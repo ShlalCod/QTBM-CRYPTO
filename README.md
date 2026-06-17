@@ -4,6 +4,13 @@ A production-grade, Binance-style crypto banking & trading platform built with N
 
 ![QTBM CRYPTO](https://img.shields.io/badge/version-1.0.0-F0B90B) ![Next.js 16](https://img.shields.io/badge/Next.js-16-black) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![License](https://img.shields.io/badge/License-MIT-green)
 
+![CI](https://github.com/ShlalCod/QTBM-CRYPTO/actions/workflows/ci.yml/badge.svg) ![Build APK](https://github.com/ShlalCod/QTBM-CRYPTO/actions/workflows/build-apk.yml/badge.svg)
+
+> 📱 **Build the APK from GitHub**: Push any commit and the
+> [Build APK workflow](https://github.com/ShlalCod/QTBM-CRYPTO/actions/workflows/build-apk.yml)
+> will produce a signed `QTBM-CRYPTO-v1.0.0.apk` you can download directly
+> from the Actions tab → latest run → **Artifacts** section.
+
 ## Features
 
 - **Trading**: Spot, Margin, Futures, Copy Trading, Limit/Market/Stop orders
@@ -64,10 +71,37 @@ bun run db:push     # Initialize SQLite database
 bun run dev         # Start dev server at http://localhost:3000
 ```
 
-### Build APK (Android)
+### Build APK (Android) — three ways
+
+#### 🅰 Build on GitHub Actions (recommended — no local setup needed)
+
+1. Push any commit to `main` (or create a `v*.*.*` tag).
+2. Open the
+   [**Actions tab**](https://github.com/ShlalCod/QTBM-CRYPTO/actions/workflows/build-apk.yml).
+3. Click the latest **Build APK** run.
+4. Scroll to the **Artifacts** section at the bottom and download
+   `QTBM-CRYPTO-release-apk.zip`.
+5. Unzip → install `QTBM-CRYPTO-v1.0.0.apk` on your device
+   (`adb install -r QTBM-CRYPTO-v1.0.0.apk`).
+
+> For a **debug** build instead, use *Actions → Run workflow →
+> build_type = debug*.
+
+#### 🅱 Build locally (with Android SDK)
 
 See **[android/BUILD_APK.md](android/BUILD_APK.md)** for the complete
 production APK build guide. Quick start:
+
+```bash
+# 1) Generate a release keystore (one-time)
+bun run keystore:generate
+
+# 2) Build the signed release APK
+bun run apk:release
+#   → android/app/build/outputs/apk/release/QTBM-CRYPTO-v1.0.0.apk
+```
+
+#### 🅒 Step-by-step (manual)
 
 ```bash
 # 1) Build the web assets
