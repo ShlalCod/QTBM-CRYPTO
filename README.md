@@ -61,6 +61,7 @@ the client through `NEXT_PUBLIC_*` environment variables (see `.env.example`).
 
 ### Prerequisites
 - Node.js 20+ (or Bun 1.3+)
+- JDK 21 (for APK builds — Capacitor 8.x requires it)
 - Android Studio (for APK builds, optional)
 
 ### Install & Run (Web)

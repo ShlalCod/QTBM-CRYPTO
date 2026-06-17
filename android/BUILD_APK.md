@@ -17,7 +17,7 @@ React Native or Flutter project is needed.
 | **Bun** (or Node.js 20+) | ≥ 1.3 / 20 | Build the Next.js web assets |
 | **Android Studio** | Hedgehog (2023.1.1) or newer | Provides the Android SDK + emulator |
 | **Android SDK** | API 34 (compileSdk) + API 23 (minSdk) | Compile the native project |
-| **JDK** | 17 (temurin-17 recommended) | Required by Gradle 8.7 |
+| **JDK** | 21 (temurin-21 recommended) | Required by Capacitor 8.x + Gradle 8.7 |
 | **keytool** | ships with JDK | Generate the release keystore |
 
 Set these environment variables (in `~/.bashrc` / `~/.zshrc`):
@@ -31,7 +31,7 @@ export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/late
 Verify:
 
 ```bash
-java -version          # → 17.x
+java -version          # → 21.x
 echo $ANDROID_HOME     # → /home/user/Android/Sdk
 adb --version          # → Android Debug Bridge ...
 ```
@@ -188,6 +188,7 @@ bun run cap:sync && bun run apk:release
 | Symptom | Fix |
 |---------|-----|
 | `SDK location not found` | Set `ANDROID_HOME` (see §1) or run `bash scripts/build-apk.sh` which writes `android/local.properties` automatically. |
+| `invalid source release: 21` | Install JDK 21 (Capacitor 8.x requires it). `sdk install java 21.0.5-tem` via SDKMAN, or Android Studio → Settings → Build Tools → Gradle → JDK. |
 | `Failed to transform google-services.json` | The package name in `google-services.json` must match `applicationId "com.qtbm.crypto"` in `app/build.gradle`. |
 | Keystore mismatch on Play Store | You must use the **same keystore** for every release. Recover it from your backup; if lost, contact Play Console support to reset. |
 | White screen in the APK | Run `bun run cap:sync` after every web change; check `adb logcat` for JS errors. |
