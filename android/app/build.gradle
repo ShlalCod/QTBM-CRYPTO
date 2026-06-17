@@ -62,7 +62,6 @@ android {
             debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            android.enableR8.fullMode = false
         }
         release {
             minifyEnabled false
