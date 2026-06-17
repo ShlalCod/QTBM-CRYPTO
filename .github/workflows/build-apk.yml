@@ -100,12 +100,21 @@ jobs:
       # signingConfigs uses file() which resolves relative to the :app module dir.
       - name: 🔑 Generate release keystore
         env:
-          KS_PASS: ${{ secrets.QTBM_KEYSTORE_PASSWORD || 'qtbm-ci-keystore-2025' }}
-          KEY_PASS: ${{ secrets.QTBM_KEY_PASSWORD || 'qtbm-ci-key-2025' }}
+          # Use a single password for both store and key to avoid any
+          # mismatch issues. Override via repo secrets for production.
+          KS_PASS: ${{ secrets.QTBM_KEYSTORE_PASSWORD }}
+          KEY_PASS: ${{ secrets.QTBM_KEY_PASSWORD }}
         run: |
+          # Fall back to CI defaults when secrets are not configured.
+          KS_PASS="${KS_PASS:-qtbm-ci-keystore-2025}"
+          KEY_PASS="${KEY_PASS:-qtbm-ci-key-2025}"
+
           if [ ! -f android/app/qtbm-release.keystore ]; then
             echo "▶ Generating CI release keystore at android/app/qtbm-release.keystore…"
+            # Explicitly use PKCS12 (JDK 21 default) and pass -storetype
+            # to avoid any ambiguity in how the key is stored.
             keytool -genkeypair -v \
+              -storetype PKCS12 \
               -keystore android/app/qtbm-release.keystore \
               -alias qtbm \
               -keyalg RSA -keysize 4096 \
@@ -114,14 +123,19 @@ jobs:
               -storepass "$KS_PASS" \
               -keypass "$KEY_PASS" \
               -dname "CN=QTBM CRYPTO CI, OU=Engineering, O=QTBM, L=Sanaa, ST=Sanaa, C=YE"
+            # Verify the keystore is readable with the given password.
+            keytool -list -v \
+              -keystore android/app/qtbm-release.keystore \
+              -storepass "$KS_PASS" \
+              -alias qtbm | head -20
           fi
           # keystore.properties sits next to build.gradle (in android/) and
           # references the keystore by filename only (relative to android/app/).
           printf 'storeFile=qtbm-release.keystore\nstorePassword=%s\nkeyAlias=qtbm\nkeyPassword=%s\n' \
             "$KS_PASS" "$KEY_PASS" > android/keystore.properties
           echo "✓ keystore.properties written (passwords redacted below):"
-          cat android/keystore.properties | sed 's/password=.*/password=***/'
-          echo "✓ Keystore location:"
+          sed 's/Password=.*/Password=***/' android/keystore.properties
+          echo "✓ Keystore file:"
           ls -la android/app/qtbm-release.keystore
 
       # ---------- 6. Build the web app ----------
