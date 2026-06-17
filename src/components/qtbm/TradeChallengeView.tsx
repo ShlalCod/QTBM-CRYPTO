@@ -1,0 +1,345 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import {
+  ArrowLeft,
+  Trophy,
+  Clock,
+  Users,
+  Flame,
+  Target,
+  Zap,
+  Medal,
+  Star,
+  Swords,
+  Crown,
+  MessageSquare,
+  Rocket,
+} from 'lucide-react';
+import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+const challenges = [
+  {
+    id: 'spot-master',
+    name: 'Spot Master',
+    description: 'Trade $25K in spot pairs',
+    reward: '$500',
+    participants: 540,
+    icon: Target,
+    color: '#0ECB81',
+  },
+  {
+    id: 'futures-sprint',
+    name: 'Futures Sprint',
+    description: 'Open 10 futures positions',
+    reward: '$1,000',
+    participants: 312,
+    icon: Zap,
+    color: '#F6465D',
+  },
+  {
+    id: 'social-trader',
+    name: 'Social Trader',
+    description: 'Share 5 trade ideas',
+    reward: '$250',
+    participants: 89,
+    icon: MessageSquare,
+    color: '#627EEA',
+  },
+  {
+    id: 'newbie-quest',
+    name: 'Newbie Quest',
+    description: 'Complete 5 trades',
+    reward: '$100',
+    participants: 1205,
+    icon: Rocket,
+    color: '#F0B90B',
+  },
+];
+
+const leaderboardData = [
+  { rank: 1, name: 'CryptoKing_99', volume: '$2,450,000', avatar: '👑', medal: 'text-[#FFD700]' },
+  { rank: 2, name: 'TradeMaster_X', volume: '$1,890,000', avatar: '🥈', medal: 'text-[#C0C0C0]' },
+  { rank: 3, name: 'DiamondHands', volume: '$1,650,000', avatar: '🥉', medal: 'text-[#CD7F32]' },
+  { rank: 4, name: 'WhaleAlert', volume: '$1,230,000', avatar: '🐋', medal: 'text-[#848E9C]' },
+  { rank: 5, name: 'MoonShot_42', volume: '$980,000', avatar: '🚀', medal: 'text-[#848E9C]' },
+];
+
+const myChallenges = [
+  { id: 'weekly-volume', name: 'Weekly Volume Challenge', progress: 25, detail: '$12,450 / $50,000' },
+  { id: 'newbie-quest', name: 'Newbie Quest', progress: 60, detail: '3/5 trades' },
+];
+
+const pastChallenges = [
+  { id: 'past-1', name: 'December Sprint', reward: '$50', won: true },
+];
+
+export default function TradeChallengeView() {
+  const { goBack } = useAppStore();
+  const { t } = useTranslation();
+  const [timeLeft, setTimeLeft] = useState({ days: 3, hours: 14, minutes: 22, seconds: 0 });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        let { days, hours, minutes, seconds } = prev;
+        seconds--;
+        if (seconds < 0) {
+          seconds = 59;
+          minutes--;
+        }
+        if (minutes < 0) {
+          minutes = 59;
+          hours--;
+        }
+        if (hours < 0) {
+          hours = 23;
+          days--;
+        }
+        if (days < 0) {
+          return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+        }
+        return { days, hours, minutes, seconds };
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <ScrollArea className="h-[calc(100vh-8rem)] lg:h-[calc(100vh-4rem)]">
+      <div className="p-4 max-w-lg mx-auto space-y-4">
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-8 w-8"
+            onClick={goBack}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-lg font-semibold text-[#EAECEF]">{t('tradeChallenge.title')}</h1>
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#F6465D]/10 border border-[#F6465D]/20">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#F6465D] animate-pulse" />
+            <span className="text-[9px] font-bold text-[#F6465D]">{t('status.live')}</span>
+          </div>
+        </div>
+
+        {/* Active Challenge Banner */}
+        <Card className="bg-[#1E2329] border-[#2B3139] overflow-hidden relative glass-card">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#F0B90B]/10 via-[#F6465D]/5 to-[#0ECB81]/5 animate-gradient-shift" style={{ backgroundSize: '200% 200%' }} />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#F0B90B] via-[#F6465D] to-[#0ECB81]" />
+          <CardContent className="p-4 relative z-10">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Trophy className="h-5 w-5 text-[#F0B90B]" />
+                <span className="text-sm font-semibold text-[#EAECEF]">{t('tradeChallenge.weeklyVolume')}</span>
+              </div>
+              <Badge className="bg-[#F6465D]/10 text-[#F6465D] border-0 text-[8px] px-1.5 py-0 h-4 font-semibold">
+                {t('tradeChallenge.active')}
+              </Badge>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="mb-3">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs text-[#848E9C]">{t('tradeChallenge.yourVolume')}: $12,450 / $50,000</span>
+                <span className="text-xs font-semibold text-[#F0B90B]">25%</span>
+              </div>
+              <div className="w-full h-2.5 bg-[#2B3139] rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: '25%' }}
+                  transition={{ duration: 1, ease: 'easeOut' }}
+                  className="h-full rounded-full bg-gradient-to-r from-[#F0B90B] to-[#F6465D]"
+                />
+              </div>
+            </div>
+
+            {/* Time Remaining */}
+            <div className="flex items-center gap-1.5 mb-3">
+              <Clock className="h-3.5 w-3.5 text-[#848E9C]" />
+              <span className="text-xs text-[#848E9C]">{t('tradeChallenge.timeRemaining')}:</span>
+              <div className="flex items-center gap-1">
+                {[
+                  { value: timeLeft.days, label: 'd' },
+                  { value: timeLeft.hours, label: 'h' },
+                  { value: timeLeft.minutes, label: 'm' },
+                  { value: timeLeft.seconds, label: 's' },
+                ].map((item, idx) => (
+                  <span key={idx} className="flex items-center gap-0.5">
+                    <span className="text-xs font-bold text-[#EAECEF] bg-[#0B0E11]/60 px-1.5 py-0.5 rounded">
+                      {String(item.value).padStart(2, '0')}
+                    </span>
+                    <span className="text-[9px] text-[#5E6673]">{item.label}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Prize Pool & Rank */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-[#0B0E11]/50 rounded-xl p-3 text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <Crown className="h-3.5 w-3.5 text-[#F0B90B]" />
+                  <span className="text-[9px] text-[#5E6673] uppercase tracking-wider">{t('tradeChallenge.prizePool')}</span>
+                </div>
+                <p className="text-lg font-bold text-[#F0B90B]">$10,000</p>
+                <p className="text-[9px] text-[#848E9C]">USDT</p>
+              </div>
+              <div className="bg-[#0B0E11]/50 rounded-xl p-3 text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <Users className="h-3.5 w-3.5 text-[#848E9C]" />
+                  <span className="text-[9px] text-[#5E6673] uppercase tracking-wider">{t('tradeChallenge.currentRank')}</span>
+                </div>
+                <p className="text-lg font-bold text-[#EAECEF]">#156</p>
+                <p className="text-[9px] text-[#848E9C]">{t('tradeChallenge.ofParticipants', { count: '2,340' })}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Challenge List */}
+        <Card className="bg-[#1E2329] border-[#2B3139] glass-card">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Swords className="h-4 w-4 text-[#F0B90B]" />
+              <h3 className="text-sm font-medium text-[#EAECEF]">{t('tradeChallenge.availableChallenges')}</h3>
+            </div>
+            <div className="space-y-2">
+              {challenges.map((challenge) => {
+                const Icon = challenge.icon;
+                return (
+                  <div
+                    key={challenge.id}
+                    className="flex items-center justify-between p-3 rounded-xl bg-[#0B0E11]/40 hover:bg-[#0B0E11]/60 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-9 h-9 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: `${challenge.color}15` }}
+                      >
+                        <Icon className="h-4 w-4" style={{ color: challenge.color }} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-[#EAECEF]">{challenge.name}</p>
+                        <p className="text-[9px] text-[#5E6673]">{challenge.description}</p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[9px] text-[#F0B90B] font-semibold">{t('tradeChallenge.win')} {challenge.reward}</span>
+                          <span className="text-[8px] text-[#5E6673]">• {challenge.participants.toLocaleString()} {t('tradeChallenge.participants').toLowerCase()}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      className="gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-7 px-3 text-[10px] press-scale shrink-0"
+                    >
+                      {t('tradeChallenge.join')}
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* My Challenges */}
+        <Card className="bg-[#1E2329] border-[#2B3139] glass-card">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Target className="h-4 w-4 text-[#0ECB81]" />
+              <h3 className="text-sm font-medium text-[#EAECEF]">{t('tradeChallenge.myChallenges')}</h3>
+            </div>
+            <div className="space-y-3">
+              {myChallenges.map((challenge) => (
+                <div key={challenge.id} className="bg-[#0B0E11]/40 rounded-xl p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-semibold text-[#EAECEF]">{challenge.name}</p>
+                    <span className="text-xs font-bold text-[#F0B90B]">{challenge.progress}%</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-[#2B3139] rounded-full overflow-hidden mb-1">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${challenge.progress}%` }}
+                      transition={{ duration: 1, ease: 'easeOut' }}
+                      className="h-full rounded-full bg-gradient-to-r from-[#F0B90B] to-[#0ECB81]"
+                    />
+                  </div>
+                  <span className="text-[9px] text-[#5E6673]">{challenge.detail}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Leaderboard Preview */}
+        <Card className="bg-[#1E2329] border-[#2B3139] glass-card">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Medal className="h-4 w-4 text-[#F0B90B]" />
+              <h3 className="text-sm font-medium text-[#EAECEF]">{t('tradeChallenge.leaderboard')}</h3>
+            </div>
+            <div className="space-y-1.5">
+              {leaderboardData.map((trader) => (
+                <div
+                  key={trader.rank}
+                  className="flex items-center justify-between py-2 px-3 rounded-lg bg-[#0B0E11]/30"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className={`text-sm font-bold w-5 text-center ${
+                      trader.rank === 1 ? 'text-[#FFD700]' :
+                      trader.rank === 2 ? 'text-[#C0C0C0]' :
+                      trader.rank === 3 ? 'text-[#CD7F32]' :
+                      'text-[#848E9C]'
+                    }`}>
+                      {trader.rank <= 3 ? (
+                        trader.rank === 1 ? '🥇' : trader.rank === 2 ? '🥈' : '🥉'
+                      ) : (
+                        `#${trader.rank}`
+                      )}
+                    </span>
+                    <span className="text-lg">{trader.avatar}</span>
+                    <span className="text-xs text-[#EAECEF] font-medium">{trader.name}</span>
+                  </div>
+                  <span className="text-xs text-[#848E9C] font-semibold">{trader.volume}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Past Challenges */}
+        <Card className="bg-[#1E2329] border-[#2B3139] glass-card">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Star className="h-4 w-4 text-[#848E9C]" />
+              <h3 className="text-sm font-medium text-[#EAECEF]">{t('tradeChallenge.pastChallenges')}</h3>
+            </div>
+            {pastChallenges.map((challenge) => (
+              <div
+                key={challenge.id}
+                className="flex items-center justify-between p-3 rounded-xl bg-[#0B0E11]/30"
+              >
+                <div>
+                  <p className="text-xs font-semibold text-[#EAECEF]">{challenge.name}</p>
+                  <p className="text-[9px] text-[#5E6673]">{t('tradeChallenge.completed')}</p>
+                </div>
+                {challenge.won && (
+                  <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[9px] px-2 py-0 h-5 font-semibold">
+                    {t('tradeChallenge.won')} {challenge.reward}
+                  </Badge>
+                )}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    </ScrollArea>
+  );
+}

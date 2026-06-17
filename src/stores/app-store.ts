@@ -1,0 +1,183 @@
+import { create } from 'zustand';
+import type { AppView, UserState, CryptoAsset, WalletBalance, Notification, Order } from '@/types';
+
+export type Language = 'en' | 'ar';
+
+interface AppState {
+  // Navigation
+  currentView: AppView;
+  previousView: AppView | null;
+  navigateTo: (view: AppView) => void;
+  goBack: () => void;
+  
+  // Selected market
+  selectedMarket: string;
+  setSelectedMarket: (market: string) => void;
+  
+  // Selected asset
+  selectedAsset: string;
+  setSelectedAsset: (asset: string) => void;
+  
+  // User
+  user: UserState;
+  setUser: (user: Partial<UserState>) => void;
+  logout: () => void;
+  
+  // Favorites
+  favorites: string[];
+  toggleFavorite: (symbol: string) => void;
+  
+  // Notifications
+  notifications: Notification[];
+  unreadCount: number;
+  setNotifications: (notifications: Notification[]) => void;
+  markAsRead: (id: string) => void;
+  
+  // Search
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  
+  // Loading
+  isLoading: boolean;
+  setLoading: (loading: boolean) => void;
+
+  // Live Prices (real-time simulation)
+  livePrices: Record<string, number>;
+  priceDirection: Record<string, 'up' | 'down' | null>;
+  updateLivePrices: (prices: Record<string, number>) => void;
+
+  // WebSocket Connection State
+  wsConnected: boolean;
+  setWsConnected: (connected: boolean) => void;
+
+  // Language / i18n
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  isRTL: boolean;
+
+  // Theme
+  theme: 'dark' | 'light';
+  setTheme: (theme: 'dark' | 'light') => void;
+}
+
+export const useAppStore = create<AppState>((set, get) => ({
+  // Navigation
+  currentView: 'home',
+  previousView: null,
+  navigateTo: (view) => set((state) => ({ 
+    previousView: state.currentView, 
+    currentView: view 
+  })),
+  goBack: () => set((state) => ({ 
+    currentView: state.previousView || 'home',
+    previousView: null 
+  })),
+  
+  // Selected market
+  selectedMarket: 'BTCUSDT',
+  setSelectedMarket: (market) => set({ selectedMarket: market }),
+  
+  // Selected asset
+  selectedAsset: 'BTC',
+  setSelectedAsset: (asset) => set({ selectedAsset: asset }),
+  
+  // User
+  user: {
+    role: 'user',
+    status: 'registered',
+    twoFactorEnabled: false,
+    isAuthenticated: false,
+    kycStatus: 'not_started',
+  },
+  setUser: (userData) => set((state) => ({ 
+    user: { ...state.user, ...userData } 
+  })),
+  logout: () => set({ 
+    user: { 
+      role: 'user', 
+      status: 'registered', 
+      twoFactorEnabled: false, 
+      isAuthenticated: false,
+      kycStatus: 'not_started',
+    } 
+  }),
+  
+  // Favorites
+  favorites: ['BTC', 'ETH', 'BNB', 'SOL'],
+  toggleFavorite: (symbol) => set((state) => ({
+    favorites: state.favorites.includes(symbol)
+      ? state.favorites.filter(s => s !== symbol)
+      : [...state.favorites, symbol]
+  })),
+  
+  // Notifications
+  notifications: [],
+  unreadCount: 0,
+  setNotifications: (notifications) => set({ 
+    notifications,
+    unreadCount: notifications.filter(n => !n.isRead).length 
+  }),
+  markAsRead: (id) => set((state) => {
+    const notifications = state.notifications.map(n => 
+      n.id === id ? { ...n, isRead: true } : n
+    );
+    return { 
+      notifications,
+      unreadCount: notifications.filter(n => !n.isRead).length 
+    };
+  }),
+  
+  // Search
+  searchQuery: '',
+  setSearchQuery: (query) => set({ searchQuery: query }),
+  
+  // Loading
+  isLoading: false,
+  setLoading: (loading) => set({ isLoading: loading }),
+
+  // Live Prices
+  livePrices: {},
+  priceDirection: {},
+  updateLivePrices: (prices) => set((state) => {
+    const direction: Record<string, 'up' | 'down' | null> = {};
+    Object.keys(prices).forEach((key) => {
+      const oldPrice = state.livePrices[key];
+      const newPrice = prices[key];
+      if (oldPrice && newPrice !== oldPrice) {
+        direction[key] = newPrice > oldPrice ? 'up' : 'down';
+      } else {
+        direction[key] = null;
+      }
+    });
+    return { livePrices: prices, priceDirection: direction };
+  }),
+
+  // WebSocket Connection State
+  wsConnected: false,
+  setWsConnected: (connected) => set({ wsConnected: connected }),
+
+  // Language / i18n
+  language: (typeof window !== 'undefined' && localStorage.getItem('qtbm-language') === '"ar"') ? 'ar' : 'en',
+  setLanguage: (lang) => {
+    try {
+      localStorage.setItem('qtbm-language', JSON.stringify(lang));
+    } catch {}
+    set({ 
+      language: lang,
+      isRTL: lang === 'ar',
+    });
+  },
+  isRTL: (typeof window !== 'undefined' && localStorage.getItem('qtbm-language') === '"ar"'),
+
+  // Theme
+  theme: ((typeof window !== 'undefined' && localStorage.getItem('qtbm-theme') === 'light') ? 'light' : 'dark') as 'dark' | 'light',
+  setTheme: (theme) => {
+    try {
+      localStorage.setItem('qtbm-theme', theme);
+    } catch {}
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+    set({ theme });
+  },
+}));

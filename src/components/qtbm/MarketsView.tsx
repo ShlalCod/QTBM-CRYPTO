@@ -1,0 +1,499 @@
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import { useAppStore } from '@/stores/app-store';
+import { mockMarketPairs, mockAssets, formatPrice, formatNumber, generateSparkline } from '@/lib/mock-data';
+import { Star, Search, ArrowUpDown, TrendingUp, TrendingDown, Globe, BarChart3, Coins, Activity } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+type SortField = 'symbol' | 'price' | 'change' | 'volume';
+type SortDir = 'asc' | 'desc';
+
+// Mini area chart SVG component (replaces sparkline with area fill)
+function MiniAreaChart({ data, positive }: { data: number[]; positive: boolean }) {
+  if (data.length < 2) return null;
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min || 1;
+  const w = 80;
+  const h = 28;
+  const points = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / range) * h}`).join(' ');
+  const color = positive ? '#0ECB81' : '#F6465D';
+  return (
+    <svg width={w} height={h} className="shrink-0">
+      <defs>
+        <linearGradient id={`area-${positive ? 'g' : 'r'}-${data[0]}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.2" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <polygon
+        fill={`url(#area-${positive ? 'g' : 'r'}-${data[0]})`}
+        points={`0,${h} ${points} ${w},${h}`}
+      />
+      <polyline fill="none" stroke={color} strokeWidth="1.5" points={points} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// Live price cell with flash animation
+function LivePriceCell({ symbol, fallbackPrice }: { symbol: string; fallbackPrice: number }) {
+  const { livePrices, priceDirection } = useAppStore();
+  const price = livePrices[symbol] || fallbackPrice;
+  const direction = priceDirection[symbol] || null;
+  // Compute flash class directly (no setState in effect)
+  const flashClass = direction === 'up' ? 'price-flash-up' : direction === 'down' ? 'price-flash-down' : '';
+
+  return (
+    <span
+      key={price}
+      className={`text-sm font-medium text-[#EAECEF] tabular-nums price-transition ${flashClass}`}
+    >
+      {formatPrice(price)}
+    </span>
+  );
+}
+
+const TABS = [
+  { id: 'favorites', label: '★' },
+  { id: 'usdt', label: 'USDT' },
+  { id: 'btc', label: 'BTC' },
+  { id: 'eth', label: 'ETH' },
+  { id: 'bnb', label: 'BNB' },
+  { id: 'heatmap', label: '🔥 Heatmap' },
+  { id: 'new', label: 'New' },
+  { id: 'gainers', label: 'Gainers' },
+  { id: 'losers', label: 'Losers' },
+];
+
+export default function MarketsView() {
+  const { navigateTo, favorites, toggleFavorite, setSelectedMarket, searchQuery, setSearchQuery, livePrices, priceDirection } = useAppStore();
+  const [tab, setTab] = useState('usdt');
+  const [sortField, setSortField] = useState<SortField>('volume');
+  const [sortDir, setSortDir] = useState<SortDir>('desc');
+  const [heatmapFilter, setHeatmapFilter] = useState<'all' | 'gainers' | 'losers'>('all');
+
+  // Live-enhanced market pairs
+  const livePairs = useMemo(() => {
+    return mockMarketPairs.map((pair) => {
+      const livePrice = livePrices[pair.symbol];
+      return livePrice ? { ...pair, price: livePrice } : pair;
+    });
+  }, [livePrices]);
+
+  // Pre-compute sparkline data for all pairs (stable across renders)
+  const sparklineCache = useMemo(() => {
+    const cache: Record<string, number[]> = {};
+    mockMarketPairs.forEach(pair => {
+      cache[pair.symbol] = generateSparkline(pair);
+    });
+    return cache;
+  }, []);
+
+  // New listings (arbitrary: ARB, OP, APT, IMX)
+  const newAssets = ['ARB', 'OP', 'APT', 'IMX'];
+
+  const filteredPairs = useMemo(() => {
+    let pairs = livePairs.filter(pair => {
+      const matchesSearch = searchQuery
+        ? pair.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          pair.baseAsset.toLowerCase().includes(searchQuery.toLowerCase())
+        : true;
+
+      switch (tab) {
+        case 'favorites':
+          return matchesSearch && favorites.includes(pair.baseAsset);
+        case 'usdt':
+          return matchesSearch && pair.quoteAsset === 'USDT';
+        case 'btc':
+          return matchesSearch && pair.quoteAsset === 'BTC';
+        case 'eth':
+          return matchesSearch && pair.quoteAsset === 'ETH';
+        case 'bnb':
+          return matchesSearch && pair.quoteAsset === 'BNB';
+        case 'new':
+          return matchesSearch && newAssets.includes(pair.baseAsset) && pair.quoteAsset === 'USDT';
+        case 'gainers':
+          return matchesSearch && pair.changePercent > 0;
+        case 'losers':
+          return matchesSearch && pair.changePercent < 0;
+        default:
+          return matchesSearch;
+      }
+    });
+
+    // Sort
+    pairs = [...pairs].sort((a, b) => {
+      let cmp = 0;
+      switch (sortField) {
+        case 'symbol':
+          cmp = a.baseAsset.localeCompare(b.baseAsset);
+          break;
+        case 'price':
+          cmp = a.price - b.price;
+          break;
+        case 'change':
+          cmp = a.changePercent - b.changePercent;
+          break;
+        case 'volume':
+          cmp = a.quoteVolume - b.quoteVolume;
+          break;
+      }
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+
+    // For gainers, always sort by change descending
+    if (tab === 'gainers') {
+      pairs.sort((a, b) => b.changePercent - a.changePercent);
+    }
+    // For losers, always sort by change ascending (most negative first)
+    if (tab === 'losers') {
+      pairs.sort((a, b) => a.changePercent - b.changePercent);
+    }
+
+    return pairs;
+  }, [searchQuery, tab, sortField, sortDir, favorites, livePairs]);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDir('desc');
+    }
+  };
+
+  const handlePairClick = (symbol: string) => {
+    setSelectedMarket(symbol);
+    navigateTo('trade');
+  };
+
+  // Max volume for volume bar scaling
+  const maxVolume = Math.max(...livePairs.map(p => p.quoteVolume), 1);
+
+  // ── Heatmap Component ────────────────────────────────────────────────────────
+  const heatmapData = useMemo(() => {
+    const usdtPairs = livePairs.filter(p => p.quoteAsset === 'USDT');
+    let filtered = usdtPairs;
+    if (heatmapFilter === 'gainers') filtered = usdtPairs.filter(p => p.changePercent > 0);
+    if (heatmapFilter === 'losers') filtered = usdtPairs.filter(p => p.changePercent < 0);
+    // Sort by volume for sizing
+    return filtered.sort((a, b) => b.quoteVolume - a.quoteVolume).slice(0, 20);
+  }, [livePairs, heatmapFilter]);
+
+  const renderHeatmap = () => {
+    if (heatmapData.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center py-12 text-[#5E6673]">
+          <BarChart3 className="h-8 w-8 mb-2 text-[#2B3139]" />
+          <p className="text-sm">No data for heatmap</p>
+        </div>
+      );
+    }
+
+    const totalVolume = heatmapData.reduce((sum, p) => sum + p.quoteVolume, 0);
+    const svgW = 600;
+    const svgH = 300;
+    const gap = 3;
+    const cols = 5;
+    const rows = Math.ceil(heatmapData.length / cols);
+    const cellW = (svgW - (cols + 1) * gap) / cols;
+    const cellH = (svgH - (rows + 1) * gap) / rows;
+
+    // Compute color based on change percent
+    const getCellColor = (change: number) => {
+      if (change > 5) return '#0ECB81';
+      if (change > 2) return 'rgba(14,203,129,0.7)';
+      if (change > 0) return 'rgba(14,203,129,0.45)';
+      if (change > -2) return 'rgba(246,70,93,0.45)';
+      if (change > -5) return 'rgba(246,70,93,0.7)';
+      return '#F6465D';
+    };
+
+    // Get cell size factor based on volume
+    const getCellHeight = (volume: number) => {
+      const ratio = volume / (totalVolume / heatmapData.length);
+      return Math.max(cellH * 0.6, cellH * Math.min(ratio, 1.4));
+    };
+
+    let yOffset = gap;
+
+    return (
+      <div>
+        {/* Gainers/Losers Filter Bar */}
+        <div className="flex gap-2 mb-3 px-4">
+          {(['all', 'gainers', 'losers'] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setHeatmapFilter(f)}
+              className={`px-3 py-1 rounded-md text-[10px] font-semibold transition-all duration-200 ${
+                heatmapFilter === f
+                  ? f === 'gainers' ? 'bg-[#0ECB81]/15 text-[#0ECB81] border border-[#0ECB81]/30'
+                    : f === 'losers' ? 'bg-[#F6465D]/15 text-[#F6465D] border border-[#F6465D]/30'
+                    : 'bg-[#F0B90B]/15 text-[#F0B90B] border border-[#F0B90B]/30'
+                  : 'bg-[#1E2329] text-[#848E9C] border border-[#2B3139] hover:text-[#EAECEF]'
+              }`}
+            >
+              {f === 'all' ? 'All' : f === 'gainers' ? '▲ Gainers' : '▼ Losers'}
+            </button>
+          ))}
+        </div>
+
+        <div className="px-4 pb-4">
+          <svg width="100%" viewBox={`0 0 ${svgW} ${svgH}`} className="w-full" style={{ maxHeight: '300px' }}>
+            {heatmapData.map((pair, idx) => {
+              const col = idx % cols;
+              const row = Math.floor(idx / cols);
+              const x = gap + col * (cellW + gap);
+              const cH = getCellHeight(pair.quoteVolume);
+              const y = row === 0 ? gap : yOffset;
+              if (col === 0 && row > 0) yOffset += gap;
+              const actualY = gap + row * (cellH + gap) + (cellH - cH) / 2;
+              const color = getCellColor(pair.changePercent);
+
+              return (
+                <g key={pair.symbol}>
+                  <rect
+                    x={x}
+                    y={actualY}
+                    width={cellW}
+                    height={cH}
+                    rx={4}
+                    fill={color}
+                    opacity={0.85}
+                    className="heatmap-cell"
+                  />
+                  <text
+                    x={x + cellW / 2}
+                    y={actualY + cH / 2 - 6}
+                    textAnchor="middle"
+                    fill="white"
+                    fontSize="11"
+                    fontWeight="bold"
+                  >
+                    {pair.baseAsset}
+                  </text>
+                  <text
+                    x={x + cellW / 2}
+                    y={actualY + cH / 2 + 8}
+                    textAnchor="middle"
+                    fill="rgba(255,255,255,0.85)"
+                    fontSize="9"
+                  >
+                    {pair.changePercent >= 0 ? '+' : ''}{pair.changePercent.toFixed(2)}%
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+      </div>
+    );
+  };
+
+  // Stats
+  const totalMarketCap = mockAssets.reduce((acc, a) => acc + a.marketCap, 0);
+  const totalVolume = livePairs.reduce((acc, p) => acc + p.quoteVolume, 0);
+  const btcDominance = ((mockAssets[0].marketCap / totalMarketCap) * 100);
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Stats Banner */}
+      <div className="px-4 pt-3 pb-2 border-b border-[#2B3139]">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-md bg-[#F0B90B]/10 flex items-center justify-center shrink-0">
+              <Globe className="h-3.5 w-3.5 text-[#F0B90B]" />
+            </div>
+            <div>
+              <p className="text-[10px] text-[#5E6673] leading-tight">Market Cap</p>
+              <p className="text-xs text-[#EAECEF] font-semibold tabular-nums">{formatNumber(totalMarketCap, 1)}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-md bg-[#0ECB81]/10 flex items-center justify-center shrink-0">
+              <BarChart3 className="h-3.5 w-3.5 text-[#0ECB81]" />
+            </div>
+            <div>
+              <p className="text-[10px] text-[#5E6673] leading-tight">24h Volume</p>
+              <p className="text-xs text-[#EAECEF] font-semibold tabular-nums">{formatNumber(totalVolume, 1)}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-md bg-[#F0B90B]/10 flex items-center justify-center shrink-0">
+              <Coins className="h-3.5 w-3.5 text-[#F0B90B]" />
+            </div>
+            <div>
+              <p className="text-[10px] text-[#5E6673] leading-tight">BTC Dominance</p>
+              <p className="text-xs text-[#EAECEF] font-semibold tabular-nums">{btcDominance.toFixed(1)}%</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-md bg-[#0ECB81]/10 flex items-center justify-center shrink-0">
+              <Activity className="h-3.5 w-3.5 text-[#0ECB81]" />
+            </div>
+            <div>
+              <p className="text-[10px] text-[#5E6673] leading-tight">Active Markets</p>
+              <p className="text-xs text-[#EAECEF] font-semibold tabular-nums">{mockMarketPairs.length}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search */}
+      <div className="px-4 pt-3 pb-1">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#848E9C]" />
+          <Input
+            placeholder="Search symbol or name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 bg-[#1E2329] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
+          />
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="px-4 py-2">
+        <div className="flex gap-1 overflow-x-auto no-scrollbar">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`shrink-0 px-3 py-1.5 rounded-md text-xs font-medium transition-colors card-depth ${
+                tab === t.id
+                  ? 'bg-[#2B3139] gradient-text-gold'
+                  : 'text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#1E2329]'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Table Header */}
+      <div className="flex items-center px-4 py-1.5 text-[11px] text-[#5E6673] border-b border-[#2B3139]">
+        <div className="w-5 shrink-0 text-center">#</div>
+        <div className="w-8 shrink-0" />
+        <button onClick={() => handleSort('symbol')} className="flex items-center gap-0.5 flex-1 text-left hover:text-[#848E9C] min-w-0">
+          <span className="truncate">Pair</span>
+          <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
+        </button>
+        <button onClick={() => handleSort('price')} className="flex items-center gap-0.5 w-24 text-right hover:text-[#848E9C] shrink-0">
+          <span>Price</span>
+          <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
+        </button>
+        <div className="w-20 shrink-0 hidden sm:block" /> {/* Sparkline placeholder */}
+        <button onClick={() => handleSort('change')} className="flex items-center gap-0.5 w-16 text-right hover:text-[#848E9C] shrink-0">
+          <span>24h</span>
+          <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
+        </button>
+        <button onClick={() => handleSort('volume')} className="flex items-center gap-0.5 w-20 text-right hover:text-[#848E9C] shrink-0">
+          <span>Volume</span>
+          <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
+        </button>
+      </div>
+
+      {/* Market List / Heatmap */}
+      {tab === 'heatmap' ? (
+        <div className="flex-1">
+          {renderHeatmap()}
+        </div>
+      ) : (
+      <ScrollArea className="flex-1">
+        <div className="px-4">
+          {filteredPairs.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-12 text-[#5E6673]">
+              {tab === 'favorites' ? (
+                <>
+                  <Star className="h-8 w-8 mb-2 text-[#2B3139]" />
+                  <p className="text-sm">No favorites yet</p>
+                  <p className="text-xs mt-1">Star assets to add them here</p>
+                </>
+              ) : (
+                <p className="text-sm">No results found</p>
+              )}
+            </div>
+          )}
+          {filteredPairs.map((pair, rankIdx) => {
+            const isFav = favorites.includes(pair.baseAsset);
+            const isPositive = pair.changePercent >= 0;
+            const sparkData = sparklineCache[pair.symbol];
+            const isHot = Math.abs(pair.changePercent) >= 3;
+
+            return (
+              <div
+                key={pair.symbol}
+                role="button"
+                tabIndex={0}
+                onClick={() => handlePairClick(pair.symbol)}
+                className="w-full flex items-center py-2.5 border-b border-[#2B3139]/40 hover:bg-[#1E2329]/50 transition-colors group cursor-pointer"
+              >
+                {/* Market cap rank number */}
+                <div className="w-5 shrink-0 text-center text-[10px] text-[#5E6673] tabular-nums">{rankIdx + 1}</div>
+
+                {/* Favorite */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(pair.baseAsset);
+                  }}
+                  className={`w-8 shrink-0 transition-colors ${isFav ? 'text-[#F0B90B]' : 'text-[#3B4451] hover:text-[#848E9C]'}`}
+                >
+                  <Star className={`h-3.5 w-3.5 ${isFav ? 'fill-current' : ''}`} />
+                </button>
+
+                {/* Pair name */}
+                <div className="flex-1 text-left min-w-0">
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-semibold text-[#EAECEF]">{pair.baseAsset}</span>
+                    <span className="text-[11px] text-[#5E6673]">/{pair.quoteAsset}</span>
+                    {/* Hot badge */}
+                    {isHot && (
+                      <Badge className="text-[8px] h-3.5 px-1 bg-[#F6465D]/15 text-[#F6465D] border-0 hot-badge badge-shimmer font-bold">
+                        HOT
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+
+                {/* Price - with live flash */}
+                <div className="w-24 text-right shrink-0">
+                  <LivePriceCell symbol={pair.symbol} fallbackPrice={pair.price} />
+                </div>
+
+                {/* Mini Area Chart - hidden on very small screens */}
+                <div className="w-20 shrink-0 hidden sm:flex items-center justify-end">
+                  <MiniAreaChart data={sparkData} positive={isPositive} />
+                </div>
+
+                {/* 24h Change */}
+                <div className="w-16 text-right shrink-0">
+                  <span className={`text-xs font-semibold tabular-nums ${isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+                    {isPositive ? '+' : ''}{pair.changePercent.toFixed(2)}%
+                  </span>
+                </div>
+
+                {/* Volume Bar */}
+                <div className="w-20 text-right shrink-0">
+                  <span className="text-[11px] text-[#848E9C] tabular-nums">{formatNumber(pair.quoteVolume)}</span>
+                  <div className="volume-bar-bg mt-0.5">
+                    <div
+                      className="volume-bar-fill"
+                      style={{ width: `${Math.min(100, (pair.quoteVolume / maxVolume) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </ScrollArea>
+      )}
+    </div>
+  );
+}

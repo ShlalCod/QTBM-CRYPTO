@@ -1,0 +1,17 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- QTBM yellow "Q" mark on transparent background; foreground of adaptive icon -->
+    <group
+        android:scaleX="0.55"
+        android:scaleY="0.55"
+        android:translateX="24.3"
+        android:translateY="24.3">
+        <path
+            android:fillColor="#F0B90B"
+            android:pathData="M54,18 C33.46,18 18,33.46 18,54 C18,74.54 33.46,90 54,90 C63.27,90 71.65,86.24 77.71,79.18 L86.41,87.88 L90,84.29 L81.3,75.59 C86.06,69.7 90,62.36 90,54 C90,33.46 74.54,18 54,18 Z M54,27 C69.46,27 81,38.54 81,54 C81,69.46 69.46,81 54,81 C38.54,81 27,69.46 27,54 C27,38.54 38.54,27 54,27 Z" />
+    </group>
+</vector>

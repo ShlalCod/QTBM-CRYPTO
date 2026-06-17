@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "506536686458",
+    "firebase_url": "https://qtb-bank-crypto-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "qtb-bank-crypto",
+    "storage_bucket": "qtb-bank-crypto.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:506536686458:android:cb8e1888f30ea8a1ac1cc3",
+        "android_client_info": {
+          "package_name": "com.qtbm.crypto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "506536686458-fj9s8vm1rcc39mglv31segmup9ikprs8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjsrjak2u8J0b6rfaqrB-NZmc1apI70JI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "506536686458-fj9s8vm1rcc39mglv31segmup9ikprs8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

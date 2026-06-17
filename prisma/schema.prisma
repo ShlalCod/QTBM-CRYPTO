@@ -1,0 +1,544 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============ USER & AUTH ============
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  phone         String?
+  password      String
+  name          String?
+  avatar        String?
+  role          String    @default("user") // user, vip, admin, compliance, support
+  status        String    @default("registered") // anonymous, registered, email_verified, phone_verified, kyc_pending, kyc_approved, restricted, suspended, closed
+  twoFactorSecret String?
+  twoFactorEnabled Boolean @default(false)
+  referralCode  String?   @unique
+  referredBy    String?
+  language      String    @default("en")
+  currency      String    @default("USD")
+  lastLoginAt   DateTime?
+  lastLoginIp   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  profile       UserProfile?
+  sessions      Session[]
+  devices       Device[]
+  kycSubmission KycSubmission?
+  wallets       Wallet[]
+  orders        Order[]
+  buyerTrades   Trade[] @relation("BuyerTrades")
+  sellerTrades  Trade[] @relation("SellerTrades")
+  deposits      Deposit[]
+  withdrawals   Withdrawal[]
+  transfers     Transfer[]
+  notifications Notification[]
+  supportTickets SupportTicket[]
+  apiKeys       ApiKey[]
+  earnSubs      EarnSubscription[]
+  p2pListings   P2pListing[]
+  p2pBuyerOrders  P2pOrder[] @relation("P2pBuyerOrders")
+  p2pSellerOrders P2pOrder[] @relation("P2pSellerOrders")
+  launchParticipations LaunchParticipation[]
+  auditLogs     AuditLog[]
+}
+
+model UserProfile {
+  id          String  @id @default(cuid())
+  userId      String  @unique
+  firstName   String?
+  lastName    String?
+  dateOfBirth String?
+  country     String?
+  city        String?
+  address     String?
+  postalCode  String?
+  bio         String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  device    String?
+  ip        String?
+  userAgent String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Device {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String?
+  type        String?  // mobile, desktop, tablet
+  os          String?
+  browser     String?
+  fingerprint String?
+  lastUsedAt  DateTime?
+  trusted     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ============ KYC ============
+
+model KycSubmission {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  status      String   @default("not_started") // not_started, pending, approved, rejected, needs_more_info
+  level       String   @default("basic") // basic, intermediate, advanced
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  rejectionReason String?
+  submittedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents   KycDocument[]
+}
+
+model KycDocument {
+  id          String   @id @default(cuid())
+  submissionId String
+  type        String   // id_front, id_back, selfie, proof_of_address, etc
+  url         String
+  status      String   @default("pending") // pending, approved, rejected
+  createdAt   DateTime @default(now())
+
+  submission KycSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+}
+
+// ============ ASSETS & MARKETS ============
+
+model Asset {
+  id          String   @id @default(cuid())
+  symbol      String   @unique
+  name        String
+  icon        String?
+  type        String   @default("crypto") // crypto, fiat, token
+  network     String?
+  contractAddress String?
+  decimals    Int      @default(8)
+  isListed    Boolean  @default(true)
+  depositEnabled Boolean @default(true)
+  withdrawEnabled Boolean @default(true)
+  minDeposit  Float    @default(0)
+  minWithdraw Float    @default(0)
+  withdrawFee Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  markets     Market[]
+  basePairs   Market[] @relation("BaseAsset")
+}
+
+model Market {
+  id          String   @id @default(cuid())
+  symbol      String   @unique // e.g. BTCUSDT
+  baseAssetId String
+  quoteAssetId String
+  baseAsset   String   // e.g. BTC
+  quoteAsset  String   // e.g. USDT
+  type        String   @default("spot") // spot, margin, futures
+  isListed    Boolean  @default(true)
+  minOrder    Float    @default(0)
+  maxOrder    Float?
+  pricePrecision Int   @default(8)
+  qtyPrecision Int    @default(8)
+  makerFee    Float    @default(0.001)
+  takerFee    Float    @default(0.001)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  baseAssetRel  Asset  @relation("BaseAsset", fields: [baseAssetId], references: [id])
+  quoteAssetRel Asset  @relation(fields: [quoteAssetId], references: [id])
+  candles    Candle[]
+  priceTicks PriceTick[]
+  orders     Order[]
+  trades     Trade[]
+}
+
+model PriceTick {
+  id        String   @id @default(cuid())
+  marketId  String
+  price     Float
+  volume    Float
+  timestamp DateTime @default(now())
+
+  market Market @relation(fields: [marketId], references: [id], onDelete: Cascade)
+}
+
+model Candle {
+  id        String   @id @default(cuid())
+  marketId  String
+  interval  String   // 1m, 5m, 15m, 1h, 4h, 1d, 1w
+  open      Float
+  high      Float
+  low       Float
+  close     Float
+  volume    Float
+  timestamp DateTime
+
+  market Market @relation(fields: [marketId], references: [id], onDelete: Cascade)
+}
+
+// ============ WALLET ============
+
+model Wallet {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   @default("spot") // spot, funding, earn, futures, margin
+  assetId   String
+  asset     String   // e.g. BTC, USDT
+  balance   Float    @default(0)
+  available Float    @default(0)
+  locked    Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  addresses  WalletAddress[]
+
+  @@unique([userId, type, asset])
+}
+
+model WalletAddress {
+  id        String   @id @default(cuid())
+  walletId  String
+  address   String
+  network   String
+  tag       String?  // memo/tag for XRP, etc
+  createdAt DateTime @default(now())
+
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+}
+
+// ============ ORDERS & TRADES ============
+
+model Order {
+  id          String   @id @default(cuid())
+  userId      String
+  marketId    String
+  market      String   // e.g. BTCUSDT
+  type        String   // market, limit, stop_limit, stop_market, oco
+  side        String   // buy, sell
+  status      String   @default("pending") // draft, pending, partially_filled, filled, canceled, rejected, expired
+  price       Float?
+  stopPrice   Float?
+  quantity    Float
+  filledQty   Float    @default(0)
+  quoteQty    Float?
+  fee         Float    @default(0)
+  feeAsset    String?
+  isMargin    Boolean  @default(false)
+  isIsolated  Boolean?
+  leverage    Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  marketRel Market @relation(fields: [marketId], references: [id])
+  trades Trade[]
+}
+
+model Trade {
+  id          String   @id @default(cuid())
+  orderId     String
+  marketId    String
+  marketSymbol String
+  buyerId     String
+  sellerId    String
+  price       Float
+  quantity    Float
+  quoteQty    Float
+  fee         Float    @default(0)
+  feeAsset    String?
+  side        String   // buy, sell
+  isBuyerMaker Boolean @default(false)
+  createdAt   DateTime @default(now())
+
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  marketRel Market @relation(fields: [marketId], references: [id])
+  buyer    User   @relation("BuyerTrades", fields: [buyerId], references: [id])
+  seller   User   @relation("SellerTrades", fields: [sellerId], references: [id])
+}
+
+// ============ DEPOSITS & WITHDRAWALS ============
+
+model Deposit {
+  id          String   @id @default(cuid())
+  userId      String
+  asset       String
+  network     String
+  amount      Float
+  txHash      String?
+  fromAddress String?
+  toAddress   String?
+  status      String   @default("initiated") // initiated, pending_confirmation, processing, completed, failed, reversed, under_review
+  confirmations Int    @default(0)
+  requiredConfirmations Int @default(3)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Withdrawal {
+  id          String   @id @default(cuid())
+  userId      String
+  asset       String
+  network     String
+  amount      Float
+  fee         Float    @default(0)
+  txHash      String?
+  toAddress   String
+  status      String   @default("initiated") // initiated, pending_confirmation, processing, completed, failed, reversed, under_review
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Transfer {
+  id          String   @id @default(cuid())
+  userId      String
+  asset       String
+  amount      Float
+  fromType    String   // spot, funding, earn, futures, margin
+  toType      String
+  status      String   @default("completed") // pending, completed, failed
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ============ EARN ============
+
+model EarnProduct {
+  id            String   @id @default(cuid())
+  asset         String
+  type          String   // flexible, locked, staking
+  apr           Float
+  minAmount     Float    @default(0)
+  maxAmount     Float?
+  duration      Int?     // days, null for flexible
+  isAvailable   Boolean  @default(true)
+  totalSupply   Float?
+  usedSupply    Float    @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  subscriptions EarnSubscription[]
+}
+
+model EarnSubscription {
+  id          String   @id @default(cuid())
+  userId      String
+  productId   String
+  amount      Float
+  rewards     Float    @default(0)
+  status      String   @default("active") // active, redeemed, early_redeemed
+  startAt     DateTime @default(now())
+  endAt       DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product EarnProduct  @relation(fields: [productId], references: [id])
+}
+
+// ============ P2P ============
+
+model P2pListing {
+  id            String   @id @default(cuid())
+  userId        String
+  asset         String
+  fiatCurrency  String
+  price         Float
+  minAmount     Float
+  maxAmount     Float
+  available     Float
+  side          String   // buy, sell
+  paymentMethods String  // JSON string of payment methods
+  terms         String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders P2pOrder[]
+}
+
+model P2pOrder {
+  id            String   @id @default(cuid())
+  listingId     String
+  buyerId       String
+  sellerId      String
+  asset         String
+  fiatCurrency  String
+  amount        Float
+  price         Float
+  fiatAmount    Float
+  paymentMethod String
+  status        String   @default("pending") // pending, paid, released, disputed, canceled, completed
+  escrowTxId    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  listing P2pListing @relation(fields: [listingId], references: [id])
+  buyer   User       @relation("P2pBuyerOrders", fields: [buyerId], references: [id])
+  seller  User       @relation("P2pSellerOrders", fields: [sellerId], references: [id])
+}
+
+// ============ LAUNCHPAD ============
+
+model LaunchProject {
+  id            String   @id @default(cuid())
+  name          String
+  symbol        String
+  icon          String?
+  description   String?
+  type          String   // launchpad, launchpool, airdrop
+  tokenPrice    Float
+  totalSupply   Float
+  availableSupply Float
+  minCommit     Float
+  maxCommit     Float?
+  startAt       DateTime
+  endAt         DateTime
+  status        String   @default("upcoming") // upcoming, active, completed, canceled
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  participants LaunchParticipation[]
+}
+
+model LaunchParticipation {
+  id          String   @id @default(cuid())
+  userId      String
+  projectId   String
+  amount      Float
+  allocation  Float?
+  status      String   @default("committed") // committed, allocated, claimed, refunded
+  createdAt   DateTime @default(now())
+
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project LaunchProject  @relation(fields: [projectId], references: [id])
+}
+
+// ============ NOTIFICATIONS ============
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // security, trade, deposit, withdrawal, system, promotion
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  type      String   @default("general") // general, maintenance, listing, delisting, promotion
+  priority  Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============ SUPPORT ============
+
+model SupportTicket {
+  id          String   @id @default(cuid())
+  userId      String
+  subject     String
+  category    String   // account, trading, deposit, withdrawal, security, other
+  status      String   @default("open") // open, waiting_user, waiting_support, escalated, resolved, closed
+  priority    String   @default("normal") // low, normal, high, urgent
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages SupportMessage[]
+}
+
+model SupportMessage {
+  id        String   @id @default(cuid())
+  ticketId  String
+  senderId  String?
+  senderType String  @default("user") // user, agent, system
+  message   String
+  attachment String?
+  createdAt DateTime @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+}
+
+// ============ API KEYS ============
+
+model ApiKey {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  key         String   @unique
+  secret      String
+  permissions String   @default("read") // read, trade, withdraw
+  ipWhitelist String?
+  isActive    Boolean  @default(true)
+  lastUsedAt  DateTime?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ============ AUDIT ============
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  action      String
+  entity      String
+  entityId    String?
+  details     String?
+  ip          String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+}
+
+// ============ LEDGER ============
+
+model LedgerEntry {
+  id          String   @id @default(cuid())
+  userId      String
+  walletId    String
+  asset       String
+  amount      Float
+  type        String   // deposit, withdrawal, trade, fee, transfer_in, transfer_out, earn_reward, launch_allocation
+  referenceId String?
+  referenceType String? // order_id, deposit_id, etc
+  balance     Float    // balance after this entry
+  createdAt   DateTime @default(now())
+}

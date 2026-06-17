@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">QTBM CRYPTO</string>
+    <string name="title_main_activity">QTBM CRYPTO</string>
+    <string name="custom_url_scheme">https</string>
+    <string name="default_notification_channel_id">qtbm_default_channel</string>
+    <string name="default_notification_channel_name">QTBM Notifications</string>
+    <string name="default_notification_channel_description">Price alerts, trades, deposits and security notifications from QTBM CRYPTO.</string>
+</resources>

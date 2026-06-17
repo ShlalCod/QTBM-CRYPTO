@@ -1,0 +1,549 @@
+'use client';
+
+import React, { useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Home,
+  TrendingUp,
+  CandlestickChart,
+  Wallet,
+  Menu,
+  Search,
+  Bell,
+  LogIn,
+  X,
+  Settings,
+  Shield,
+  Headphones,
+  Moon,
+  Sun,
+} from 'lucide-react';
+import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { mockNotifications } from '@/lib/mock-data';
+import { usePriceSimulator } from '@/hooks/use-price-simulator';
+import HomeView from './HomeView';
+import MarketsView from './MarketsView';
+import TradeView from './TradeView';
+import WalletView from './WalletView';
+import MoreView from './MoreView';
+import AuthView from './AuthView';
+import EarnView from './EarnView';
+import P2PView from './P2PView';
+import LaunchpadView from './LaunchpadView';
+import NotificationsView from './NotificationsView';
+import SettingsView from './SettingsView';
+import KYCView from './KYCView';
+import SupportView from './SupportView';
+import DepositView from './DepositView';
+import WithdrawView from './WithdrawView';
+import TransferView from './TransferView';
+import AssetDetailView from './AssetDetailView';
+import OrderHistoryView from './OrderHistoryView';
+import TradeHistoryView from './TradeHistoryView';
+import FuturesView from './FuturesView';
+import MarginView from './MarginView';
+import AdminDashboardView from './AdminDashboardView';
+import AIChatView from './AIChatView';
+import SwapView from './SwapView';
+import ReferralView from './ReferralView';
+import PortfolioAnalyticsView from './PortfolioAnalyticsView';
+import StakingView from './StakingView';
+import CopyTradingView from './CopyTradingView';
+import VotingView from './VotingView';
+import PriceAlertsView from './PriceAlertsView';
+import LeaderboardView from './LeaderboardView';
+import NewsFeedView from './NewsFeedView';
+import TransactionDetailView from './TransactionDetailView';
+import StrategyBotView from './StrategyBotView';
+import SavingsGoalsView from './SavingsGoalsView';
+import ConvertView from './ConvertView';
+import GiftCardsView from './GiftCardsView';
+import TaxReportView from './TaxReportView';
+import TradeChallengeView from './TradeChallengeView';
+import NFTGalleryView from './NFTGalleryView';
+import DeFiDashboardView from './DeFiDashboardView';
+import SocialFeedView from './SocialFeedView';
+
+const navItems = [
+  { id: 'home' as const, labelKey: 'nav.home', icon: Home },
+  { id: 'markets' as const, labelKey: 'nav.markets', icon: TrendingUp },
+  { id: 'trade' as const, labelKey: 'nav.trade', icon: CandlestickChart },
+  { id: 'wallet' as const, labelKey: 'nav.wallet', icon: Wallet },
+  { id: 'more' as const, labelKey: 'nav.more', icon: Menu },
+];
+
+const sidebarItems = [
+  { id: 'home' as const, labelKey: 'nav.home', icon: Home },
+  { id: 'markets' as const, labelKey: 'nav.markets', icon: TrendingUp },
+  { id: 'trade' as const, labelKey: 'nav.trade', icon: CandlestickChart },
+  { id: 'futures' as const, labelKey: 'nav.futures', icon: TrendingUp },
+  { id: 'margin' as const, labelKey: 'nav.margin', icon: TrendingUp },
+  { id: 'wallet' as const, labelKey: 'nav.wallet', icon: Wallet },
+  { id: 'earn' as const, labelKey: 'nav.earn', icon: TrendingUp },
+  { id: 'p2p' as const, labelKey: 'nav.p2p', icon: TrendingUp },
+  { id: 'launchpad' as const, labelKey: 'nav.launchpad', icon: TrendingUp },
+];
+
+const authViews = ['login', 'register'];
+
+// Views that have their own back navigation (sub-views)
+const subViews = ['earn', 'p2p', 'launchpad', 'notifications', 'settings', 'kyc', 'support', 'deposit', 'withdraw', 'transfer', 'asset-detail', 'order-history', 'trade-history', 'futures', 'margin', 'admin', 'ai-chat', 'swap', 'referral', 'staking', 'portfolio-analytics', 'copy-trading', 'voting', 'price-alerts', 'leaderboard', 'news-feed', 'transaction-detail', 'strategy-bot', 'savings-goals', 'convert', 'gift-cards', 'tax-report', 'trade-challenge', 'nft-gallery', 'defi-dashboard', 'social-feed'];
+
+function ViewRenderer({ view }: { view: string }) {
+  switch (view) {
+    case 'home':
+      return <HomeView />;
+    case 'markets':
+      return <MarketsView />;
+    case 'trade':
+      return <TradeView />;
+    case 'wallet':
+      return <WalletView />;
+    case 'login':
+    case 'register':
+      return <AuthView />;
+    case 'more':
+      return <MoreView />;
+    case 'earn':
+      return <EarnView />;
+    case 'p2p':
+      return <P2PView />;
+    case 'launchpad':
+      return <LaunchpadView />;
+    case 'notifications':
+      return <NotificationsView />;
+    case 'settings':
+      return <SettingsView />;
+    case 'kyc':
+      return <KYCView />;
+    case 'support':
+      return <SupportView />;
+    case 'deposit':
+      return <DepositView />;
+    case 'withdraw':
+      return <WithdrawView />;
+    case 'transfer':
+      return <TransferView />;
+    case 'asset-detail':
+      return <AssetDetailView />;
+    case 'order-history':
+      return <OrderHistoryView />;
+    case 'trade-history':
+      return <TradeHistoryView />;
+    case 'futures':
+      return <FuturesView />;
+    case 'margin':
+      return <MarginView />;
+    case 'admin':
+      return <AdminDashboardView />;
+    case 'ai-chat':
+      return <AIChatView />;
+    case 'swap':
+      return <SwapView />;
+    case 'referral':
+      return <ReferralView />;
+    case 'staking':
+      return <StakingView />;
+    case 'portfolio-analytics':
+      return <PortfolioAnalyticsView />;
+    case 'copy-trading':
+      return <CopyTradingView />;
+    case 'voting':
+      return <VotingView />;
+    case 'price-alerts':
+      return <PriceAlertsView />;
+    case 'leaderboard':
+      return <LeaderboardView />;
+    case 'news-feed':
+      return <NewsFeedView />;
+    case 'transaction-detail':
+      return <TransactionDetailView />;
+    case 'strategy-bot':
+      return <StrategyBotView />;
+    case 'savings-goals':
+      return <SavingsGoalsView />;
+    case 'convert':
+      return <ConvertView />;
+    case 'gift-cards':
+      return <GiftCardsView />;
+    case 'tax-report':
+      return <TaxReportView />;
+    case 'trade-challenge':
+      return <TradeChallengeView />;
+    case 'nft-gallery':
+      return <NFTGalleryView />;
+    case 'defi-dashboard':
+      return <DeFiDashboardView />;
+    case 'social-feed':
+      return <SocialFeedView />;
+    // Fallback views that show the appropriate sub-view
+    case 'profile':
+      return <MoreView />;
+    default:
+      return <HomeView />;
+  }
+}
+
+export default function QTBMApp() {
+  const { currentView, navigateTo, searchQuery, setSearchQuery, user, unreadCount, setNotifications, isRTL, language, wsConnected, theme, setTheme } = useAppStore();
+  const { t } = useTranslation();
+  const [searchOpen, setSearchOpen] = React.useState(false);
+
+  // Initialize price simulator
+  usePriceSimulator();
+
+  // Load mock notifications on mount
+  useEffect(() => {
+    setNotifications(mockNotifications);
+  }, [setNotifications]);
+
+  // Update document direction and lang attribute
+  useEffect(() => {
+    document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+    document.documentElement.lang = language;
+  }, [isRTL, language]);
+
+  // Apply theme on mount and when it changes
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  const handleNavClick = (view: typeof currentView) => {
+    navigateTo(view);
+  };
+
+  // Determine which view is "active" in the sidebar/nav
+  const getActiveNavId = () => {
+    if (['home'].includes(currentView)) return 'home';
+    if (['markets'].includes(currentView)) return 'markets';
+    if (['trade'].includes(currentView)) return 'trade';
+    if (['futures'].includes(currentView)) return 'futures';
+    if (['margin'].includes(currentView)) return 'margin';
+    if (['wallet', 'deposit', 'withdraw', 'transfer', 'asset-detail'].includes(currentView)) return 'wallet';
+    // Everything else maps to "more"
+    return 'more';
+  };
+
+  const activeNavId = getActiveNavId();
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#0B0E11] text-[#EAECEF]" dir={isRTL ? 'rtl' : 'ltr'} data-theme={theme}>
+      {/* Header with glass effect */}
+      <header className="sticky top-0 z-50 glass-header">
+        <div className="flex items-center justify-between h-14 px-4">
+          {/* Logo + LIVE Badge */}
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="w-8 h-8 gradient-gold rounded-md flex items-center justify-center shadow-lg shadow-[#F0B90B]/20">
+              <span className="text-[#0B0E11] font-bold text-sm">Q</span>
+            </div>
+            <div className="hidden sm:flex flex-col">
+              <div className="flex items-center gap-2">
+                <span className="text-[#F0B90B] font-bold text-base leading-tight tracking-wide">QTBM BANK</span>
+                {/* LIVE Badge with WS connection indicator */}
+                <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full border ${wsConnected ? 'bg-[#0ECB81]/10 border-[#0ECB81]/20' : 'bg-[#F6465D]/10 border-[#F6465D]/20'}`}>
+                  <div className={`w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-[#0ECB81] pulse-green' : 'bg-[#F6465D] live-dot'}`} />
+                  <span className={`text-[9px] font-bold tracking-wider ${wsConnected ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>{wsConnected ? t('status.live') : 'OFF'}</span>
+                </div>
+              </div>
+              <span className="text-[#848E9C] text-[10px] leading-tight">{t('common.digitalAssetExchange')}</span>
+            </div>
+            <div className="sm:hidden flex items-center gap-1.5">
+              <span className="text-[#F0B90B] font-bold text-sm">QTBM</span>
+              <div className={`w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-[#0ECB81] pulse-green' : 'bg-[#F6465D] live-dot'}`} />
+            </div>
+          </div>
+
+          {/* Search Bar - Desktop */}
+          <div className="hidden md:flex flex-1 max-w-md mx-6">
+            <div className="relative w-full group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#848E9C] group-focus-within:text-[#F0B90B] transition-colors" />
+              <Input
+                placeholder={t('common.searchMarkets')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 bg-[#2B3139]/60 border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 backdrop-blur-sm transition-all duration-200"
+              />
+            </div>
+          </div>
+
+          {/* Right Actions */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Search toggle - mobile */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-9 w-9"
+              onClick={() => setSearchOpen(!searchOpen)}
+            >
+              {searchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+            </Button>
+
+            {/* Notifications */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-9 w-9 relative"
+              onClick={() => navigateTo('notifications')}
+            >
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <Badge className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 bg-[#F6465D] text-white text-[10px] flex items-center justify-center border-0 animate-fade-scale notif-dot-pulse">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </Badge>
+              )}
+            </Button>
+
+            {/* Theme Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-[#848E9C] hover:text-[#F0B90B] hover:bg-[#2B3139] h-9 w-9 transition-colors duration-200"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              title={theme === 'dark' ? t('settings.lightMode') : t('settings.darkMode')}
+            >
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
+
+            {/* Login / User */}
+            {user.isAuthenticated ? (
+              <Button
+                variant="ghost"
+                className="text-[#EAECEF] hover:bg-[#2B3139] h-9 px-3 text-sm"
+                onClick={() => navigateTo('more')}
+              >
+                <div className="w-6 h-6 gradient-gold rounded-full flex items-center justify-center mr-2 shadow-sm shadow-[#F0B90B]/30">
+                  <span className="text-[#0B0E11] text-xs font-bold">
+                    {user.name?.[0]?.toUpperCase() || 'U'}
+                  </span>
+                </div>
+                <span className="hidden sm:inline">{user.name || 'User'}</span>
+              </Button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  className="text-[#EAECEF] hover:bg-[#2B3139] h-9 px-3 text-sm hidden sm:inline-flex"
+                  onClick={() => navigateTo('register')}
+                >
+                  {t('auth.register')}
+                </Button>
+                <Button
+                  className="gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-9 px-4 text-sm shadow-md shadow-[#F0B90B]/20 transition-all duration-200 hover-lift"
+                  onClick={() => navigateTo('login')}
+                >
+                  <LogIn className="h-4 w-4 mr-1.5" />
+                  <span className="hidden sm:inline">{t('auth.login')}</span>
+                  <span className="sm:hidden">{t('auth.login')}</span>
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Animated gradient line below header */}
+        <div className="animated-gradient-border h-[1px]" />
+
+        {/* Mobile Search Bar - Expandable */}
+        <AnimatePresence>
+          {searchOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden overflow-hidden border-t border-[#2B3139]"
+            >
+              <div className="p-3">
+                <div className="relative group">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#848E9C] group-focus-within:text-[#F0B90B] transition-colors" />
+                  <Input
+                    placeholder={t('common.searchMarkets')}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    autoFocus
+                    className="pl-9 bg-[#2B3139]/60 border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 backdrop-blur-sm"
+                  />
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+
+      {/* Main Content Area */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Desktop Sidebar - Hidden on auth views */}
+        {!authViews.includes(currentView) && (
+        <aside className="hidden lg:flex flex-col w-56 bg-[#0B0E11]/80 backdrop-blur-sm border-r border-[#2B3139]/60 shrink-0">
+          <ScrollArea className="flex-1">
+            <nav className="py-4 px-3 space-y-0.5">
+              {sidebarItems.map((item) => {
+                const isActive = currentView === item.id;
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleNavClick(item.id)}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 sidebar-item-hover ${
+                      isActive
+                        ? 'bg-[#2B3139] text-[#F0B90B] sidebar-item-active'
+                        : 'text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139]/40'
+                    }`}
+                  >
+                    <Icon className={`h-5 w-5 shrink-0 transition-colors duration-200 ${isActive ? 'text-[#F0B90B]' : ''}`} />
+                    <span>{t(item.labelKey)}</span>
+                    {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F0B90B]" />}
+                  </button>
+                );
+              })}
+            </nav>
+            <Separator className="bg-[#2B3139]/60 mx-3" />
+            <div className="p-3 space-y-0.5">
+              {[
+                { id: 'notifications' as const, labelKey: 'nav.notifications', icon: Bell },
+                { id: 'settings' as const, labelKey: 'nav.settings', icon: Settings },
+                { id: 'kyc' as const, labelKey: 'nav.kyc', icon: Shield },
+                { id: 'support' as const, labelKey: 'nav.support', icon: Headphones },
+              ].map((item) => {
+                const isActive = currentView === item.id;
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleNavClick(item.id)}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 sidebar-item-hover ${
+                      isActive
+                        ? 'bg-[#2B3139] text-[#F0B90B] sidebar-item-active'
+                        : 'text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139]/40'
+                    }`}
+                  >
+                    <Icon className={`h-5 w-5 shrink-0 transition-colors duration-200 ${isActive ? 'text-[#F0B90B]' : ''}`} />
+                    <span>{t(item.labelKey)}</span>
+                    {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F0B90B]" />}
+                  </button>
+                );
+              })}
+            </div>
+            <Separator className="bg-[#2B3139]/60 mx-3" />
+            <div className="p-3">
+              <button
+                onClick={() => handleNavClick('more')}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 sidebar-item-hover ${
+                  currentView === 'more'
+                    ? 'bg-[#2B3139] text-[#F0B90B] sidebar-item-active'
+                    : 'text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139]/40'
+                }`}
+              >
+                <Menu className={`h-5 w-5 shrink-0 transition-colors duration-200 ${currentView === 'more' ? 'text-[#F0B90B]' : ''}`} />
+                <span>{t('nav.more')}</span>
+                {currentView === 'more' && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F0B90B]" />}
+              </button>
+            </div>
+          </ScrollArea>
+
+          {/* Sidebar bottom promo with animated gradient */}
+          <div className="p-3 mt-auto">
+            <div className="relative overflow-hidden rounded-lg border border-[#F0B90B]/10">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#F0B90B]/8 via-[#1E2329] to-[#0ECB81]/5 animate-gradient-shift" style={{ backgroundSize: '200% 200%' }} />
+              <div className="absolute inset-0 shimmer-gradient" />
+              <div className="relative p-4">
+                <p className="text-xs text-[#848E9C] mb-2">{t('common.tradeOnTheGo')}</p>
+                <p className="text-xs text-[#EAECEF] font-medium mb-3">{t('common.downloadApp')}</p>
+                <Button className="w-full gradient-yellow hover:opacity-90 text-[#0B0E11] text-xs h-8 font-semibold shadow-md shadow-[#F0B90B]/15 press-scale">
+                  {t('common.getStarted')}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </aside>
+        )}
+
+        {/* Main View Content */}
+        <main className={`flex-1 ${currentView === 'trade' ? 'overflow-hidden' : 'overflow-y-auto'} ${authViews.includes(currentView) ? '' : 'pb-16 lg:pb-0'}`}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentView}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className={currentView === 'trade' ? 'h-full view-transition' : 'view-transition'}
+            >
+              <ViewRenderer view={currentView} />
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
+
+      {/* Footer Gradient Line - visible on all non-auth views */}
+      {!authViews.includes(currentView) && (
+        <div className="footer-gradient-line shrink-0" />
+      )}
+
+      {/* Mobile Bottom Navigation - Hidden on auth views */}
+      {!authViews.includes(currentView) && (
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 glass-header border-t border-[#2B3139]/60 pb-safe">
+        <div className="relative flex items-center justify-around h-14">
+          {/* Sliding pill indicator behind nav items */}
+          <motion.div
+            className="bottom-nav-indicator"
+            layoutId="bottomNavPill"
+            style={{ width: `${100 / navItems.length}%` }}
+            animate={{
+              left: `${(navItems.findIndex(item => activeNavId === item.id) / navItems.length) * 100}%`,
+            }}
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          />
+          {navItems.map((item) => {
+            const isActive = activeNavId === item.id;
+            const Icon = item.icon;
+            const isTrade = item.id === 'trade';
+
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNavClick(item.id)}
+                className={`flex flex-col items-center justify-center gap-0.5 min-w-0 flex-1 h-full relative transition-all duration-200 touch-feedback ${
+                  isActive
+                    ? 'text-[#F0B90B]'
+                    : 'text-[#5E6673] active:text-[#848E9C]'
+                }`}
+              >
+                {isTrade ? (
+                  <div className={`flex items-center justify-center w-11 h-11 rounded-full -mt-5 transition-all duration-300 trade-btn-glow ${
+                    isActive
+                      ? 'gradient-gold glow-yellow shadow-lg shadow-[#F0B90B]/30 active'
+                      : 'bg-[#2B3139] hover:bg-[#3B4451]'
+                  }`}>
+                    <Icon className={`h-5 w-5 transition-transform duration-200 ${isActive ? 'text-[#0B0E11] scale-110' : 'text-[#848E9C]'}`} />
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <Icon className={`h-5 w-5 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`} />
+                    {isActive && (
+                      <motion.div
+                        layoutId="navIndicator"
+                        className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#F0B90B]"
+                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                      />
+                    )}
+                  </div>
+                )}
+                <span className={`text-[10px] ${isTrade ? 'mt-0' : ''} font-medium transition-colors duration-200`}>
+                  {t(item.labelKey)}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+      )}
+    </div>
+  );
+}
