@@ -33,4 +33,9 @@ else
   npx cap sync android
 fi
 
+# Ensure the cordova-android-plugins directory exists (Gradle flatDir
+# references it; an empty libs/ folder keeps the build happy when no
+# Cordova plugins are installed).
+mkdir -p "$PROJECT_ROOT/android/capacitor-cordova-android-plugins/src/main/libs"
+
 echo "✓ Capacitor sync complete."

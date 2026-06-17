@@ -125,6 +125,12 @@ jobs:
       - name: 🔄 Capacitor sync
         run: bun run cap:sync
 
+      # Ensure the cordova-android-plugins directory exists (Gradle flatDir
+      # references it; an empty libs/ folder keeps the build happy when no
+      # Cordova plugins are installed).
+      - name: 📁 Ensure cordova-plugins directory
+        run: mkdir -p android/capacitor-cordova-android-plugins/src/main/libs
+
       # ---------- 8. Build the APK with Gradle ----------
       - name: 📱 Build ${{ github.event.inputs.build_type || 'release' }} APK
         env:
@@ -138,6 +144,10 @@ jobs:
             gradle wrapper --gradle-version 8.7 --distribution-type bin
           fi
           ls -la gradle/wrapper/
+          echo "--- settings.gradle ---"
+          cat settings.gradle
+          echo "--- app/build.gradle (signingConfigs + deps) ---"
+          sed -n '30,120p' app/build.gradle
           if [ "$BUILD_TYPE" = "debug" ]; then
             ./gradlew assembleDebug --no-daemon --console=plain --stacktrace
           else
