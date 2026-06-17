@@ -40,6 +40,12 @@ fi
 read -rp "Key password (Enter to reuse keystore password): " -s KEY_PASS; echo
 KEY_PASS="${KEY_PASS:-$STORE_PASS}"
 
+if [[ "$KEY_PASS" != "$STORE_PASS" ]]; then
+  echo "⚠ PKCS12 keystores require the SAME password for store and key."
+  echo "  The -keypass value will be ignored; using the store password for both."
+  KEY_PASS="$STORE_PASS"
+fi
+
 read -rp "Key alias [qtbm]: " ALIAS
 ALIAS="${ALIAS:-qtbm}"
 
@@ -52,13 +58,14 @@ COUNTRY="${COUNTRY:-YE}"
 echo ""
 echo "▶ Generating keystore…"
 keytool -genkeypair -v \
+  -storetype PKCS12 \
   -keystore "$KEYSTORE_FILE" \
   -alias "$ALIAS" \
   -keyalg RSA -keysize 4096 \
   -sigalg SHA256withRSA \
   -validity 10950 \
   -storepass "$STORE_PASS" \
-  -keypass "$KEY_PASS" \
+  -keypass  "$KEY_PASS" \
   -dname "CN=${CN}, OU=Engineering, O=${CN}, L=Sanaa, ST=Sanaa, C=${COUNTRY}"
 
 # Write keystore.properties (git-ignored)
