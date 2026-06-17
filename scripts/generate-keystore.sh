@@ -10,7 +10,7 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
-KEYSTORE_FILE="$PROJECT_ROOT/android/qtbm-release.keystore"
+KEYSTORE_FILE="$PROJECT_ROOT/android/app/qtbm-release.keystore"
 PROPS_FILE="$PROJECT_ROOT/android/keystore.properties"
 
 echo "============================================================"

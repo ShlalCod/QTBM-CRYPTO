@@ -96,15 +96,17 @@ jobs:
       # ---------- 5. Generate release keystore (CI-only) ----------
       # In CI we use a temporary keystore. For Play Store releases,
       # store your real keystore as a repository secret and reference it here.
+      # NOTE: The keystore MUST live in android/app/ because app/build.gradle's
+      # signingConfigs uses file() which resolves relative to the :app module dir.
       - name: 🔑 Generate release keystore
         env:
           KS_PASS: ${{ secrets.QTBM_KEYSTORE_PASSWORD || 'qtbm-ci-keystore-2025' }}
           KEY_PASS: ${{ secrets.QTBM_KEY_PASSWORD || 'qtbm-ci-key-2025' }}
         run: |
-          if [ ! -f android/qtbm-release.keystore ]; then
-            echo "▶ Generating CI release keystore…"
+          if [ ! -f android/app/qtbm-release.keystore ]; then
+            echo "▶ Generating CI release keystore at android/app/qtbm-release.keystore…"
             keytool -genkeypair -v \
-              -keystore android/qtbm-release.keystore \
+              -keystore android/app/qtbm-release.keystore \
               -alias qtbm \
               -keyalg RSA -keysize 4096 \
               -sigalg SHA256withRSA \
@@ -113,10 +115,14 @@ jobs:
               -keypass "$KEY_PASS" \
               -dname "CN=QTBM CRYPTO CI, OU=Engineering, O=QTBM, L=Sanaa, ST=Sanaa, C=YE"
           fi
+          # keystore.properties sits next to build.gradle (in android/) and
+          # references the keystore by filename only (relative to android/app/).
           printf 'storeFile=qtbm-release.keystore\nstorePassword=%s\nkeyAlias=qtbm\nkeyPassword=%s\n' \
             "$KS_PASS" "$KEY_PASS" > android/keystore.properties
-          echo "✓ keystore.properties written"
+          echo "✓ keystore.properties written (passwords redacted below):"
           cat android/keystore.properties | sed 's/password=.*/password=***/'
+          echo "✓ Keystore location:"
+          ls -la android/app/qtbm-release.keystore
 
       # ---------- 6. Build the web app ----------
       - name: 🌐 Build Next.js web app

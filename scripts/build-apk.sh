@@ -14,7 +14,7 @@
 #   - Node.js 20+ / Bun 1.3+
 #   - Android SDK (ANDROID_HOME or ANDROID_SDK_ROOT set)
 #   - JDK 17+
-#   - A release keystore at android/qtbm-release.keystore
+#   - A release keystore at android/app/qtbm-release.keystore
 #     (generate one with `bun run keystore:generate`)
 #
 # Output:
@@ -100,7 +100,7 @@ ok "Java: $(java -version 2>&1 | head -1)"
 
 # Release keystore (only required for release builds)
 if [[ "$BUILD_TYPE" == "release" ]]; then
-  KS_FILE="$PROJECT_ROOT/android/qtbm-release.keystore"
+  KS_FILE="$PROJECT_ROOT/android/app/qtbm-release.keystore"
   KS_PROPS="$PROJECT_ROOT/android/keystore.properties"
   if [[ ! -f "$KS_FILE" || ! -f "$KS_PROPS" ]]; then
     warn "Release keystore not found."
