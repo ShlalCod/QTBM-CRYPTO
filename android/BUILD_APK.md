@@ -16,7 +16,7 @@ React Native or Flutter project is needed.
 |------|---------|-----|
 | **Bun** (or Node.js 20+) | ≥ 1.3 / 20 | Build the Next.js web assets |
 | **Android Studio** | Hedgehog (2023.1.1) or newer | Provides the Android SDK + emulator |
-| **Android SDK** | API 34 (compileSdk) + API 23 (minSdk) | Compile the native project |
+| **Android SDK** | API 35 (compileSdk) + API 23 (minSdk) | Compile the native project (Capacitor 8.x requires API 35) |
 | **JDK** | 21 (temurin-21 recommended) | Required by Capacitor 8.x + Gradle 8.7 |
 | **keytool** | ships with JDK | Generate the release keystore |
 

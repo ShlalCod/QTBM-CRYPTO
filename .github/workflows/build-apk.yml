@@ -79,9 +79,9 @@ jobs:
           java-version: "21"
 
       # ---------- 4. Setup Android SDK ----------
-      # ubuntu-latest already ships with Android SDK 34 + build-tools 34.0.0
-      # + platform-tools preinstalled. We just need to accept licenses and
-      # make sure the env vars point at it.
+      # ubuntu-latest already ships with Android SDK preinstalled. We just
+      # need to accept licenses, ensure API 35 + build-tools 35.0.0 are
+      # present (Capacitor 8.x requires compileSdk 35), and point env vars.
       - name: 🤖 Configure Android SDK
         run: |
           echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
@@ -89,9 +89,9 @@ jobs:
           echo "sdk.dir=$ANDROID_HOME" > android/local.properties
           # Accept all SDK licenses (idempotent)
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          # Ensure required components are present
-          sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools" >/dev/null 2>&1 || true
-          sdkmanager --list_installed | head -20 || true
+          # Ensure required components are present (Capacitor 8.x → API 35)
+          sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools" >/dev/null 2>&1 || true
+          sdkmanager --list_installed | grep -E "android-35|build-tools;35" || true
 
       # ---------- 5. Generate release keystore (CI-only) ----------
       # In CI we use a temporary keystore. For Play Store releases,
