@@ -15,31 +15,36 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "QTBM BANK - Digital Asset Exchange",
-  description: "Trade cryptocurrencies with confidence on QTBM BANK. Buy, sell, and manage your digital assets securely.",
+  title: "QTBM CRYPTO — Digital Asset Exchange",
+  description: "Trade cryptocurrencies with confidence on QTBM CRYPTO. Buy, sell, and manage your digital assets securely.",
   keywords: ["QTBM", "cryptocurrency", "bitcoin", "ethereum", "trading", "exchange", "digital assets"],
-  authors: [{ name: "QTBM BANK" }],
+  authors: [{ name: "QTBM CRYPTO" }],
   icons: {
     icon: "/favicon.ico",
   },
   openGraph: {
-    title: "QTBM BANK - Digital Asset Exchange",
-    description: "Trade cryptocurrencies with confidence on QTBM BANK",
-    siteName: "QTBM BANK",
+    title: "QTBM CRYPTO — Digital Asset Exchange",
+    description: "Trade cryptocurrencies with confidence on QTBM CRYPTO",
+    siteName: "QTBM CRYPTO",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "QTBM BANK - Digital Asset Exchange",
-    description: "Trade cryptocurrencies with confidence on QTBM BANK",
+    title: "QTBM CRYPTO — Digital Asset Exchange",
+    description: "Trade cryptocurrencies with confidence on QTBM CRYPTO",
   },
 };
 
+// Viewport optimized for Capacitor Android WebView + mobile browsers.
+// Based on research: viewport-fit=cover for notched devices,
+// user-scalable=no to prevent pinch-zoom in the app shell.
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  minimumScale: 1,
   maximumScale: 1,
   userScalable: false,
+  viewportFit: "cover",
   themeColor: "#0B0E11",
 };
 
@@ -48,21 +53,30 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Default to Arabic (RTL) — the app's primary language.
+  // The inline script normalizes both 'ar' and '"ar"' localStorage forms
+  // and applies the correct dir/lang BEFORE first paint to prevent flash.
   return (
-    <html lang="en" dir="ltr" suppressHydrationWarning className="dark">
+    <html lang="ar" dir="rtl" suppressHydrationWarning className="dark">
       <head>
-        {/* Inline script to set initial direction from localStorage before paint */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 try {
                   var stored = localStorage.getItem('qtbm-language');
-                  if (stored === '"ar"' || stored === 'ar') {
+                  var lang = stored ? stored.replace(/^["']|["']$/g, '') : 'ar';
+                  if (lang === 'en') {
+                    document.documentElement.dir = 'ltr';
+                    document.documentElement.lang = 'en';
+                  } else {
                     document.documentElement.dir = 'rtl';
                     document.documentElement.lang = 'ar';
                   }
-                } catch(e) {}
+                } catch(e) {
+                  document.documentElement.dir = 'rtl';
+                  document.documentElement.lang = 'ar';
+                }
               })();
             `,
           }}

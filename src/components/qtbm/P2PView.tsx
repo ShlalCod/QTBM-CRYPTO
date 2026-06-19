@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
 import { mockP2PListings, formatPrice } from '@/lib/mock-data';
 import {
   ArrowLeft,
@@ -38,12 +39,12 @@ const paymentMethodIcons: Record<string, string> = {
 };
 
 // Quick chat messages for P2P
-const quickMessages = [
-  'Hi, I want to trade',
-  'What is your payment method?',
-  'Ready to proceed',
-  'How long does it take?',
-  'Can you provide a discount?',
+const quickMessageKeys = [
+  'p2p.quickMsg1',
+  'p2p.quickMsg2',
+  'p2p.quickMsg3',
+  'p2p.quickMsg4',
+  'p2p.quickMsg5',
 ];
 
 // Online status data for merchants (simulated)
@@ -55,8 +56,10 @@ function isMerchantOnline(userId: string): boolean {
 
 // ── Mini Chat Preview Component ────────────────────────────────────────────
 function MiniChatPreview({ merchantName, onClose }: { merchantName: string; onClose: () => void }) {
+  const { t } = useTranslation();
+  const quickMessages = quickMessageKeys.map((k) => t(k));
   const [messages, setMessages] = useState<Array<{ text: string; isUser: boolean; time: string }>>([
-    { text: `Hello! You're chatting with ${merchantName}`, isUser: false, time: 'Now' },
+    { text: t('p2p.chatWithMerchant').replace('{name}', merchantName), isUser: false, time: t('p2p.now') },
   ]);
   const [inputVal, setInputVal] = useState('');
 
@@ -64,14 +67,14 @@ function MiniChatPreview({ merchantName, onClose }: { merchantName: string; onCl
     if (!text.trim()) return;
     setMessages((prev) => [
       ...prev,
-      { text: text.trim(), isUser: true, time: 'Now' },
+      { text: text.trim(), isUser: true, time: t('p2p.now') },
     ]);
     setInputVal('');
     // Simulate auto-reply after a short delay
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
-        { text: 'Thanks for reaching out! I\'ll respond shortly.', isUser: false, time: 'Now' },
+        { text: t('p2p.thanksReachingOut'), isUser: false, time: t('p2p.now') },
       ]);
     }, 1200);
   };
@@ -138,7 +141,7 @@ function MiniChatPreview({ merchantName, onClose }: { merchantName: string; onCl
           value={inputVal}
           onChange={(e) => setInputVal(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') handleSend(inputVal); }}
-          placeholder="Type a message..."
+          placeholder={t('p2p.typeMessage')}
           className="h-7 text-[11px] bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] focus:border-[#F0B90B]"
         />
         <button
@@ -154,6 +157,7 @@ function MiniChatPreview({ merchantName, onClose }: { merchantName: string; onCl
 
 export default function P2PView() {
   const { navigateTo } = useAppStore();
+  const { t } = useTranslation();
   const [side, setSide] = useState<P2PSide>('buy');
   const [fiatCurrency, setFiatCurrency] = useState<FiatCurrency>('USD');
   const [searchQuery, setSearchQuery] = useState('');
@@ -185,8 +189,8 @@ export default function P2PView() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-lg font-bold text-[#EAECEF]">P2P Trading</h1>
-            <p className="text-xs text-[#848E9C]">Buy & sell crypto with merchants</p>
+            <h1 className="text-lg font-bold text-[#EAECEF]">{t('p2p.title')}</h1>
+            <p className="text-xs text-[#848E9C]">{t('p2p.subtitle')}</p>
           </div>
         </div>
 
@@ -200,7 +204,7 @@ export default function P2PView() {
                 : 'text-[#848E9C] hover:text-[#EAECEF]'
             }`}
           >
-            Buy
+            {t('p2p.buy')}
           </button>
           <button
             onClick={() => setSide('sell')}
@@ -210,7 +214,7 @@ export default function P2PView() {
                 : 'text-[#848E9C] hover:text-[#EAECEF]'
             }`}
           >
-            Sell
+            {t('p2p.sell')}
           </button>
         </div>
 
@@ -231,7 +235,7 @@ export default function P2PView() {
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673]" />
             <Input
-              placeholder="Search merchant..."
+              placeholder={t('p2p.searchMerchant')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-xs focus:border-[#F0B90B]"
@@ -251,7 +255,7 @@ export default function P2PView() {
             }`}
             onClick={() => setPaymentFilter('all')}
           >
-            All
+            {t('p2p.all')}
           </Button>
           {['Bank Transfer', 'Zelle', 'PayPal', 'Venmo', 'STC Pay', 'Wire'].map((method) => (
             <Button
@@ -275,8 +279,8 @@ export default function P2PView() {
           {displayListings.length === 0 ? (
             <Card className="bg-[#1E2329] border-[#2B3139]">
               <CardContent className="p-8 text-center">
-                <p className="text-sm text-[#5E6673]">No listings found for {fiatCurrency}</p>
-                <p className="text-xs text-[#3E444D] mt-1">Try a different currency or payment method</p>
+                <p className="text-sm text-[#5E6673]">{t('p2p.noListings')} {fiatCurrency}</p>
+                <p className="text-xs text-[#3E444D] mt-1">{t('p2p.tryDifferent')}</p>
               </CardContent>
             </Card>
           ) : (
@@ -301,20 +305,20 @@ export default function P2PView() {
                           {/* Online/Offline status text */}
                           <span className={`text-[9px] font-medium flex items-center gap-0.5 ${isMerchantOnline(listing.user) ? 'text-[#0ECB81]' : 'text-[#5E6673]'}`}>
                             <span className={`w-1 h-1 rounded-full ${isMerchantOnline(listing.user) ? 'bg-[#0ECB81] online-indicator' : 'bg-[#5E6673]'}`} />
-                            {isMerchantOnline(listing.user) ? 'Online' : 'Offline'}
+                            {isMerchantOnline(listing.user) ? t('p2p.online') : t('p2p.offline')}
                           </span>
                           {/* Verified merchant badge */}
                           {listing.completionRate >= 98 && (
                             <div className="flex items-center gap-0.5 px-1 py-0.5 bg-[#0ECB81]/10 rounded-full badge-shimmer">
                               <Shield className="h-3 w-3 text-[#0ECB81]" />
-                              <span className="text-[8px] text-[#0ECB81] font-bold">Verified</span>
+                              <span className="text-[8px] text-[#0ECB81] font-bold">{t('p2p.verified')}</span>
                             </div>
                           )}
                         </div>
                         <div className="flex items-center gap-2 text-[10px] text-[#5E6673]">
-                          <span>{listing.ordersCount} orders</span>
+                          <span>{listing.ordersCount} {t('p2p.orders')}</span>
                           <span>·</span>
-                          <span className="text-[#0ECB81]">{listing.completionRate}% completion</span>
+                          <span className="text-[#0ECB81]">{listing.completionRate}% {t('p2p.completionRate')}</span>
                         </div>
                         {/* Completion rate progress bar */}
                         <div className="completion-rate-bar mt-1 w-24">
@@ -341,19 +345,19 @@ export default function P2PView() {
                   {/* Details */}
                   <div className="grid grid-cols-3 gap-3 mb-3">
                     <div>
-                      <p className="text-[10px] text-[#5E6673]">Available</p>
+                      <p className="text-[10px] text-[#5E6673]">{t('p2p.available')}</p>
                       <p className="text-xs text-[#EAECEF] font-medium tabular-nums">
                         {listing.available.toLocaleString()} {listing.asset}
                       </p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-[#5E6673]">Limit</p>
+                      <p className="text-[10px] text-[#5E6673]">{t('p2p.limit')}</p>
                       <p className="text-xs text-[#EAECEF] font-medium tabular-nums">
                         {listing.minAmount}-{listing.maxAmount} {listing.fiatCurrency}
                       </p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-[#5E6673]">Payment</p>
+                      <p className="text-[10px] text-[#5E6673]">{t('p2p.payment')}</p>
                       <p className="text-xs text-[#EAECEF] font-medium truncate">
                         {listing.paymentMethods.join(', ')}
                       </p>
@@ -384,7 +388,7 @@ export default function P2PView() {
                         }`}
                       >
                         <MessageCircle className="h-3.5 w-3.5" />
-                        Chat
+                        {t('p2p.chat')}
                       </button>
                       <Button
                         className={`text-xs h-8 px-5 font-semibold ${
@@ -393,7 +397,7 @@ export default function P2PView() {
                             : 'bg-[#F6465D] hover:bg-[#F6465D]/90 text-white'
                         }`}
                       >
-                        {listing.side === 'sell' ? 'Buy' : 'Sell'} {listing.asset}
+                        {listing.side === 'sell' ? t('p2p.buy') : t('p2p.sell')} {listing.asset}
                       </Button>
                     </div>
                   </div>
@@ -424,8 +428,7 @@ export default function P2PView() {
         <Card className="bg-[#1E2329]/50 border-[#2B3139]">
           <CardContent className="p-3">
             <p className="text-[10px] text-[#5E6673] text-center">
-              P2P transactions are between users. QTBM BANK provides the platform but is not a party to the trade.
-              Always verify payment before releasing crypto.
+              {t('p2p.disclaimer')}
             </p>
           </CardContent>
         </Card>

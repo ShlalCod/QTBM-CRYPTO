@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
 import { mockFAQs, mockSupportTickets, getTimeAgo } from '@/lib/mock-data';
 import {
   ArrowLeft,
@@ -30,15 +31,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const statusConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
-  open: { icon: AlertCircle, color: 'text-[#F0B90B]', label: 'Open' },
-  in_progress: { icon: Loader2, color: 'text-[#F0B90B]', label: 'In Progress' },
-  resolved: { icon: CheckCircle2, color: 'text-[#0ECB81]', label: 'Resolved' },
-  closed: { icon: CheckCircle2, color: 'text-[#848E9C]', label: 'Closed' },
+const statusConfig: Record<string, { icon: React.ElementType; color: string; labelKey: string }> = {
+  open: { icon: AlertCircle, color: 'text-[#F0B90B]', labelKey: 'support.statusOpen' },
+  in_progress: { icon: Loader2, color: 'text-[#F0B90B]', labelKey: 'support.statusInProgress' },
+  resolved: { icon: CheckCircle2, color: 'text-[#0ECB81]', labelKey: 'support.statusResolved' },
+  closed: { icon: CheckCircle2, color: 'text-[#848E9C]', labelKey: 'support.statusClosed' },
 };
 
 export default function SupportView() {
   const { navigateTo } = useAppStore();
+  const { t } = useTranslation();
   const [searchFAQ, setSearchFAQ] = useState('');
   const [createTicketOpen, setCreateTicketOpen] = useState(false);
   const [ticketSubject, setTicketSubject] = useState('');
@@ -85,8 +87,8 @@ export default function SupportView() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-lg font-bold text-[#EAECEF]">Support Center</h1>
-              <p className="text-xs text-[#848E9C]">Get help with your account</p>
+              <h1 className="text-lg font-bold text-[#EAECEF]">{t('support.title')}</h1>
+              <p className="text-xs text-[#848E9C]">{t('support.subtitle')}</p>
             </div>
           </div>
           <Button
@@ -94,7 +96,7 @@ export default function SupportView() {
             onClick={() => setCreateTicketOpen(true)}
           >
             <Plus className="h-3.5 w-3.5 mr-1" />
-            New Ticket
+            {t('support.newTicket')}
           </Button>
         </div>
 
@@ -109,8 +111,8 @@ export default function SupportView() {
                 <MessageSquare className="h-5 w-5 text-[#F0B90B]" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-[#EAECEF]">Create Ticket</p>
-                <p className="text-[10px] text-[#5E6673]">Get personalized help</p>
+                <p className="text-sm font-semibold text-[#EAECEF]">{t('support.createTicket')}</p>
+                <p className="text-[10px] text-[#5E6673]">{t('support.getPersonalizedHelp')}</p>
               </div>
             </CardContent>
           </Card>
@@ -120,8 +122,8 @@ export default function SupportView() {
                 <Headphones className="h-5 w-5 text-[#0ECB81]" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-[#EAECEF]">Live Chat</p>
-                <p className="text-[10px] text-[#5E6673]">Chat with an agent</p>
+                <p className="text-sm font-semibold text-[#EAECEF]">{t('support.liveChat')}</p>
+                <p className="text-[10px] text-[#5E6673]">{t('support.chatWithAgent')}</p>
               </div>
             </CardContent>
           </Card>
@@ -129,13 +131,13 @@ export default function SupportView() {
 
         {/* FAQ Section */}
         <div>
-          <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">Frequently Asked Questions</h3>
+          <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">{t('support.faqTitle')}</h3>
 
           {/* Search */}
           <div className="relative mb-3">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673]" />
             <Input
-              placeholder="Search FAQs..."
+              placeholder={t('support.searchFaqs')}
               value={searchFAQ}
               onChange={(e) => setSearchFAQ(e.target.value)}
               className="pl-9 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B]"
@@ -182,7 +184,7 @@ export default function SupportView() {
               ))}
               {filteredFAQs.length === 0 && (
                 <div className="p-6 text-center">
-                  <p className="text-sm text-[#5E6673]">No FAQs found</p>
+                  <p className="text-sm text-[#5E6673]">{t('support.noFaqs')}</p>
                 </div>
               )}
             </CardContent>
@@ -191,7 +193,7 @@ export default function SupportView() {
 
         {/* My Tickets */}
         <div>
-          <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">My Tickets</h3>
+          <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">{t('support.myTickets')}</h3>
           <div className="space-y-2">
             {mockSupportTickets.map((ticket) => {
               const config = statusConfig[ticket.status] || statusConfig.open;
@@ -239,10 +241,10 @@ export default function SupportView() {
                               }`}
                             >
                               <StatusIcon className={`h-2.5 w-2.5 mr-0.5 ${config.color}`} />
-                              {config.label}
+                              {t(config.labelKey)}
                             </Badge>
                             <span className="text-[9px] text-[#3E444D]">
-                              Updated {getTimeAgo(ticket.updatedAt)}
+                              {t('support.updated')} {getTimeAgo(ticket.updatedAt)}
                             </span>
                           </div>
                         </div>
@@ -265,7 +267,7 @@ export default function SupportView() {
         <Dialog open={createTicketOpen} onOpenChange={(open) => { setCreateTicketOpen(open); if (!open) setTicketStep(1); }}>
           <DialogContent className="bg-[#1E2329] border-[#2B3139] text-[#EAECEF]">
             <DialogHeader>
-              <DialogTitle className="text-[#EAECEF]">Create Support Ticket</DialogTitle>
+              <DialogTitle className="text-[#EAECEF]">{t('support.createSupportTicket')}</DialogTitle>
             </DialogHeader>
 
             {/* Step Progress Indicator */}
@@ -282,24 +284,33 @@ export default function SupportView() {
               ))}
             </div>
             <div className="flex justify-between text-[10px] text-[#5E6673] mb-3">
-              <span className={ticketStep >= 1 ? 'text-[#F0B90B]' : ''}>Category</span>
-              <span className={ticketStep >= 2 ? 'text-[#F0B90B]' : ''}>Details</span>
-              <span className={ticketStep >= 3 ? 'text-[#F0B90B]' : ''}>Submit</span>
+              <span className={ticketStep >= 1 ? 'text-[#F0B90B]' : ''}>{t('support.stepCategory')}</span>
+              <span className={ticketStep >= 2 ? 'text-[#F0B90B]' : ''}>{t('support.stepDetails')}</span>
+              <span className={ticketStep >= 3 ? 'text-[#F0B90B]' : ''}>{t('support.stepSubmit')}</span>
             </div>
 
             <AnimatePresence mode="wait">
               {ticketStep === 1 && (
                 <motion.div key="step1" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="space-y-4 py-2">
-                  <label className="text-xs text-[#848E9C]">Category</label>
+                  <label className="text-xs text-[#848E9C]">{t('support.category')}</label>
                   <Select value={ticketCategory} onValueChange={setTicketCategory}>
                     <SelectTrigger className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] h-10 text-sm">
-                      <SelectValue placeholder="Select category" />
+                      <SelectValue placeholder={t('support.selectCategory')} />
                     </SelectTrigger>
                     <SelectContent className="bg-[#2B3139] border-[#2B3139]">
-                      {['Deposit', 'Withdrawal', 'Trading', 'Verification', 'Security', 'P2P', 'Earn', 'Other'].map(
+                      {[
+                        { value: 'deposit', label: t('support.catDeposit') },
+                        { value: 'withdrawal', label: t('support.catWithdrawal') },
+                        { value: 'trading', label: t('support.catTrading') },
+                        { value: 'verification', label: t('support.catVerification') },
+                        { value: 'security', label: t('support.catSecurity') },
+                        { value: 'p2p', label: t('support.catP2P') },
+                        { value: 'earn', label: t('support.catEarn') },
+                        { value: 'other', label: t('support.catOther') },
+                      ].map(
                         (cat) => (
-                          <SelectItem key={cat} value={cat.toLowerCase()} className="text-[#EAECEF] text-sm">
-                            {cat}
+                          <SelectItem key={cat.value} value={cat.value} className="text-[#EAECEF] text-sm">
+                            {cat.label}
                           </SelectItem>
                         )
                       )}
@@ -310,18 +321,18 @@ export default function SupportView() {
               {ticketStep === 2 && (
                 <motion.div key="step2" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="space-y-4 py-2">
                   <div className="space-y-2">
-                    <label className="text-xs text-[#848E9C]">Subject</label>
+                    <label className="text-xs text-[#848E9C]">{t('support.subject')}</label>
                     <Input
-                      placeholder="Brief description of your issue"
+                      placeholder={t('support.subjectPlaceholder')}
                       value={ticketSubject}
                       onChange={(e) => setTicketSubject(e.target.value)}
                       className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] h-10 text-sm input-focus-glow"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs text-[#848E9C]">Message</label>
+                    <label className="text-xs text-[#848E9C]">{t('support.message')}</label>
                     <Textarea
-                      placeholder="Describe your issue in detail..."
+                      placeholder={t('support.messagePlaceholder')}
                       value={ticketMessage}
                       onChange={(e) => setTicketMessage(e.target.value)}
                       className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] min-h-[120px] text-sm resize-none input-focus-glow"
@@ -331,18 +342,18 @@ export default function SupportView() {
               )}
               {ticketStep === 3 && (
                 <motion.div key="step3" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="space-y-3 py-2">
-                  <p className="text-xs text-[#848E9C] mb-2">Review your ticket:</p>
+                  <p className="text-xs text-[#848E9C] mb-2">{t('support.reviewTicket')}</p>
                   <div className="bg-[#2B3139] rounded-lg p-3 space-y-2 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-[#5E6673]">Category</span>
+                      <span className="text-[#5E6673]">{t('support.category')}</span>
                       <span className="text-[#EAECEF] capitalize">{ticketCategory}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[#5E6673]">Subject</span>
+                      <span className="text-[#5E6673]">{t('support.subject')}</span>
                       <span className="text-[#EAECEF]">{ticketSubject}</span>
                     </div>
                     <div>
-                      <span className="text-[#5E6673]">Message</span>
+                      <span className="text-[#5E6673]">{t('support.message')}</span>
                       <p className="text-[#848E9C] mt-1 line-clamp-3">{ticketMessage}</p>
                     </div>
                   </div>
@@ -358,7 +369,7 @@ export default function SupportView() {
                     onClick={() => setTicketStep(ticketStep - 1)}
                     className="flex-1 border-[#2B3139] text-[#848E9C] hover:text-[#EAECEF] h-11"
                   >
-                    Back
+                    {t('support.back')}
                   </Button>
                 )}
                 {ticketStep < 3 ? (
@@ -367,14 +378,14 @@ export default function SupportView() {
                     onClick={() => canAdvanceStep() && setTicketStep(ticketStep + 1)}
                     disabled={!canAdvanceStep()}
                   >
-                    Next
+                    {t('support.next')}
                   </Button>
                 ) : (
                   <Button
                     className="flex-1 gradient-submit-btn text-[#0B0E11] font-semibold h-11"
                     onClick={handleCreateTicket}
                   >
-                    Submit Ticket
+                    {t('support.submitTicket')}
                   </Button>
                 )}
               </div>
@@ -395,7 +406,7 @@ export default function SupportView() {
                 <div className="bg-gradient-to-r from-[#F0B90B] to-[#F0B90B]/80 p-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <MessageCircle className="h-4 w-4 text-[#0B0E11]" />
-                    <span className="text-sm font-bold text-[#0B0E11]">Live Support</span>
+                    <span className="text-sm font-bold text-[#0B0E11]">{t('support.liveSupport')}</span>
                   </div>
                   <button onClick={() => setChatOpen(false)} className="text-[#0B0E11]/70 hover:text-[#0B0E11]">
                     <ChevronDown className="h-4 w-4" />
@@ -408,17 +419,17 @@ export default function SupportView() {
                         <Headphones className="h-3 w-3 text-[#F0B90B]" />
                       </div>
                       <div className="bg-[#2B3139] rounded-lg rounded-tl-none p-2 text-[11px] text-[#848E9C]">
-                        Hi! How can we help you today?
+                        {t('support.chatGreeting')}
                       </div>
                     </div>
                   </div>
                   <div className="mt-2 flex gap-1">
                     <Input
-                      placeholder="Type a message..."
+                      placeholder={t('support.typeMessage')}
                       className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] h-8 text-xs input-focus-glow"
                     />
                     <Button size="sm" className="bg-[#F0B90B] hover:bg-[#F0B90B]/90 text-[#0B0E11] h-8 px-3">
-                      Send
+                      {t('support.send')}
                     </Button>
                   </div>
                 </div>
@@ -431,7 +442,7 @@ export default function SupportView() {
           >
             <MessageCircle className="h-5 w-5" />
             <span className="absolute -top-8 right-0 bg-[#1E2329] text-[#EAECEF] text-[10px] px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-              Help
+              {t('support.help')}
             </span>
           </button>
         </div>

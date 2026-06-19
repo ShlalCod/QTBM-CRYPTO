@@ -156,18 +156,33 @@ export const useAppStore = create<AppState>((set, get) => ({
   wsConnected: false,
   setWsConnected: (connected) => set({ wsConnected: connected }),
 
-  // Language / i18n
-  language: (typeof window !== 'undefined' && localStorage.getItem('qtbm-language') === '"ar"') ? 'ar' : 'en',
+  // Language / i18n — default to Arabic (RTL) on first launch.
+  // The stored value can be either the raw string ('ar' / 'en') or a JSON-
+  // quoted string ('"ar"' / '"en"'), depending on which code path wrote it.
+  // We normalize both forms on read.
+  language: (() => {
+    if (typeof window === 'undefined') return 'ar';
+    const stored = localStorage.getItem('qtbm-language');
+    if (!stored) return 'ar'; // default = Arabic
+    const normalized = stored.replace(/^["']|["']$/g, '');
+    return normalized === 'en' ? 'en' : 'ar';
+  })() as Language,
   setLanguage: (lang) => {
     try {
-      localStorage.setItem('qtbm-language', JSON.stringify(lang));
+      localStorage.setItem('qtbm-language', lang); // store as plain string
     } catch {}
-    set({ 
+    set({
       language: lang,
       isRTL: lang === 'ar',
     });
   },
-  isRTL: (typeof window !== 'undefined' && localStorage.getItem('qtbm-language') === '"ar"'),
+  isRTL: (() => {
+    if (typeof window === 'undefined') return true;
+    const stored = localStorage.getItem('qtbm-language');
+    if (!stored) return true; // default = RTL
+    const normalized = stored.replace(/^["']|["']$/g, '');
+    return normalized !== 'en'; // RTL unless explicitly English
+  })(),
 
   // Theme
   theme: ((typeof window !== 'undefined' && localStorage.getItem('qtbm-theme') === 'light') ? 'light' : 'dark') as 'dark' | 'light',

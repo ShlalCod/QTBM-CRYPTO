@@ -27,11 +27,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 const referralCode = 'QTBM-7X9K2M';
 const referralLink = 'https://qtbm.bank/invite/QTBM-7X9K2M';
 
-const rewardTiers = [
-  { name: 'Bronze', minRefs: 1, maxRefs: 5, reward: 10, color: '#CD7F32', icon: '🥉' },
-  { name: 'Silver', minRefs: 6, maxRefs: 20, reward: 15, color: '#C0C0C0', icon: '🥈' },
-  { name: 'Gold', minRefs: 21, maxRefs: 50, reward: 25, color: '#FFD700', icon: '🥇' },
-  { name: 'Diamond', minRefs: 51, maxRefs: 999, reward: 40, color: '#B9F2FF', icon: '💎' },
+const rewardTierKeys = [
+  { nameKey: 'referral.bronzeTier', minRefs: 1, maxRefs: 5, reward: 10, color: '#CD7F32', icon: '🥉' },
+  { nameKey: 'referral.silverTier', minRefs: 6, maxRefs: 20, reward: 15, color: '#C0C0C0', icon: '🥈' },
+  { nameKey: 'referral.goldTier', minRefs: 21, maxRefs: 50, reward: 25, color: '#FFD700', icon: '🥇' },
+  { nameKey: 'referral.diamondTier', minRefs: 51, maxRefs: 999, reward: 40, color: '#B9F2FF', icon: '💎' },
 ];
 
 const referralHistory = [
@@ -49,18 +49,18 @@ const totalInvited = 8;
 const activeReferrals = 7;
 const totalEarned = 80;
 
-const currentTier = rewardTiers.find(
+const currentTier = rewardTierKeys.find(
   (tier) => totalInvited >= tier.minRefs && totalInvited <= tier.maxRefs
-) || rewardTiers[0];
-const nextTier = rewardTiers.find(
+) || rewardTierKeys[0];
+const nextTier = rewardTierKeys.find(
   (tier) => tier.minRefs > totalInvited
 );
 
-const howItWorks = [
-  { step: 1, title: 'Share your link', desc: 'Send your unique referral link to friends' },
-  { step: 2, title: 'They register', desc: 'Your friend signs up using your link' },
-  { step: 3, title: 'They trade', desc: 'Your friend completes their first trade' },
-  { step: 4, title: 'You earn', desc: 'Both you and your friend receive rewards' },
+const howItWorksKeys = [
+  { step: 1, titleKey: 'referral.step1Title', descKey: 'referral.step1Desc' },
+  { step: 2, titleKey: 'referral.step2Title', descKey: 'referral.step2Desc' },
+  { step: 3, titleKey: 'referral.step3Title', descKey: 'referral.step3Desc' },
+  { step: 4, titleKey: 'referral.step4Title', descKey: 'referral.step4Desc' },
 ];
 
 export default function ReferralView() {
@@ -150,7 +150,7 @@ export default function ReferralView() {
                 <span className="text-[9px] text-[#848E9C]">{t('referral.copyLink')}</span>
               </button>
               <a
-                href={`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('Join QTBM BANK and earn crypto rewards!')}`}
+                href={`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(t('referral.shareMessage'))}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-[#0B0E11]/50 hover:bg-[#2B3139] transition-all"
@@ -159,7 +159,7 @@ export default function ReferralView() {
                 <span className="text-[9px] text-[#848E9C]">Telegram</span>
               </a>
               <a
-                href={`https://wa.me/?text=${encodeURIComponent('Join QTBM BANK and earn crypto rewards! ' + referralLink)}`}
+                href={`https://wa.me/?text=${encodeURIComponent(t('referral.shareMessage') + ' ' + referralLink)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-[#0B0E11]/50 hover:bg-[#2B3139] transition-all"
@@ -168,7 +168,7 @@ export default function ReferralView() {
                 <span className="text-[9px] text-[#848E9C]">WhatsApp</span>
               </a>
               <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('Join QTBM BANK and earn crypto rewards!')}&url=${encodeURIComponent(referralLink)}`}
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(t('referral.shareMessage'))}&url=${encodeURIComponent(referralLink)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-[#0B0E11]/50 hover:bg-[#2B3139] transition-all"
@@ -218,12 +218,12 @@ export default function ReferralView() {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">{currentTier.icon}</span>
-                  <span className="text-xs font-medium text-[#EAECEF]">{currentTier.name}</span>
+                  <span className="text-xs font-medium text-[#EAECEF]">{t(currentTier.nameKey)}</span>
                 </div>
                 {nextTier && (
                   <div className="flex items-center gap-1 text-[10px] text-[#5E6673]">
                     <span>{nextTier.icon}</span>
-                    <span>{t('referral.next')}: {nextTier.name}</span>
+                    <span>{t('referral.next')}: {t(nextTier.nameKey)}</span>
                   </div>
                 )}
               </div>
@@ -245,12 +245,12 @@ export default function ReferralView() {
 
             {/* Tier Cards */}
             <div className="space-y-2">
-              {rewardTiers.map((tier) => {
-                const isCurrentTier = tier.name === currentTier.name;
+              {rewardTierKeys.map((tier) => {
+                const isCurrentTier = tier.nameKey === currentTier.nameKey;
                 const isPastTier = totalInvited > tier.maxRefs;
                 return (
                   <div
-                    key={tier.name}
+                    key={tier.nameKey}
                     className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                       isCurrentTier
                         ? 'bg-[#F0B90B]/10 border border-[#F0B90B]/20'
@@ -261,7 +261,7 @@ export default function ReferralView() {
                       <span className="text-lg">{tier.icon}</span>
                       <div>
                         <p className={`text-xs font-medium ${isCurrentTier ? 'text-[#F0B90B]' : 'text-[#848E9C]'}`}>
-                          {tier.name}
+                          {t(tier.nameKey)}
                           {isCurrentTier && (
                             <Badge className="ml-2 bg-[#F0B90B]/20 text-[#F0B90B] border-0 text-[8px] px-1.5 py-0 h-3.5">
                               {t('status.active')}
@@ -309,16 +309,16 @@ export default function ReferralView() {
           <CardContent className="p-4">
             <h3 className="text-sm font-medium text-[#EAECEF] mb-3">{t('referral.howItWorks')}</h3>
             <div className="space-y-3">
-              {howItWorks.map((item, idx) => (
+              {howItWorksKeys.map((item, idx) => (
                 <div key={item.step} className="flex items-start gap-3">
                   <div className="w-7 h-7 shrink-0 rounded-full bg-gradient-to-br from-[#F0B90B] to-[#F0B90B]/60 flex items-center justify-center">
                     <span className="text-[10px] font-bold text-[#0B0E11]">{item.step}</span>
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs font-medium text-[#EAECEF]">{item.title}</p>
-                    <p className="text-[10px] text-[#5E6673]">{item.desc}</p>
+                    <p className="text-xs font-medium text-[#EAECEF]">{t(item.titleKey)}</p>
+                    <p className="text-[10px] text-[#5E6673]">{t(item.descKey)}</p>
                   </div>
-                  {idx < howItWorks.length - 1 && (
+                  {idx < howItWorksKeys.length - 1 && (
                     <div className="absolute left-6 top-9 w-px h-4 bg-[#2B3139]" />
                   )}
                 </div>

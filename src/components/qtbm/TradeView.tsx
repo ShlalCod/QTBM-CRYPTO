@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Slider } from '@/components/ui/slider';
 import type { Order, OrderBookEntry } from '@/types';
+import { useTranslation } from '@/lib/i18n';
 
 type OrderType = 'limit' | 'market' | 'stop_limit';
 type OrderSide = 'buy' | 'sell';
@@ -233,6 +234,7 @@ function MACDChart() {
 
 // ── Bollinger Bands Overlay SVG ───────────────────────────────────────────────
 function BollingerBandsOverlay() {
+  const { t } = useTranslation();
   const closePrices = useMemo(() => mockCandleData.map(d => d.close), []);
   const period = 20;
   const multiplier = 2;
@@ -290,9 +292,9 @@ function BollingerBandsOverlay() {
     <div className="border-t border-[#2B3139] p-2 chart-grid-bg relative">
       <div className="flex items-center gap-3 mb-1">
         <span className="text-[10px] text-[#848E9C]">BB(20,2)</span>
-        <span className="text-[10px] font-medium text-[#F0B90B] tabular-nums">Upper: {bands.upper[bands.upper.length - 1]?.toFixed(2)}</span>
-        <span className="text-[10px] font-medium text-[#848E9C] tabular-nums">SMA: {sma[sma.length - 1]?.toFixed(2)}</span>
-        <span className="text-[10px] font-medium text-[#627EEA] tabular-nums">Lower: {bands.lower[bands.lower.length - 1]?.toFixed(2)}</span>
+        <span className="text-[10px] font-medium text-[#F0B90B] tabular-nums">{t('trade.upper')}: {bands.upper[bands.upper.length - 1]?.toFixed(2)}</span>
+        <span className="text-[10px] font-medium text-[#848E9C] tabular-nums">{t('trade.sma')}: {sma[sma.length - 1]?.toFixed(2)}</span>
+        <span className="text-[10px] font-medium text-[#627EEA] tabular-nums">{t('trade.lower')}: {bands.lower[bands.lower.length - 1]?.toFixed(2)}</span>
       </div>
       <svg width="100%" height={h - 16} viewBox={`0 0 ${w} ${h - 16}`} preserveAspectRatio="none" className="w-full">
         <defs>
@@ -317,6 +319,7 @@ function BollingerBandsOverlay() {
 
 // ── Candlestick Chart Component ──────────────────────────────────────────────
 function CandlestickChart({ pairSymbol, livePrice }: { pairSymbol: string; livePrice: number | undefined }) {
+  const { t } = useTranslation();
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<ReturnType<typeof import('lightweight-charts').createChart> | null>(null);
   const candleSeriesRef = useRef<any>(null);
@@ -498,13 +501,13 @@ function CandlestickChart({ pairSymbol, livePrice }: { pairSymbol: string; liveP
       <div className="flex items-center gap-1 px-2 py-1.5 bg-[#0B0E11] border-t border-b border-[#2B3139]">
         <span className="text-[10px] text-[#5E6673] mr-1 flex items-center gap-1">
           <Activity className="h-3 w-3" />
-          Indicator
+          {t('trade.indicator')}
         </span>
         {([
-          { id: 'candle' as IndicatorTab, label: 'Candle' },
+          { id: 'candle' as IndicatorTab, label: t('trade.candle') },
           { id: 'rsi' as IndicatorTab, label: 'RSI' },
           { id: 'macd' as IndicatorTab, label: 'MACD' },
-          { id: 'bollinger' as IndicatorTab, label: 'Bollinger' },
+          { id: 'bollinger' as IndicatorTab, label: t('trade.bollinger') },
         ]).map((tab) => (
           <button
             key={tab.id}
@@ -635,6 +638,7 @@ function DepthChart({ currentPrice, isPositive }: { currentPrice: number; isPosi
 
 // ── Order Book Component ──────────────────────────────────────────────────────
 function OrderBook({ currentPrice, isPositive, livePrice }: { currentPrice: number; isPositive: boolean; livePrice: number | undefined }) {
+  const { t } = useTranslation();
   const { asks, bids } = mockOrderBook;
   const maxAskTotal = asks[asks.length - 1]?.total || 1;
   const maxBidTotal = bids[bids.length - 1]?.total || 1;
@@ -645,9 +649,9 @@ function OrderBook({ currentPrice, isPositive, livePrice }: { currentPrice: numb
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-[#2B3139] text-[10px] text-[#5E6673]">
-        <span className="w-[38%] text-left">Price(USDT)</span>
-        <span className="w-[30%] text-right">Amount(BTC)</span>
-        <span className="w-[32%] text-right">Total</span>
+        <span className="w-[38%] text-left">{t('trade.price')}(USDT)</span>
+        <span className="w-[30%] text-right">{t('trade.amount')}(BTC)</span>
+        <span className="w-[32%] text-right">{t('trade.total')}</span>
       </div>
 
       <ScrollArea className="flex-1 min-h-0">
@@ -680,7 +684,7 @@ function OrderBook({ currentPrice, isPositive, livePrice }: { currentPrice: numb
             <ArrowDownRight className="h-3.5 w-3.5 text-[#F6465D]" />
           )}
           <Badge className="text-[9px] h-4 px-1.5 bg-[#F0B90B]/10 text-[#F0B90B] border-0 font-medium spread-gradient-text">
-            Spread: {formatPrice(asks[0]?.price - bids[0]?.price || 0)}
+            {t('trade.spread')}: {formatPrice(asks[0]?.price - bids[0]?.price || 0)}
           </Badge>
         </div>
 
@@ -708,6 +712,7 @@ function OrderBook({ currentPrice, isPositive, livePrice }: { currentPrice: numb
 
 // ── Trade Panel Component ─────────────────────────────────────────────────────
 function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; livePrice: number | undefined }) {
+  const { t } = useTranslation();
   const [side, setSide] = useState<OrderSide>('buy');
   const [orderType, setOrderType] = useState<OrderType>('limit');
   const currentPrice = livePrice || pair.price;
@@ -774,7 +779,7 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
               : 'text-[#5E6673] hover:text-[#848E9C] border-b-2 border-transparent'
           }`}
         >
-          Buy {pair.baseAsset}
+          {t('trade.buy')} {pair.baseAsset}
         </button>
         <button
           onClick={() => setSide('sell')}
@@ -784,7 +789,7 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
               : 'text-[#5E6673] hover:text-[#848E9C] border-b-2 border-transparent'
           }`}
         >
-          Sell {pair.baseAsset}
+          {t('trade.sell')} {pair.baseAsset}
         </button>
       </div>
 
@@ -801,7 +806,7 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
                   : 'text-[#5E6673] hover:text-[#848E9C]'
               }`}
             >
-              {type === 'stop_limit' ? 'Stop-Limit' : type.charAt(0).toUpperCase() + type.slice(1)}
+              {type === 'stop_limit' ? t('trade.stopLimit') : type === 'limit' ? t('trade.limit') : t('trade.market')}
             </button>
           ))}
         </div>
@@ -809,13 +814,13 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
         {/* Stop Price (Stop-Limit only) */}
         {orderType === 'stop_limit' && (
           <div>
-            <label className="text-[10px] text-[#5E6673]">Stop Price</label>
+            <label className="text-[10px] text-[#5E6673]">{t('trade.stopPrice')}</label>
             <div className="flex items-center bg-[#2B3139] rounded h-8 px-2 mt-0.5">
               <Input
                 type="number"
                 value={stopPrice}
                 onChange={(e) => setStopPrice(e.target.value)}
-                placeholder="Stop price"
+                placeholder={t('trade.stopPrice')}
                 className="border-0 bg-transparent text-[#EAECEF] text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-[#3B4451]"
               />
               <span className="text-[10px] text-[#5E6673] shrink-0 ml-1">{pair.quoteAsset}</span>
@@ -826,7 +831,7 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
         {/* Price (Limit & Stop-Limit) */}
         {orderType !== 'market' && (
           <div>
-            <label className="text-[10px] text-[#5E6673]">Price</label>
+            <label className="text-[10px] text-[#5E6673]">{t('trade.price')}</label>
             <div className="flex items-center bg-[#2B3139] rounded h-8 px-2 mt-0.5">
               <button onClick={() => setPrice(formatPrice(Math.max(0, priceNum - (currentPrice * 0.001))))} className="text-[#5E6673] hover:text-[#EAECEF] shrink-0">
                 <Minus className="h-3 w-3" />
@@ -847,7 +852,7 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
 
         {/* Amount */}
         <div>
-          <label className="text-[10px] text-[#5E6673]">Amount</label>
+          <label className="text-[10px] text-[#5E6673]">{t('trade.amount')}</label>
           <div className="flex items-center bg-[#2B3139] rounded h-8 px-2 mt-0.5">
             <Input
               type="number"
@@ -888,7 +893,7 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
 
         {/* Total */}
         <div>
-          <label className="text-[10px] text-[#5E6673]">Total</label>
+          <label className="text-[10px] text-[#5E6673]">{t('trade.total')}</label>
           <div className="flex items-center bg-[#2B3139] rounded h-8 px-2 mt-0.5">
             <span className="text-sm text-[#EAECEF] tabular-nums flex-1">
               {total > 0 ? formatPrice(total) : '0.00'}
@@ -899,7 +904,7 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
 
         {/* Available Balance */}
         <div className="flex justify-between text-[10px]">
-          <span className="text-[#5E6673]">Available</span>
+          <span className="text-[#5E6673]">{t('trade.available')}</span>
           <span className="text-[#848E9C] tabular-nums">
             {side === 'buy' ? `${formatPrice(availableBalance)} ${pair.quoteAsset}` : `${availableBalance.toFixed(6)} ${pair.baseAsset}`}
           </span>
@@ -909,11 +914,11 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
         {amountNum > 0 && (
           <div className="bg-[#1E2329] rounded p-2 space-y-1">
             <div className="flex justify-between text-[10px]">
-              <span className="text-[#5E6673]">Est. Fee ({feeAsset})</span>
+              <span className="text-[#5E6673]">{t('trade.estFee')} ({feeAsset})</span>
               <span className="text-[#848E9C] tabular-nums">{fee.toFixed(6)}</span>
             </div>
             <div className="flex justify-between text-[10px]">
-              <span className="text-[#5E6673]">Total ({pair.quoteAsset})</span>
+              <span className="text-[#5E6673]">{t('trade.total')} ({pair.quoteAsset})</span>
               <span className="text-[#EAECEF] tabular-nums font-medium">{formatPrice(total + (side === 'buy' ? 0 : -fee))}</span>
             </div>
           </div>
@@ -928,7 +933,7 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
               : 'bg-[#F6465D] hover:bg-[#F6465D]/90 text-white hover:scale-[1.02] active:scale-[0.98]'
           } transition-transform duration-150`}
         >
-          {side === 'buy' ? 'Buy' : 'Sell'} {pair.baseAsset}
+          {side === 'buy' ? t('trade.buy') : t('trade.sell')} {pair.baseAsset}
         </Button>
       </div>
     </div>
@@ -937,6 +942,7 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
 
 // ── Open Orders Component ─────────────────────────────────────────────────────
 function OpenOrders({ pairSymbol }: { pairSymbol: string }) {
+  const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
   const [orders, setOrders] = useState<Order[]>(mockOrders.filter(o => o.status === 'pending' || o.status === 'partially_filled'));
 
@@ -952,7 +958,7 @@ function OpenOrders({ pairSymbol }: { pairSymbol: string }) {
         onClick={() => setCollapsed(!collapsed)}
         className="w-full flex items-center justify-between px-4 py-2 hover:bg-[#1E2329]/50 transition-colors"
       >
-        <span className="text-xs font-semibold text-[#848E9C]">Open Orders ({orders.length})</span>
+        <span className="text-xs font-semibold text-[#848E9C]">{t('trade.openOrders')} ({orders.length})</span>
         <ChevronDown className={`h-4 w-4 text-[#5E6673] transition-transform ${collapsed ? '' : 'rotate-180'}`} />
       </button>
       {!collapsed && (
@@ -960,13 +966,13 @@ function OpenOrders({ pairSymbol }: { pairSymbol: string }) {
           <div className="px-4 pb-3">
             {/* Header */}
             <div className="grid grid-cols-7 gap-2 text-[10px] text-[#5E6673] pb-1 border-b border-[#2B3139]/50">
-              <span>Pair</span>
-              <span>Side</span>
-              <span className="text-right">Price</span>
-              <span className="text-right">Amount</span>
-              <span className="text-right">Filled</span>
-              <span className="text-right">Time</span>
-              <span className="text-center">Action</span>
+              <span>{t('trade.pair')}</span>
+              <span>{t('trade.side')}</span>
+              <span className="text-right">{t('trade.price')}</span>
+              <span className="text-right">{t('trade.amount')}</span>
+              <span className="text-right">{t('trade.filled')}</span>
+              <span className="text-right">{t('common.time')}</span>
+              <span className="text-center">{t('trade.action')}</span>
             </div>
             {orders.map((order) => {
               const filledPct = order.quantity > 0 ? (order.filledQty / order.quantity) * 100 : 0;
@@ -974,10 +980,10 @@ function OpenOrders({ pairSymbol }: { pairSymbol: string }) {
                 <div key={order.id} className="grid grid-cols-7 gap-2 text-[11px] py-1.5 border-b border-[#2B3139]/30 items-center">
                   <span className="text-[#EAECEF] font-medium">{order.market}</span>
                   <span className={order.side === 'buy' ? 'text-[#0ECB81]' : 'text-[#F6465D]'}>
-                    {order.side.charAt(0).toUpperCase() + order.side.slice(1)}
+                    {t('trade.' + order.side)}
                   </span>
                   <span className="text-right text-[#EAECEF] tabular-nums">
-                    {order.price ? formatPrice(order.price) : 'Market'}
+                    {order.price ? formatPrice(order.price) : t('trade.market')}
                   </span>
                   <span className="text-right text-[#848E9C] tabular-nums">{order.quantity}</span>
                   <span className="text-right tabular-nums">
@@ -991,7 +997,7 @@ function OpenOrders({ pairSymbol }: { pairSymbol: string }) {
                       onClick={() => handleCancel(order.id)}
                       className="h-5 px-2 text-[10px] text-[#F6465D] hover:text-[#F6465D] hover:bg-[#F6465D]/10"
                     >
-                      Cancel
+                      {t('trade.cancel')}
                     </Button>
                   </div>
                 </div>
@@ -1006,15 +1012,16 @@ function OpenOrders({ pairSymbol }: { pairSymbol: string }) {
 
 // ── Recent Trades Component ───────────────────────────────────────────────────
 function RecentTrades() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-[#2B3139]">
-        <span className="text-[11px] font-semibold text-[#848E9C]">Recent Trades</span>
+        <span className="text-[11px] font-semibold text-[#848E9C]">{t('trade.recentTrades')}</span>
       </div>
       <div className="flex items-center justify-between px-3 py-0.5 text-[9px] text-[#5E6673]">
-        <span className="w-[35%]">Price(USDT)</span>
-        <span className="w-[30%] text-right">Amount(BTC)</span>
-        <span className="w-[35%] text-right">Time</span>
+        <span className="w-[35%]">{t('trade.price')}(USDT)</span>
+        <span className="w-[30%] text-right">{t('trade.amount')}(BTC)</span>
+        <span className="w-[35%] text-right">{t('common.time')}</span>
       </div>
       <ScrollArea className="flex-1 min-h-0">
         {mockTrades.map((trade, idx) => (
@@ -1033,6 +1040,7 @@ function RecentTrades() {
 
 // ── Pair Selector Dropdown ────────────────────────────────────────────────────
 function PairSelector({ currentPair, onSelect }: { currentPair: typeof mockMarketPairs[0]; onSelect: (symbol: string) => void }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const popularPairs = mockMarketPairs.filter(p => p.quoteAsset === 'USDT');
@@ -1053,10 +1061,10 @@ function PairSelector({ currentPair, onSelect }: { currentPair: typeof mockMarke
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1 w-64 bg-[#1E2329] border border-[#2B3139] rounded-lg shadow-xl z-50 overflow-hidden">
+        <div className="absolute top-full left-0 mt-1 w-[280px] max-w-[calc(100vw-1.5rem)] bg-[#1E2329] border border-[#2B3139] rounded-lg shadow-xl z-[60] overflow-hidden">
           <div className="p-2">
             <Input
-              placeholder="Search pair..."
+              placeholder={t('markets.search')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               autoFocus
@@ -1095,6 +1103,7 @@ function PairSelector({ currentPair, onSelect }: { currentPair: typeof mockMarke
 // ── Main TradeView Component ──────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════════
 export default function TradeView() {
+  const { t } = useTranslation();
   const { selectedMarket, setSelectedMarket, livePrices, priceDirection } = useAppStore();
 
   const currentPair = mockMarketPairs.find(p => p.symbol === selectedMarket) || mockMarketPairs[0];
@@ -1106,16 +1115,17 @@ export default function TradeView() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* ─── Pair Header ─── */}
-      <div className="px-3 py-2 border-b border-[#2B3139] bg-[#0B0E11]">
+      {/* ─── Pair Header (mobile-friendly: wraps stats below) ─── */}
+      <div className="px-3 py-2 border-b border-[#2B3139] bg-[#0B0E11] shrink-0">
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-center gap-4">
+          {/* Pair selector + price + badge — tight on mobile, spaced on desktop */}
+          <div className="flex items-center gap-2 sm:gap-4 flex-wrap min-w-0">
             <PairSelector
               currentPair={currentPair}
               onSelect={(symbol) => setSelectedMarket(symbol)}
             />
             <LivePriceDisplay price={livePrice} isPositive={isPositive} direction={direction} />
-            <Badge className={`text-[10px] font-semibold ${
+            <Badge className={`text-[10px] font-semibold shrink-0 ${
               isPositive
                 ? 'bg-[#0ECB81]/10 text-[#0ECB81] border-0'
                 : 'bg-[#F6465D]/10 text-[#F6465D] border-0'
@@ -1124,57 +1134,60 @@ export default function TradeView() {
               {isPositive ? '+' : ''}{currentPair.changePercent.toFixed(2)}%
             </Badge>
           </div>
-          <div className="flex items-center gap-4 text-[11px] text-[#848E9C]">
+          {/* 24h stats — wraps to second row on phones */}
+          <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-[11px] text-[#848E9C] flex-wrap">
             <div>
-              <span className="text-[#5E6673]">24h High </span>
+              <span className="text-[#707785]">{t('trade.high24h')} </span>
               <span className="text-[#0ECB81] tabular-nums">{formatPrice(currentPair.high)}</span>
             </div>
             <div>
-              <span className="text-[#5E6673]">24h Low </span>
+              <span className="text-[#707785]">{t('trade.low24h')} </span>
               <span className="text-[#F6465D] tabular-nums">{formatPrice(currentPair.low)}</span>
             </div>
             <div className="hidden sm:block">
-              <span className="text-[#5E6673]">24h Vol </span>
+              <span className="text-[#707785]">{t('trade.volume24h')} </span>
               <span className="text-[#EAECEF] tabular-nums">{formatNumber(currentPair.quoteVolume)}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ─── Desktop Layout: Chart+OrderBook (2/3) | TradePanel+RecentTrades (1/3) ─── */}
-      <div className="flex-1 min-h-0 flex flex-col lg:flex-row">
-        {/* Left side: Chart + Order Book + Open Orders */}
-        <div className="flex-1 flex flex-col min-h-0 lg:border-r border-[#2B3139]">
-          {/* Chart - with grid background */}
-          <div className="flex-1 min-h-[200px] lg:min-h-0 relative">
+      {/* ─── Mobile Layout (< lg): vertical scroll, fixed section heights ───
+          Each section has a fixed height on mobile so they don't overlap.
+          Desktop (lg+): side-by-side 2-column layout. */}
+      <div className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
+        {/* Left/top: Chart + Order Book + Open Orders */}
+        <div className="flex flex-col min-h-0 lg:flex-1 lg:border-r border-[#2B3139]">
+          {/* Chart — fixed 340px on mobile (was flex-1 which collapsed to 0),
+              flex-1 on desktop */}
+          <div className="h-[340px] lg:h-auto lg:flex-1 lg:min-h-[200px] relative shrink-0">
             <div className="absolute inset-0 chart-grid-bg opacity-40 pointer-events-none z-0" />
             <div className="relative z-10 h-full">
               <CandlestickChart pairSymbol={currentPair.symbol} livePrice={livePrice} />
             </div>
           </div>
 
-          {/* Order Book + Depth Chart */}
-          <div className="h-64 lg:h-56 border-t border-[#2B3139]">
-            {/* Depth Chart - compact */}
+          {/* Order Book + Depth Chart — fixed height on mobile */}
+          <div className="h-[280px] lg:h-56 border-t border-[#2B3139] shrink-0">
             <div className="px-3 py-1.5 border-b border-[#2B3139]/50">
               <DepthChart currentPrice={livePrice} isPositive={isPositive} />
             </div>
             <OrderBook currentPrice={livePrice} isPositive={isPositive} livePrice={livePrice} />
           </div>
 
-          {/* Open Orders */}
+          {/* Open Orders — placed AFTER order book, not floating over it */}
           <OpenOrders pairSymbol={currentPair.symbol} />
         </div>
 
-        {/* Right side: Trade Panel + Recent Trades */}
+        {/* Right/bottom: Trade Panel + Recent Trades */}
         <div className="w-full lg:w-80 xl:w-96 flex flex-col min-h-0 shrink-0">
-          {/* Trade Panel - glass morphism */}
-          <div className="border-b border-[#2B3139] glass-morphism">
+          {/* Trade Panel */}
+          <div className="border-b border-[#2B3139] glass-morphism shrink-0">
             <TradePanel pair={currentPair} livePrice={livePrice} />
           </div>
 
-          {/* Recent Trades */}
-          <div className="flex-1 min-h-0">
+          {/* Recent Trades — fixed height on mobile so it doesn't grow over chart */}
+          <div className="h-[220px] lg:h-auto lg:flex-1 lg:min-h-0 shrink-0">
             <RecentTrades />
           </div>
         </div>

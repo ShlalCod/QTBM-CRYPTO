@@ -3,9 +3,11 @@ import type { CapacitorConfig } from "@capacitor/cli";
 /**
  * Capacitor configuration for QTBM CRYPTO Android wrapper.
  *
- * - appId: com.qtbm.crypto  (matches google-services.json package_name)
- * - appName: QTBM CRYPTO
- * - webDir: out/             (Next.js static export destination)
+ * Based on research best practices for mobile WebView apps:
+ * - androidScheme: "https" (required for service workers, FCM)
+ * - allowMixedContent: false (security)
+ * - webContentsDebuggingEnabled: false (production)
+ * - backgroundColor matches app theme (prevents white flash)
  */
 const config: CapacitorConfig = {
   appId: "com.qtbm.crypto",
@@ -19,7 +21,7 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 1500,
+      launchShowDuration: 1200,
       launchAutoHide: true,
       backgroundColor: "#0B0E11",
       androidSplashResourceName: "splash",
@@ -36,6 +38,11 @@ const config: CapacitorConfig = {
     NavigationBar: {
       backgroundColor: "#0B0E11",
       style: "DARK",
+    },
+    Keyboard: {
+      resize: "body",
+      style: "DARK",
+      resizeOnFullScreen: true,
     },
   },
   server: {

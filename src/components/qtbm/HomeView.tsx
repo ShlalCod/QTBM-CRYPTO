@@ -111,18 +111,18 @@ function LivePrice({ symbol, fallbackPrice }: { symbol: string; fallbackPrice: n
 }
 
 // ── Fear and Greed Index Gauge Widget ────────────────────────────────────────
-function FearAndGreedGauge({ value = 72 }: { value?: number }) {
+function FearAndGreedGauge({ value = 72, t }: { value?: number; t: (key: string) => string }) {
   // Clamp value 0-100
   const clamped = Math.max(0, Math.min(100, value));
 
   // Determine label and color
-  let label = 'Neutral';
+  let label = t('home.neutral');
   let color = '#F0B90B';
-  if (clamped <= 25) { label = 'Extreme Fear'; color = '#F6465D'; }
-  else if (clamped <= 45) { label = 'Fear'; color = '#E8706E'; }
-  else if (clamped <= 55) { label = 'Neutral'; color = '#F0B90B'; }
-  else if (clamped <= 75) { label = 'Greed'; color = '#5CC98A'; }
-  else { label = 'Extreme Greed'; color = '#0ECB81'; }
+  if (clamped <= 25) { label = t('home.extremeFear'); color = '#F6465D'; }
+  else if (clamped <= 45) { label = t('home.fear'); color = '#E8706E'; }
+  else if (clamped <= 55) { label = t('home.neutral'); color = '#F0B90B'; }
+  else if (clamped <= 75) { label = t('home.greed'); color = '#5CC98A'; }
+  else { label = t('home.extremeGreed'); color = '#0ECB81'; }
 
   // SVG semi-circle gauge
   const svgW = 200;
@@ -155,7 +155,7 @@ function FearAndGreedGauge({ value = 72 }: { value?: number }) {
       <CardContent className="p-4">
         <div className="flex items-center gap-2 mb-2">
           <Gauge className="h-4 w-4 text-[#F0B90B]" />
-          <h3 className="text-sm font-semibold text-[#EAECEF]">Fear & Greed Index</h3>
+          <h3 className="text-sm font-semibold text-[#EAECEF]">{t('home.fearGreedIndex')}</h3>
         </div>
         <div className="flex items-center justify-center">
           <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} className="w-full max-w-[220px]">
@@ -183,13 +183,13 @@ function FearAndGreedGauge({ value = 72 }: { value?: number }) {
               {clamped}
             </text>
             {/* Labels */}
-            <text x={cx - r - 8} y={cy + 16} textAnchor="middle" fill="#F6465D" fontSize="8" opacity="0.7">Fear</text>
-            <text x={cx + r + 8} y={cy + 16} textAnchor="middle" fill="#0ECB81" fontSize="8" opacity="0.7">Greed</text>
+            <text x={cx - r - 8} y={cy + 16} textAnchor="middle" fill="#F6465D" fontSize="8" opacity="0.7">{t('home.fear')}</text>
+            <text x={cx + r + 8} y={cy + 16} textAnchor="middle" fill="#0ECB81" fontSize="8" opacity="0.7">{t('home.greed')}</text>
           </svg>
         </div>
         <div className="text-center mt-1">
           <span className="text-sm font-bold" style={{ color }}>{label}</span>
-          <p className="text-[10px] text-[#5E6673] mt-0.5">Market Sentiment Indicator</p>
+          <p className="text-[10px] text-[#707785] mt-0.5">{t('home.marketSentimentIndicator')}</p>
         </div>
       </CardContent>
     </Card>
@@ -314,33 +314,33 @@ export default function HomeView() {
           {[0, 1].map((dup) => (
             <span key={dup} className="inline-flex items-center gap-6 text-[10px] text-[#848E9C] font-medium px-4">
               <span className="flex items-center gap-1">
-                <span className="text-[#F0B90B]">24h Volume:</span>
+                <span className="text-[#F0B90B]">{t('home.spotVolume')}:</span>
                 <span className="text-[#EAECEF] tabular-nums">$2.4B</span>
               </span>
               <span className="text-[#2B3139]">|</span>
               <span className="flex items-center gap-1">
-                <span className="text-[#F0B90B]">BTC Dominance:</span>
+                <span className="text-[#F0B90B]">{t('home.btcDominance')}:</span>
                 <span className="text-[#EAECEF] tabular-nums">52.3%</span>
               </span>
               <span className="text-[#2B3139]">|</span>
               <span className="flex items-center gap-1">
-                <span className="text-[#F0B90B]">Active Traders:</span>
+                <span className="text-[#F0B90B]">{t('home.activeTraders')}:</span>
                 <span className="text-[#EAECEF] tabular-nums">1.2M</span>
               </span>
               <span className="text-[#2B3139]">|</span>
               <span className="flex items-center gap-1">
-                <span className="text-[#F0B90B]">Total Market Cap:</span>
+                <span className="text-[#F0B90B]">{t('home.totalMarketCap')}:</span>
                 <span className="text-[#EAECEF] tabular-nums">$2.1T</span>
               </span>
               <span className="text-[#2B3139]">|</span>
               <span className="flex items-center gap-1">
-                <span className="text-[#F0B90B]">ETH Gas:</span>
+                <span className="text-[#F0B90B]">{t('home.ethGas')}:</span>
                 <span className="text-[#EAECEF] tabular-nums">12 Gwei</span>
               </span>
               <span className="text-[#2B3139]">|</span>
               <span className="flex items-center gap-1">
-                <span className="text-[#F0B90B]">Fear & Greed:</span>
-                <span className="text-[#0ECB81] tabular-nums">72 (Greed)</span>
+                <span className="text-[#F0B90B]">{t('home.fearGreedIndex')}:</span>
+                <span className="text-[#0ECB81] tabular-nums">72 ({t('home.greed')})</span>
               </span>
               <span className="text-[#2B3139]">|</span>
             </span>
@@ -443,7 +443,7 @@ export default function HomeView() {
       </Card>
 
       {/* ============ Fear & Greed Index Gauge ============ */}
-      <FearAndGreedGauge value={72} />
+      <FearAndGreedGauge value={72} t={t} />
 
       {/* ============ Market Highlights ============ */}
       <div>
@@ -502,7 +502,7 @@ export default function HomeView() {
                     <MiniSparkline positive={asset.changePercent24h >= 0} width={52} height={24} seed={asset.id.charCodeAt(0)} />
                   </div>
                   <div className="flex items-center gap-3 mt-1.5 text-[10px] text-[#5E6673]">
-                    <span>Vol {formatNumber(asset.volume24h)}</span>
+                    <span>{t('home.volume')} {formatNumber(asset.volume24h)}</span>
                   </div>
                 </CardContent>
               </Card>

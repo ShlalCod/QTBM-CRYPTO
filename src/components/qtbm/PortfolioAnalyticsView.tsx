@@ -320,7 +320,7 @@ function AssetAllocationDonut() {
             $45.6K
           </text>
           <text x={center} y={center + 10} textAnchor="middle" fill="#848E9C" fontSize="10">
-            Total
+            {t('portfolio.total')}
           </text>
         </svg>
       </div>
@@ -418,7 +418,7 @@ function PerformanceMetrics() {
                       <Info className="h-3.5 w-3.5 text-[#5E6673] cursor-help" />
                       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-10">
                         <div className="bg-[#2B3139] text-[#EAECEF] text-[10px] rounded px-2 py-1 whitespace-nowrap shadow-lg">
-                          Risk-adjusted return measure
+                          {t('portfolio.sharpeTooltip')}
                         </div>
                       </div>
                     </>
@@ -507,9 +507,9 @@ function RiskAnalysis() {
   ];
 
   const getRiskLevel = (score: number) => {
-    if (score < 33) return { label: 'Low', color: 'text-[#0ECB81]', gaugeColor: '#0ECB81' };
-    if (score < 66) return { label: 'Medium', color: 'text-[#F0B90B]', gaugeColor: '#F0B90B' };
-    return { label: 'High', color: 'text-[#F6465D]', gaugeColor: '#F6465D' };
+    if (score < 33) return { labelKey: 'portfolio.riskLevelLow', color: 'text-[#0ECB81]', gaugeColor: '#0ECB81' };
+    if (score < 66) return { labelKey: 'portfolio.riskLevelMedium', color: 'text-[#F0B90B]', gaugeColor: '#F0B90B' };
+    return { labelKey: 'portfolio.riskLevelHigh', color: 'text-[#F6465D]', gaugeColor: '#F6465D' };
   };
 
   const risk = getRiskLevel(riskScore);
@@ -592,7 +592,7 @@ function RiskAnalysis() {
           <span className="text-xs text-[#5E6673]">/100</span>
         </div>
         <Badge className={cn('text-xs font-semibold border-0', risk.color)} style={{ background: risk.gaugeColor + '15' }}>
-          {risk.label} Risk
+          {t(risk.labelKey)} {t('portfolio.riskSuffix')}
         </Badge>
       </div>
 
@@ -614,7 +614,7 @@ function RiskAnalysis() {
 
       {/* Monthly Returns Heatmap */}
       <div className="mt-4">
-        <p className="text-[10px] text-[#848E9C] mb-2 uppercase tracking-wider font-medium">Monthly Returns</p>
+        <p className="text-[10px] text-[#848E9C] mb-2 uppercase tracking-wider font-medium">{t('portfolio.monthlyReturns')}</p>
         <div className="grid grid-cols-6 gap-1">
           {monthlyReturns.map((m, i) => (
             <motion.div
@@ -655,13 +655,13 @@ function TopHoldingsTable() {
         <table className="w-full min-w-[600px]">
           <thead>
             <tr className="text-[10px] text-[#5E6673] uppercase tracking-wide">
-              <th className="text-left pb-3 font-medium">Asset</th>
-              <th className="text-right pb-3 font-medium">Amount</th>
-              <th className="text-right pb-3 font-medium">Avg Buy</th>
-              <th className="text-right pb-3 font-medium">Current</th>
-              <th className="text-right pb-3 font-medium">PnL ($)</th>
-              <th className="text-right pb-3 font-medium">PnL (%)</th>
-              <th className="text-right pb-3 font-medium">Alloc %</th>
+              <th className="text-left pb-3 font-medium">{t('portfolio.asset')}</th>
+              <th className="text-right pb-3 font-medium">{t('portfolio.amount')}</th>
+              <th className="text-right pb-3 font-medium">{t('portfolio.avgBuy')}</th>
+              <th className="text-right pb-3 font-medium">{t('portfolio.current')}</th>
+              <th className="text-right pb-3 font-medium">{t('portfolio.pnlUsd')}</th>
+              <th className="text-right pb-3 font-medium">{t('portfolio.pnlPct')}</th>
+              <th className="text-right pb-3 font-medium">{t('portfolio.allocPct')}</th>
             </tr>
           </thead>
           <tbody>
@@ -726,10 +726,10 @@ function AIRebalanceModal({ onClose }: { onClose: () => void }) {
   const [done, setDone] = useState(false);
 
   const suggestions = [
-    { action: 'Reduce', asset: 'BTC', change: '-5%', current: '45%', suggested: '40%', color: 'text-[#F6465D]' },
-    { action: 'Increase', asset: 'ETH', change: '+3%', current: '25%', suggested: '28%', color: 'text-[#0ECB81]' },
-    { action: 'Increase', asset: 'SOL', change: '+1.5%', current: '8%', suggested: '9.5%', color: 'text-[#0ECB81]' },
-    { action: 'Increase', asset: 'Others', change: '+0.5%', current: '7%', suggested: '7.5%', color: 'text-[#0ECB81]' },
+    { actionKey: 'portfolio.reduce', asset: 'BTC', change: '-5%', current: '45%', suggested: '40%', color: 'text-[#F6465D]' },
+    { actionKey: 'portfolio.increase', asset: 'ETH', change: '+3%', current: '25%', suggested: '28%', color: 'text-[#0ECB81]' },
+    { actionKey: 'portfolio.increase', asset: 'SOL', change: '+1.5%', current: '8%', suggested: '9.5%', color: 'text-[#0ECB81]' },
+    { actionKey: 'portfolio.increase', asset: 'Others', change: '+0.5%', current: '7%', suggested: '7.5%', color: 'text-[#0ECB81]' },
   ];
 
   const handleRebalance = () => {
@@ -782,10 +782,10 @@ function AIRebalanceModal({ onClose }: { onClose: () => void }) {
 
               <div className="space-y-2">
                 <div className="grid grid-cols-4 gap-2 text-[9px] text-[#5E6673] uppercase tracking-wider font-semibold px-1">
-                  <span>Asset</span>
-                  <span className="text-right">Current</span>
-                  <span className="text-right">Suggested</span>
-                  <span className="text-right">Change</span>
+                  <span>{t('portfolio.asset')}</span>
+                  <span className="text-right">{t('portfolio.currentCol')}</span>
+                  <span className="text-right">{t('portfolio.suggestedCol')}</span>
+                  <span className="text-right">{t('portfolio.changeCol')}</span>
                 </div>
                 {suggestions.map((s, i) => (
                   <motion.div
@@ -795,10 +795,10 @@ function AIRebalanceModal({ onClose }: { onClose: () => void }) {
                     transition={{ delay: 0.1 + i * 0.08 }}
                     className="grid grid-cols-4 gap-2 px-3 py-2 bg-[#0B0E11]/40 rounded-lg items-center"
                   >
-                    <span className="text-sm font-semibold text-[#EAECEF]">{s.asset}</span>
+                    <span className="text-sm font-semibold text-[#EAECEF]">{s.asset === 'Others' ? t('portfolio.others') : s.asset}</span>
                     <span className="text-xs text-[#848E9C] tabular-nums text-right">{s.current}</span>
                     <span className="text-xs text-[#EAECEF] tabular-nums font-medium text-right">{s.suggested}</span>
-                    <span className={cn('text-xs font-semibold tabular-nums text-right', s.color)}>{s.change}</span>
+                    <span className={cn('text-xs font-semibold tabular-nums text-right', s.color)}>{t(s.actionKey)} {s.change}</span>
                   </motion.div>
                 ))}
               </div>
@@ -855,8 +855,8 @@ function RebalanceSuggestion({ onOpenModal }: { onOpenModal: () => void }) {
           <div className="flex items-start gap-2">
             <AlertTriangle className="h-4 w-4 text-[#F0B90B] shrink-0 mt-0.5" />
             <p className="text-sm text-[#EAECEF]">
-              AI Suggests: <span className="text-[#F6465D] font-semibold">Reduce BTC by 5%</span>,{' '}
-              <span className="text-[#0ECB81] font-semibold">Increase ETH by 3%</span>
+              {t('portfolio.aiSuggests')} <span className="text-[#F6465D] font-semibold">{t('portfolio.reduceBtcBy')}</span>,{' '}
+              <span className="text-[#0ECB81] font-semibold">{t('portfolio.increaseEthBy')}</span>
             </p>
           </div>
           <p className="text-xs text-[#848E9C] pl-6">
@@ -905,7 +905,7 @@ export default function PortfolioAnalyticsView() {
             </Button>
             <div>
               <h1 className="text-lg font-bold text-[#EAECEF]">{t('portfolio.title')}</h1>
-              <p className="text-[10px] text-[#5E6673]">Real-time portfolio insights</p>
+              <p className="text-[10px] text-[#5E6673]">{t('portfolio.subtitle')}</p>
             </div>
           </div>
 

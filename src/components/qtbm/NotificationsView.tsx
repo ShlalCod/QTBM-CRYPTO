@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
 import { mockNotifications, getTimeAgo } from '@/lib/mock-data';
 import {
   ArrowLeft,
@@ -27,12 +28,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 type FilterTab = 'all' | 'security' | 'trade' | 'system' | 'promotion';
 
-const filterTabs: { id: FilterTab; label: string }[] = [
-  { id: 'all', label: 'All' },
-  { id: 'security', label: 'Security' },
-  { id: 'trade', label: 'Trade' },
-  { id: 'system', label: 'System' },
-  { id: 'promotion', label: 'Promo' },
+const filterTabs: { id: FilterTab; labelKey: string }[] = [
+  { id: 'all', labelKey: 'notifications.filterAll' },
+  { id: 'security', labelKey: 'notifications.filterSecurity' },
+  { id: 'trade', labelKey: 'notifications.filterTrade' },
+  { id: 'system', labelKey: 'notifications.filterSystem' },
+  { id: 'promotion', labelKey: 'notifications.filterPromo' },
 ];
 
 const typeConfig: Record<string, { icon: React.ElementType; color: string; bgColor: string; stripeClass: string }> = {
@@ -46,6 +47,7 @@ const typeConfig: Record<string, { icon: React.ElementType; color: string; bgCol
 
 export default function NotificationsView() {
   const { navigateTo, notifications, markAsRead, setNotifications, unreadCount } = useAppStore();
+  const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
 
@@ -89,9 +91,9 @@ export default function NotificationsView() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-lg font-bold text-[#EAECEF]">Notifications</h1>
+              <h1 className="text-lg font-bold text-[#EAECEF]">{t('notifications.title')}</h1>
               <p className="text-xs text-[#848E9C]">
-                {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}
+                {unreadCount > 0 ? `${unreadCount} ${t('notifications.unread')}` : t('notifications.allCaughtUp')}
               </p>
             </div>
           </div>
@@ -108,7 +110,7 @@ export default function NotificationsView() {
               >
                 <CheckCheck className="h-3.5 w-3.5 mr-1" />
               </motion.div>
-              Mark all read
+              {t('notifications.markAllRead')}
             </Button>
           )}
         </div>
@@ -125,7 +127,7 @@ export default function NotificationsView() {
                   : 'text-[#848E9C] hover:text-[#EAECEF]'
               }`}
             >
-              {tab.label}
+              {t(tab.labelKey)}
               {activeFilter === tab.id && (
                 <motion.div
                   layoutId="notif-tab-underline"
@@ -156,9 +158,9 @@ export default function NotificationsView() {
                     <path d="M10 16 L14 20 L22 12" stroke="#0ECB81" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="draw-checkmark" />
                   </svg>
                 </motion.div>
-                <p className="text-sm text-[#0ECB81] font-semibold">All caught up!</p>
+                <p className="text-sm text-[#0ECB81] font-semibold">{t('notifications.allCaughtUpTitle')}</p>
                 <p className="text-xs text-[#5E6673] mt-1">
-                  {activeFilter !== 'all' ? 'No notifications in this category' : 'You have no unread notifications'}
+                  {activeFilter !== 'all' ? t('notifications.noNotificationsCategory') : t('notifications.noUnreadNotifications')}
                 </p>
               </CardContent>
             </Card>
@@ -244,7 +246,7 @@ export default function NotificationsView() {
         >
           <CardContent className="p-3 flex items-center gap-3">
             <Volume2 className="h-4 w-4 text-[#848E9C]" />
-            <span className="text-xs text-[#848E9C]">Notification preferences</span>
+            <span className="text-xs text-[#848E9C]">{t('notifications.notificationPreferences')}</span>
           </CardContent>
         </Card>
       </div>

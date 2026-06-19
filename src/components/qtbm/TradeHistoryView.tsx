@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
 import { mockTrades, formatPrice } from '@/lib/mock-data';
 import { ArrowLeft, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,14 +12,15 @@ import type { TradeRecord } from '@/types';
 
 type FilterSide = 'all' | 'buy' | 'sell';
 
-const filterOptions: { id: FilterSide; label: string }[] = [
-  { id: 'all', label: 'All' },
-  { id: 'buy', label: 'Buy' },
-  { id: 'sell', label: 'Sell' },
+const filterOptions: { id: FilterSide; labelKey: string }[] = [
+  { id: 'all', labelKey: 'tradeHistory.all' },
+  { id: 'buy', labelKey: 'tradeHistory.buy' },
+  { id: 'sell', labelKey: 'tradeHistory.sell' },
 ];
 
 export default function TradeHistoryView() {
   const { goBack } = useAppStore();
+  const { t } = useTranslation();
   const [filterSide, setFilterSide] = useState<FilterSide>('all');
 
   const filteredTrades = useMemo(() => {
@@ -49,22 +51,22 @@ export default function TradeHistoryView() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-lg font-bold text-[#EAECEF]">Trade History</h1>
+            <h1 className="text-lg font-bold text-[#EAECEF]">{t('tradeHistory.title')}</h1>
           </div>
         </div>
 
         {/* Summary Stats */}
         <div className="grid grid-cols-3 gap-2 px-4 pb-3">
           <div className="bg-[#1E2329] rounded-lg p-2.5">
-            <p className="text-[10px] text-[#5E6673] mb-0.5">Total Buy</p>
+            <p className="text-[10px] text-[#5E6673] mb-0.5">{t('tradeHistory.totalBuy')}</p>
             <p className="text-xs font-semibold text-[#0ECB81] tabular-nums">${formatPrice(totalBuyVolume)}</p>
           </div>
           <div className="bg-[#1E2329] rounded-lg p-2.5">
-            <p className="text-[10px] text-[#5E6673] mb-0.5">Total Sell</p>
+            <p className="text-[10px] text-[#5E6673] mb-0.5">{t('tradeHistory.totalSell')}</p>
             <p className="text-xs font-semibold text-[#F6465D] tabular-nums">${formatPrice(totalSellVolume)}</p>
           </div>
           <div className="bg-[#1E2329] rounded-lg p-2.5">
-            <p className="text-[10px] text-[#5E6673] mb-0.5">Total Fees</p>
+            <p className="text-[10px] text-[#5E6673] mb-0.5">{t('tradeHistory.totalFees')}</p>
             <p className="text-xs font-semibold text-[#F0B90B] tabular-nums">{totalFees.toFixed(4)}</p>
           </div>
         </div>
@@ -81,7 +83,7 @@ export default function TradeHistoryView() {
                   : 'text-[#5E6673] hover:text-[#848E9C] hover:bg-[#1E2329]'
               }`}
             >
-              {opt.label}
+              {t(opt.labelKey)}
             </button>
           ))}
         </div>
@@ -92,18 +94,18 @@ export default function TradeHistoryView() {
         <div className="max-w-4xl mx-auto">
           {/* Table Header */}
           <div className="grid grid-cols-12 gap-2 px-4 py-2 text-[10px] text-[#5E6673] font-medium uppercase tracking-wider border-b border-[#2B3139] sticky top-0 bg-[#0B0E11] z-5">
-            <div className="col-span-3">Pair</div>
-            <div className="col-span-1 text-center">Side</div>
-            <div className="col-span-2 text-right">Price</div>
-            <div className="col-span-2 text-right">Amount</div>
-            <div className="col-span-2 text-right">Total</div>
-            <div className="col-span-2 text-right">Fee</div>
+            <div className="col-span-3">{t('tradeHistory.pair')}</div>
+            <div className="col-span-1 text-center">{t('tradeHistory.side')}</div>
+            <div className="col-span-2 text-right">{t('tradeHistory.price')}</div>
+            <div className="col-span-2 text-right">{t('tradeHistory.amount')}</div>
+            <div className="col-span-2 text-right">{t('tradeHistory.total')}</div>
+            <div className="col-span-2 text-right">{t('tradeHistory.fee')}</div>
           </div>
 
           {/* Trade Rows */}
           {filteredTrades.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16">
-              <p className="text-sm text-[#5E6673]">No trades found</p>
+              <p className="text-sm text-[#5E6673]">{t('tradeHistory.noTrades')}</p>
             </div>
           ) : (
             filteredTrades.map((trade, index) => {

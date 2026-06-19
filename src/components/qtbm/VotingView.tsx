@@ -197,19 +197,19 @@ const VOTING_POWER = 2450;
 const BNB_STAKING_VP = 1500;
 const QTBM_LOCK_VP = 950;
 
-function getVpLevel(vp: number) {
-  if (vp >= 5000) return { label: 'Diamond', color: '#B9F2FF', pct: 100 };
-  if (vp >= 3000) return { label: 'Gold', color: '#FFD700', pct: 70 };
-  if (vp >= 1500) return { label: 'Silver', color: '#C0C0C0', pct: 45 };
-  return { label: 'Bronze', color: '#CD7F32', pct: 20 };
+function getVpLevel(vp: number, t: (key: string) => string) {
+  if (vp >= 5000) return { label: t('voting.diamond'), color: '#B9F2FF', pct: 100 };
+  if (vp >= 3000) return { label: t('voting.gold'), color: '#FFD700', pct: 70 };
+  if (vp >= 1500) return { label: t('voting.silver'), color: '#C0C0C0', pct: 45 };
+  return { label: t('voting.bronze'), color: '#CD7F32', pct: 20 };
 }
 
-function formatDateRelative(iso: string): string {
+function formatDateRelative(iso: string, t: (key: string) => string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const hours = Math.floor(diff / 3600000);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return `${hours}h`;
   const days = Math.floor(hours / 24);
-  return `${days}d ago`;
+  return `${days}d`;
 }
 
 // ─── Animation Variants ─────────────────────────────────────────────────────
@@ -240,7 +240,7 @@ export default function VotingView() {
   const [confirmStep, setConfirmStep] = useState<'choose' | 'confirm' | 'done'>('choose');
   const [pendingDirection, setPendingDirection] = useState<'for' | 'against'>('for');
 
-  const vpLevel = getVpLevel(VOTING_POWER);
+  const vpLevel = getVpLevel(VOTING_POWER, t);
 
   const openVoteModal = (proposal: ActiveProposal & { category: ProposalCategory }) => {
     setSelectedProposal(proposal);
@@ -275,7 +275,7 @@ export default function VotingView() {
           </Button>
           <h1 className="text-lg font-semibold text-[#EAECEF]">{t('voting.title')}</h1>
           <Badge className="bg-gradient-to-r from-[#F0B90B] to-[#F0B90B]/70 text-[#0B0E11] border-0 text-[10px] font-bold px-2 py-0.5 ml-auto">
-            Season 8
+            {t('voting.season')}
           </Badge>
         </div>
 
@@ -322,11 +322,11 @@ export default function VotingView() {
                   </p>
                   <div className="mt-2 space-y-1">
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-[#848E9C]">BNB Staking</span>
+                      <span className="text-[#848E9C]">{t('voting.bnbStaking')}</span>
                       <span className="text-[#EAECEF] font-medium">{BNB_STAKING_VP.toLocaleString()} {t('voting.vp')}</span>
                     </div>
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-[#848E9C]">QTBM Lock</span>
+                      <span className="text-[#848E9C]">{t('voting.qtbmLock')}</span>
                       <span className="text-[#EAECEF] font-medium">{QTBM_LOCK_VP.toLocaleString()} {t('voting.vp')}</span>
                     </div>
                   </div>
@@ -334,8 +334,8 @@ export default function VotingView() {
               </div>
 
               <div className="mt-4 pt-3 border-t border-[#2B3139]/60 flex items-center justify-between">
-                <span className="text-[11px] text-[#848E9C]">Voting Rewards</span>
-                <span className="text-[11px] font-semibold text-[#0ECB81]">Est. 45 QTBM/season</span>
+                <span className="text-[11px] text-[#848E9C]">{t('voting.votingRewards')}</span>
+                <span className="text-[11px] font-semibold text-[#0ECB81]">{t('voting.estRewardsPerSeason')}</span>
               </div>
             </CardContent>
           </Card>
@@ -385,7 +385,7 @@ export default function VotingView() {
                             {/* Voting Open Indicator */}
                             <span className="flex items-center gap-1">
                               <span className="w-1.5 h-1.5 rounded-full bg-[#0ECB81] voting-open-dot" />
-                              <span className="text-[8px] text-[#0ECB81] font-medium">Voting Open</span>
+                              <span className="text-[8px] text-[#0ECB81] font-medium">{t('voting.votingOpen')}</span>
                             </span>
                           </div>
                           <h3 className="text-sm font-medium text-[#EAECEF] leading-tight">{proposal.title}</h3>
@@ -513,7 +513,7 @@ export default function VotingView() {
                           'border-0 text-[8px] px-1.5 py-0 h-4 font-semibold',
                           proposal.passed ? 'bg-[#0ECB81]/10 text-[#0ECB81]' : 'bg-[#F6465D]/10 text-[#F6465D]'
                         )}>
-                          {proposal.passed ? '✓ Executed' : '✕ Rejected'}
+                          {proposal.passed ? `✓ ${t('voting.executed')}` : `✕ ${t('voting.rejected')}`}
                         </Badge>
                       </div>
                     </CardContent>
@@ -555,7 +555,7 @@ export default function VotingView() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium text-[#EAECEF] truncate">{entry.name}</p>
-                      <p className="text-[9px] text-[#5E6673]">{entry.proposalsVoted} proposals</p>
+                      <p className="text-[9px] text-[#5E6673]">{entry.proposalsVoted} {t('voting.proposals')}</p>
                     </div>
                     <span className="text-xs font-semibold text-[#F0B90B] shrink-0">{entry.vp} {t('voting.vp')}</span>
                   </div>
@@ -571,8 +571,8 @@ export default function VotingView() {
                   U
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-[#F0B90B]">You</p>
-                  <p className="text-[9px] text-[#848E9C]">Your Rank</p>
+                  <p className="text-xs font-medium text-[#F0B90B]">{t('voting.you')}</p>
+                  <p className="text-[9px] text-[#848E9C]">{t('voting.yourRank')}</p>
                 </div>
                 <span className="text-xs font-semibold text-[#F0B90B] shrink-0">2,450 {t('voting.vp')}</span>
               </div>
@@ -581,7 +581,7 @@ export default function VotingView() {
                 variant="outline"
                 className="w-full border-[#2B3139] text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] hover:border-[#F0B90B]/20 h-9 text-xs"
               >
-                View Full Leaderboard
+                {t('voting.viewFullLeaderboard')}
                 <ChevronRight className="h-3.5 w-3.5 ml-1" />
               </Button>
             </CardContent>
@@ -620,7 +620,7 @@ export default function VotingView() {
                           {entry.direction === 'for' ? t('voting.for') : t('voting.against')}
                         </span>
                         <span className="text-[9px] text-[#5E6673]">{entry.vpUsed.toLocaleString()} {t('voting.vp')}</span>
-                        <span className="text-[9px] text-[#5E6673]">{formatDateRelative(entry.date)}</span>
+                        <span className="text-[9px] text-[#5E6673]">{formatDateRelative(entry.date, t)}</span>
                       </div>
                     </div>
                     {entry.result && (
@@ -634,7 +634,7 @@ export default function VotingView() {
                       >
                         {entry.result === 'passed' && <CheckCircle className="h-2.5 w-2.5 mr-0.5" />}
                         {entry.result === 'failed' && <XCircle className="h-2.5 w-2.5 mr-0.5" />}
-                        {entry.result === 'passed' ? t('voting.passed') : entry.result === 'failed' ? t('voting.failed') : 'Pending'}
+                        {entry.result === 'passed' ? t('voting.passed') : entry.result === 'failed' ? t('voting.failed') : t('voting.pending')}
                       </Badge>
                     )}
                   </div>
@@ -674,7 +674,7 @@ export default function VotingView() {
                   >
                     <CheckCircle className="h-8 w-8 text-[#0ECB81]" />
                   </motion.div>
-                  <p className="text-base font-semibold text-[#EAECEF] mb-1">Vote Cast!</p>
+                  <p className="text-base font-semibold text-[#EAECEF] mb-1">{t('voting.voteCast')}</p>
                   <p className="text-xs text-[#848E9C]">
                     {Math.round(VOTING_POWER * voteSlider / 100).toLocaleString()} {t('voting.vp')} {pendingDirection === 'for' ? t('voting.for') : t('voting.against').toLowerCase()}
                   </p>
@@ -682,25 +682,25 @@ export default function VotingView() {
               ) : confirmStep === 'confirm' ? (
                 /* ── Confirmation Step ──────────────────────────────────── */
                 <div className="p-5">
-                  <h3 className="text-base font-semibold text-[#EAECEF] mb-4">Confirm Vote</h3>
+                  <h3 className="text-base font-semibold text-[#EAECEF] mb-4">{t('voting.confirmVote')}</h3>
 
                   <div className="bg-[#0B0E11]/50 rounded-xl p-3 mb-4 space-y-2">
                     <div className="flex justify-between text-xs">
-                      <span className="text-[#848E9C]">Proposal</span>
+                      <span className="text-[#848E9C]">{t('voting.proposal')}</span>
                       <span className="text-[#EAECEF] font-medium text-right max-w-[200px] truncate">{selectedProposal.title}</span>
                     </div>
                     <div className="flex justify-between text-xs">
-                      <span className="text-[#848E9C]">Direction</span>
+                      <span className="text-[#848E9C]">{t('voting.direction')}</span>
                       <span className={pendingDirection === 'for' ? 'text-[#0ECB81] font-medium' : 'text-[#F6465D] font-medium'}>
                         {pendingDirection === 'for' ? t('voting.for') : t('voting.against')}
                       </span>
                     </div>
                     <div className="flex justify-between text-xs">
-                      <span className="text-[#848E9C]">Voting Power</span>
+                      <span className="text-[#848E9C]">{t('voting.votingPower')}</span>
                       <span className="text-[#F0B90B] font-medium">{Math.round(VOTING_POWER * voteSlider / 100).toLocaleString()} {t('voting.vp')}</span>
                     </div>
                     <div className="flex justify-between text-xs">
-                      <span className="text-[#848E9C]">Network Fee</span>
+                      <span className="text-[#848E9C]">{t('voting.networkFee')}</span>
                       <span className="text-[#848E9C]">~0.001 BNB</span>
                     </div>
                   </div>
@@ -711,7 +711,7 @@ export default function VotingView() {
                       className="flex-1 border-[#2B3139] text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-10"
                       onClick={() => setConfirmStep('choose')}
                     >
-                      Back
+                      {t('voting.back')}
                     </Button>
                     <Button
                       className={cn(
@@ -722,7 +722,7 @@ export default function VotingView() {
                       )}
                       onClick={handleConfirmVote}
                     >
-                      Confirm
+                      {t('voting.confirm')}
                     </Button>
                   </div>
                 </div>
@@ -745,7 +745,7 @@ export default function VotingView() {
                   {/* Slider */}
                   <div className="mb-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] text-[#848E9C]">Voting Power</span>
+                      <span className="text-[10px] text-[#848E9C]">{t('voting.votingPower')}</span>
                       <span className="text-xs font-semibold text-[#F0B90B]">{voteSlider}% ({Math.round(VOTING_POWER * voteSlider / 100).toLocaleString()} {t('voting.vp')})</span>
                     </div>
                     <input

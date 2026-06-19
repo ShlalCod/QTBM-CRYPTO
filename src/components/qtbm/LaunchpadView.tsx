@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
 import { mockLaunchProjects, formatNumber } from '@/lib/mock-data';
 import {
   ArrowLeft,
@@ -23,6 +24,7 @@ import { Progress } from '@/components/ui/progress';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function CountdownTimer({ targetDate }: { targetDate: string }) {
+  const { t } = useTranslation();
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -87,6 +89,7 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
 
 export default function LaunchpadView() {
   const { navigateTo } = useAppStore();
+  const { t } = useTranslation();
   const [notifyProject, setNotifyProject] = useState<string | null>(null);
 
   const activeProjects = mockLaunchProjects.filter((p) => p.status === 'active');
@@ -118,8 +121,8 @@ export default function LaunchpadView() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-lg font-bold text-[#EAECEF]">Launchpad</h1>
-            <p className="text-xs text-[#848E9C]">Discover new token launches</p>
+            <h1 className="text-lg font-bold text-[#EAECEF]">{t('launchpad.title')}</h1>
+            <p className="text-xs text-[#848E9C]">{t('launchpad.subtitle')}</p>
           </div>
         </div>
 
@@ -129,13 +132,13 @@ export default function LaunchpadView() {
           <CardContent className="p-5 relative z-10">
             <div className="flex items-center gap-2 mb-2">
               <Rocket className="h-5 w-5 text-[#F0B90B]" />
-              <span className="text-sm font-semibold text-[#F0B90B]">QTBM Launchpad</span>
+              <span className="text-sm font-semibold text-[#F0B90B]">{t('launchpad.qtbmLaunchpad')}</span>
             </div>
             <p className="text-base font-bold text-[#EAECEF] mb-1">
-              Participate in Exclusive Token Sales
+              {t('launchpad.participateExclusive')}
             </p>
             <p className="text-xs text-[#848E9C]">
-              Use BNB and other tokens to commit to new projects
+              {t('launchpad.useTokens')}
             </p>
           </CardContent>
         </Card>
@@ -144,7 +147,7 @@ export default function LaunchpadView() {
         <div>
           <div className="flex items-center gap-2 mb-3">
             <div className="w-2 h-2 bg-[#0ECB81] rounded-full animate-pulse" />
-            <h3 className="text-sm font-semibold text-[#EAECEF]">Active Projects</h3>
+            <h3 className="text-sm font-semibold text-[#EAECEF]">{t('launchpad.activeProjects')}</h3>
           </div>
 
           <div className="space-y-3">
@@ -181,25 +184,25 @@ export default function LaunchpadView() {
 
                   <div className="grid grid-cols-2 gap-3 mb-3 text-xs">
                     <div>
-                      <span className="text-[#5E6673]">Token Price</span>
+                      <span className="text-[#5E6673]">{t('launchpad.tokenPrice')}</span>
                       <p className="text-[#EAECEF] font-medium tabular-nums neon-glow-yellow">
-                        {project.tokenPrice > 0 ? `$${project.tokenPrice}` : 'FREE'}
+                        {project.tokenPrice > 0 ? `$${project.tokenPrice}` : t('launchpad.free')}
                       </p>
                     </div>
                     <div>
-                      <span className="text-[#5E6673]">Min Commit</span>
+                      <span className="text-[#5E6673]">{t('launchpad.minCommit')}</span>
                       <p className="text-[#EAECEF] font-medium tabular-nums">
-                        {project.minCommit > 0 ? `${project.minCommit} USDT` : 'None'}
+                        {project.minCommit > 0 ? `${project.minCommit} USDT` : t('launchpad.none')}
                       </p>
                     </div>
                     <div>
-                      <span className="text-[#5E6673]">Total Supply</span>
+                      <span className="text-[#5E6673]">{t('launchpad.totalSupply')}</span>
                       <p className="text-[#EAECEF] font-medium tabular-nums">
                         {formatNumber(project.totalSupply)} {project.symbol}
                       </p>
                     </div>
                     <div>
-                      <span className="text-[#5E6673]">Ends In</span>
+                      <span className="text-[#5E6673]">{t('launchpad.endsIn')}</span>
                       <div className="mt-1 shimmer-gradient rounded">
                         <CountdownTimer targetDate={project.endAt} />
                       </div>
@@ -207,7 +210,7 @@ export default function LaunchpadView() {
                   </div>
 
                   <Button className="w-full gradient-submit-btn text-[#0B0E11] text-xs h-9 font-semibold ripple-effect">
-                    {project.type === 'airdrop' ? 'Claim Airdrop' : 'Commit Now'}
+                    {project.type === 'airdrop' ? t('launchpad.claimAirdrop') : t('launchpad.commitNow')}
                   </Button>
                 </CardContent>
               </Card>
@@ -216,7 +219,7 @@ export default function LaunchpadView() {
             {activeProjects.length === 0 && (
               <Card className="bg-[#1E2329] border-[#2B3139]">
                 <CardContent className="p-8 text-center">
-                  <p className="text-sm text-[#5E6673]">No active projects right now</p>
+                  <p className="text-sm text-[#5E6673]">{t('launchpad.noActiveProjects')}</p>
                 </CardContent>
               </Card>
             )}
@@ -228,7 +231,7 @@ export default function LaunchpadView() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Clock className="h-4 w-4 text-[#F0B90B]" />
-              <h3 className="text-sm font-semibold text-[#EAECEF]">Upcoming Projects</h3>
+              <h3 className="text-sm font-semibold text-[#EAECEF]">{t('launchpad.upcomingProjects')}</h3>
             </div>
 
             <div className="space-y-3">
@@ -243,7 +246,7 @@ export default function LaunchpadView() {
                         <div>
                           <div className="flex items-center gap-2">
                             <p className="text-sm font-semibold text-[#EAECEF]">{project.name}</p>
-                            <span className="shimmer-badge text-[8px] font-bold px-1.5 py-0.5 rounded text-[#0B0E11] animate-pulse">COMING SOON</span>
+                            <span className="shimmer-badge text-[8px] font-bold px-1.5 py-0.5 rounded text-[#0B0E11] animate-pulse">{t('launchpad.comingSoon')}</span>
                           </div>
                           <div className="flex items-center gap-2 mt-0.5">
                             <span className="text-[10px] text-[#5E6673]">{project.symbol}</span>
@@ -268,12 +271,12 @@ export default function LaunchpadView() {
                         {notifyProject === project.id ? (
                           <>
                             <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
-                            Notified
+                            {t('launchpad.notified')}
                           </>
                         ) : (
                           <>
                             <Bell className="h-3.5 w-3.5 mr-1" />
-                            Notify Me
+                            {t('launchpad.notifyMe')}
                           </>
                         )}
                       </Button>
@@ -283,7 +286,7 @@ export default function LaunchpadView() {
                     )}
                     <div className="flex items-center gap-1 mt-2 text-[10px] text-[#5E6673]">
                       <Timer className="h-3 w-3" />
-                      Starts: {new Date(project.startAt).toLocaleDateString()}
+                      {t('launchpad.starts')} {new Date(project.startAt).toLocaleDateString()}
                     </div>
                   </CardContent>
                 </Card>
@@ -294,12 +297,12 @@ export default function LaunchpadView() {
 
         {/* My Participations */}
         <div>
-          <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">My Participations</h3>
+          <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">{t('launchpad.myParticipations')}</h3>
           <Card className="bg-[#1E2329] border-[#2B3139]">
             <CardContent className="p-6 text-center fancy-scrollbar max-h-64 overflow-y-auto">
               <AlertCircle className="h-8 w-8 text-[#3E444D] mx-auto mb-2" />
-              <p className="text-sm text-[#5E6673]">No participations yet</p>
-              <p className="text-xs text-[#3E444D] mt-1">Commit to an active project to get started</p>
+              <p className="text-sm text-[#5E6673]">{t('launchpad.noParticipations')}</p>
+              <p className="text-xs text-[#3E444D] mt-1">{t('launchpad.commitToStart')}</p>
             </CardContent>
           </Card>
         </div>

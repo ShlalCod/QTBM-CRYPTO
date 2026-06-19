@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
 import { mockAssets, mockWalletBalances, formatPrice, getTimeAgo } from '@/lib/mock-data';
 import {
   ArrowLeft,
@@ -92,16 +93,17 @@ const mockDepositHistory = [
   { id: '5', asset: 'SOL', icon: '◎', network: 'Solana', amount: 50, status: 'confirmed' as const, txHash: '0x2d9a...6c4b', time: '2024-01-13T11:00:00Z', confirmations: '1/1' },
 ];
 
-const statusConfig: Record<string, { color: string; bg: string; label: string }> = {
-  confirmed: { color: 'text-[#0ECB81]', bg: 'bg-[#0ECB81]/10', label: 'Confirmed' },
-  completed: { color: 'text-[#0ECB81]', bg: 'bg-[#0ECB81]/10', label: 'Completed' },
-  processing: { color: 'text-[#F0B90B]', bg: 'bg-[#F0B90B]/10', label: 'Processing' },
-  pending: { color: 'text-[#848E9C]', bg: 'bg-[#848E9C]/10', label: 'Pending' },
-  failed: { color: 'text-[#F6465D]', bg: 'bg-[#F6465D]/10', label: 'Failed' },
+const statusConfig: Record<string, { color: string; bg: string; labelKey: string }> = {
+  confirmed: { color: 'text-[#0ECB81]', bg: 'bg-[#0ECB81]/10', labelKey: 'wallet.confirmed' },
+  completed: { color: 'text-[#0ECB81]', bg: 'bg-[#0ECB81]/10', labelKey: 'wallet.completed' },
+  processing: { color: 'text-[#F0B90B]', bg: 'bg-[#F0B90B]/10', labelKey: 'wallet.processing' },
+  pending: { color: 'text-[#848E9C]', bg: 'bg-[#848E9C]/10', labelKey: 'wallet.pending' },
+  failed: { color: 'text-[#F6465D]', bg: 'bg-[#F6465D]/10', labelKey: 'wallet.failed' },
 };
 
 export default function DepositView() {
   const { goBack, selectedAsset } = useAppStore();
+  const { t } = useTranslation();
   const [selectedSymbol, setSelectedSymbol] = useState(selectedAsset || 'BTC');
   const [selectedNetwork, setSelectedNetwork] = useState('');
   const [showAssetDropdown, setShowAssetDropdown] = useState(false);
@@ -141,16 +143,16 @@ export default function DepositView() {
     try {
       await navigator.clipboard.writeText(depositAddress);
       setCopied(true);
-      toast.success('Address copied to clipboard');
+      toast.success(t('wallet.addressCopied'));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error('Failed to copy address');
+      toast.error(t('wallet.copyFailed'));
     }
   };
 
   const handleRefreshAddress = () => {
     setDepositAddress(generateAddress(selectedNetwork));
-    toast.success('New address generated');
+    toast.success(t('wallet.newAddressGenerated'));
   };
 
   return (
@@ -168,15 +170,15 @@ export default function DepositView() {
             {mockAssets.find(a => a.symbol === selectedSymbol)?.icon || '?'}
           </div>
           <div>
-            <h1 className="text-lg font-bold text-[#EAECEF]">Deposit</h1>
-            <p className="text-[10px] text-[#848E9C]">{selectedSymbol} • {currentNetwork?.name || 'Select network'}</p>
+            <h1 className="text-lg font-bold text-[#EAECEF]">{t('wallet.deposit')}</h1>
+            <p className="text-[10px] text-[#848E9C]">{selectedSymbol} • {currentNetwork?.name || t('wallet.selectNetworkPrompt')}</p>
           </div>
         </div>
 
         {/* Select Asset */}
         <Card className="bg-[#1E2329] border-[#2B3139]">
           <CardContent className="p-4">
-            <label className="text-xs text-[#848E9C] font-medium mb-2 block">Select Asset</label>
+            <label className="text-xs text-[#848E9C] font-medium mb-2 block">{t('wallet.selectAsset')}</label>
             <div className="relative">
               <button
                 onClick={() => { setShowAssetDropdown(!showAssetDropdown); setShowNetworkDropdown(false); }}
@@ -205,7 +207,7 @@ export default function DepositView() {
                   >
                     <div className="p-2">
                       <Input
-                        placeholder="Search asset..."
+                        placeholder={t('wallet.searchAsset')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-8 text-sm"
@@ -258,7 +260,7 @@ export default function DepositView() {
         {networks.length > 0 && (
           <Card className="bg-[#1E2329] border-[#2B3139]">
             <CardContent className="p-4">
-              <label className="text-xs text-[#848E9C] font-medium mb-2 block">Select Network</label>
+              <label className="text-xs text-[#848E9C] font-medium mb-2 block">{t('wallet.selectNetwork')}</label>
               {/* Network Cards */}
               <div className="grid gap-2 mb-3">
                 {networks.map((network) => (
@@ -271,7 +273,7 @@ export default function DepositView() {
                   >
                     <div className="text-left">
                       <p className="text-sm font-medium text-[#EAECEF]">{network.name}</p>
-                      <p className="text-[10px] text-[#5E6673]">Deposit: {network.minDeposit} • Fee: {network.fee}</p>
+                      <p className="text-[10px] text-[#5E6673]">{t('wallet.deposit')}: {network.minDeposit} • {t('wallet.fee')}: {network.fee}</p>
                     </div>
                     {selectedNetwork === network.id && (
                       <motion.div
@@ -290,16 +292,16 @@ export default function DepositView() {
               {currentNetwork && (
                 <div className="grid grid-cols-3 gap-2 text-xs slide-up-enter">
                   <div className="bg-[#2B3139] rounded-lg p-2.5 card-hover-effect">
-                    <span className="text-[#5E6673] block">Min Deposit</span>
+                    <span className="text-[#5E6673] block">{t('wallet.minDeposit')}</span>
                     <span className="text-[#EAECEF] font-medium mt-0.5 block">{currentNetwork.minDeposit}</span>
                   </div>
                   <div className="bg-[#2B3139] rounded-lg p-2.5 card-hover-effect">
-                    <span className="text-[#5E6673] block">Deposit Fee</span>
+                    <span className="text-[#5E6673] block">{t('wallet.depositFee')}</span>
                     <span className="text-[#0ECB81] font-medium mt-0.5 block neon-glow-green">{currentNetwork.fee}</span>
                   </div>
                   <div className="bg-[#2B3139] rounded-lg p-2.5 card-hover-effect">
-                    <span className="text-[#5E6673] block">Confirmations</span>
-                    <span className="text-[#EAECEF] font-medium mt-0.5 block">{currentNetwork.confirmations} blocks</span>
+                    <span className="text-[#5E6673] block">{t('wallet.confirmations')}</span>
+                    <span className="text-[#EAECEF] font-medium mt-0.5 block">{currentNetwork.confirmations} {t('wallet.blocks')}</span>
                   </div>
                 </div>
               )}
@@ -312,13 +314,13 @@ export default function DepositView() {
           <Card className="bg-[#1E2329] border-[#2B3139] glow-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">
-                <label className="text-xs text-[#848E9C] font-medium">Deposit Address</label>
+                <label className="text-xs text-[#848E9C] font-medium">{t('wallet.depositAddress')}</label>
                 <button
                   onClick={handleRefreshAddress}
                   className="text-[#5E6673] hover:text-[#848E9C] transition-colors flex items-center gap-1 text-xs"
                 >
                   <RefreshCw className="h-3 w-3" />
-                  New Address
+                  {t('wallet.newAddress')}
                 </button>
               </div>
 
@@ -363,12 +365,12 @@ export default function DepositView() {
                 {copied ? (
                   <>
                     <CheckCircle2 className="h-4 w-4 mr-2" />
-                    Copied!
+                    {t('wallet.copied')}
                   </>
                 ) : (
                   <>
                     <Copy className="h-4 w-4 mr-2" />
-                    Copy Address
+                    {t('wallet.copyAddress')}
                   </>
                 )}
               </Button>
@@ -378,12 +380,12 @@ export default function DepositView() {
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="h-4 w-4 text-[#F6465D] shrink-0 mt-0.5 warning-animate" />
                   <div className="space-y-1.5">
-                    <p className="text-xs text-[#F6465D] font-medium">Important</p>
+                    <p className="text-xs text-[#F6465D] font-medium">{t('wallet.important')}</p>
                     <ul className="text-[11px] text-[#848E9C] space-y-1">
-                      <li>• Deposit only <span className="text-[#EAECEF] font-medium">{selectedSymbol}</span> to this address on the <span className="text-[#EAECEF] font-medium">{currentNetwork.name}</span> network</li>
-                      <li>• Depositing any other asset or using a different network may result in permanent loss</li>
-                      <li>• Minimum deposit: <span className="text-[#EAECEF] font-medium">{currentNetwork.minDeposit}</span></li>
-                      <li>• Requires <span className="text-[#EAECEF] font-medium">{currentNetwork.confirmations}</span> network confirmation(s) before crediting</li>
+                      <li>• {t('wallet.depositWarning1').replace('{asset}', selectedSymbol).replace('{network}', currentNetwork.name)}</li>
+                      <li>• {t('wallet.depositWarning2')}</li>
+                      <li>• {t('wallet.depositWarning3').replace('{amount}', currentNetwork.minDeposit)}</li>
+                      <li>• {t('wallet.depositWarning4').replace('{count}', String(currentNetwork.confirmations))}</li>
                     </ul>
                   </div>
                 </div>
@@ -392,7 +394,7 @@ export default function DepositView() {
               {/* Security note */}
               <div className="mt-3 flex items-center gap-2 text-[10px] text-[#5E6673]">
                 <Shield className="h-3 w-3 text-[#0ECB81]" />
-                <span>Your deposit address changes periodically for security. Always verify before sending.</span>
+                <span>{t('wallet.securityNote')}</span>
               </div>
             </CardContent>
           </Card>
@@ -402,9 +404,9 @@ export default function DepositView() {
         <Card className="bg-[#1E2329] border-[#2B3139]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-[#EAECEF]">Recent Deposits</h3>
+              <h3 className="text-sm font-semibold text-[#EAECEF]">{t('wallet.recentDeposits')}</h3>
               <button className="text-xs text-[#F0B90B] hover:text-[#F0B90B]/80 flex items-center gap-1 transition-colors">
-                View All <ExternalLink className="h-3 w-3" />
+                {t('wallet.viewAll')} <ExternalLink className="h-3 w-3" />
               </button>
             </div>
 
@@ -419,7 +421,7 @@ export default function DepositView() {
                       </div>
                       <div>
                         <p className="text-sm text-[#EAECEF] font-medium">
-                          {deposit.asset} Deposit
+                          {t('wallet.assetDeposit').replace('{asset}', deposit.asset)}
                         </p>
                         <div className="flex items-center gap-2">
                           <span className="text-[10px] text-[#5E6673]">{deposit.network}</span>
@@ -433,7 +435,7 @@ export default function DepositView() {
                         +{deposit.amount} {deposit.asset}
                       </p>
                       <Badge className={`text-[9px] h-4 px-1.5 border-0 ${status.color} ${status.bg}`}>
-                        {status.label}
+                        {t(status.labelKey)}
                       </Badge>
                     </div>
                   </div>

@@ -202,7 +202,7 @@ function UnstakeModal({
                 </div>
                 <div className="bg-[#0B0E11]/50 rounded-lg p-3">
                   <p className="text-[10px] text-[#5E6673]">{t('staking.lockPeriod')}</p>
-                  <p className="text-sm font-semibold text-[#EAECEF]">{position.daysRemaining}d remaining</p>
+                  <p className="text-sm font-semibold text-[#EAECEF]">{position.daysRemaining}d {t('staking.remaining')}</p>
                 </div>
               </div>
 
@@ -297,7 +297,7 @@ function StakeDialog({
             >
               <CheckCircle2 className="h-12 w-12 text-[#0ECB81] mb-3" />
               <p className="text-lg font-semibold text-[#0ECB81]">{t('staking.stakeSuccess')}</p>
-              <p className="text-xs text-[#848E9C] mt-1">{numAmount} {asset} staked</p>
+              <p className="text-xs text-[#848E9C] mt-1">{numAmount} {asset} {t('staking.staked')}</p>
             </motion.div>
           ) : (
             <>
@@ -319,7 +319,7 @@ function StakeDialog({
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] h-11 text-base focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 pr-16"
-                    placeholder={`Min ${minAmount}`}
+                    placeholder={`${t('staking.min')} ${minAmount}`}
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#848E9C] font-medium">{asset}</span>
                 </div>
@@ -346,19 +346,19 @@ function StakeDialog({
               {numAmount > 0 && (
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-[#0B0E11]/50 rounded-lg p-2.5 text-center">
-                    <p className="text-[9px] text-[#5E6673]">Daily</p>
+                    <p className="text-[9px] text-[#5E6673]">{t('staking.daily')}</p>
                     <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+{dailyReward.toFixed(4)}</p>
                   </div>
                   <div className="bg-[#0B0E11]/50 rounded-lg p-2.5 text-center">
-                    <p className="text-[9px] text-[#5E6673]">Weekly</p>
+                    <p className="text-[9px] text-[#5E6673]">{t('staking.weekly')}</p>
                     <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+{weeklyReward.toFixed(4)}</p>
                   </div>
                   <div className="bg-[#0B0E11]/50 rounded-lg p-2.5 text-center">
-                    <p className="text-[9px] text-[#5E6673]">Monthly</p>
+                    <p className="text-[9px] text-[#5E6673]">{t('staking.monthly')}</p>
                     <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+{monthlyReward.toFixed(4)}</p>
                   </div>
                   <div className="bg-[#0B0E11]/50 rounded-lg p-2.5 text-center">
-                    <p className="text-[9px] text-[#5E6673]">Yearly</p>
+                    <p className="text-[9px] text-[#5E6673]">{t('staking.yearly')}</p>
                     <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+{yearlyReward.toFixed(4)}</p>
                   </div>
                 </div>
@@ -501,7 +501,7 @@ function ActiveStakingTab({
                           {pos.apy}% APY
                         </Badge>
                       </div>
-                      <span className="text-[10px] text-[#5E6673]">{t('staking.stake')} &middot; {pos.totalDays}d lock</span>
+                      <span className="text-[10px] text-[#5E6673]">{t('staking.stake')} &middot; {pos.totalDays}d {t('staking.dLock')}</span>
                     </div>
                   </div>
                   <Button
@@ -522,14 +522,14 @@ function ActiveStakingTab({
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] text-[#5E6673]">≈ USD</p>
+                    <p className="text-[10px] text-[#5E6673]">{t('staking.usdEquivalent')}</p>
                     <p className="text-sm font-medium text-[#EAECEF] tabular-nums">${pos.rewardsUsd}</p>
                   </div>
                 </div>
 
                 <div>
                   <div className="flex justify-between text-[9px] mb-1">
-                    <span className="text-[#5E6673]">{pos.daysRemaining} {t('staking.days')} remaining</span>
+                    <span className="text-[#5E6673]">{pos.daysRemaining} {t('staking.days')} {t('staking.remaining')}</span>
                     <span className="text-[#848E9C]">{Math.round(progress)}%</span>
                   </div>
                   <div className="h-1.5 bg-[#2B3139] rounded-full overflow-hidden">
@@ -614,12 +614,12 @@ function AvailableStakeTab({
                           </Badge>
                           {isHot && (
                             <Badge className="text-[8px] border-0 h-4 px-1.5 bg-[#F6465D]/15 text-[#F6465D] hot-badge font-bold">
-                              Popular
+                              {t('staking.popular')}
                             </Badge>
                           )}
                         </div>
                         <p className="text-[10px] text-[#5E6673]">
-                          Up to {asset.maxAmount} {asset.asset} &middot; Min {asset.minAmount} {asset.asset}
+                          {t('staking.upTo')} {asset.maxAmount} {asset.asset} &middot; {t('staking.min')} {asset.minAmount} {asset.asset}
                         </p>
                       </div>
                     </div>
@@ -633,7 +633,7 @@ function AvailableStakeTab({
 
                   <div>
                     <div className="flex justify-between text-[9px] text-[#5E6673] mb-1">
-                      <span>APY Level</span>
+                      <span>{t('staking.apyLevel')}</span>
                       <span className="text-[#0ECB81]">{Math.round(Math.min(effectiveApy / 25 * 100, 100))}%</span>
                     </div>
                     <div className="h-1 bg-[#2B3139] rounded-full overflow-hidden">
@@ -657,11 +657,11 @@ function RewardsHistoryTab({ t }: { t: (key: string) => string }) {
   return (
     <div className="space-y-0">
       <div className="grid grid-cols-5 gap-2 px-3 py-2 text-[9px] text-[#5E6673] uppercase tracking-wider font-semibold">
-        <span>Date</span>
-        <span>Asset</span>
-        <span className="text-right">Amount</span>
-        <span className="text-right">USD</span>
-        <span className="text-right">Type</span>
+        <span>{t('staking.date')}</span>
+        <span>{t('staking.asset')}</span>
+        <span className="text-right">{t('staking.amount')}</span>
+        <span className="text-right">{t('staking.usd')}</span>
+        <span className="text-right">{t('staking.type')}</span>
       </div>
       <Separator className="bg-[#2B3139]" />
 
@@ -688,7 +688,7 @@ function RewardsHistoryTab({ t }: { t: (key: string) => string }) {
                     : 'bg-[#0ECB81]/10 text-[#0ECB81]'
                 )}
               >
-                {entry.type === 'Auto-compound' ? 'Auto' : 'Reward'}
+                {entry.type === 'Auto-compound' ? t('staking.auto') : t('staking.reward')}
               </Badge>
             </span>
           </div>
@@ -775,18 +775,18 @@ function StakingCalculator({ t }: { t: (key: string) => string }) {
 
         <div className="space-y-3">
           <div>
-            <label className="text-[10px] text-[#5E6673] mb-1 block">Amount (USD)</label>
+            <label className="text-[10px] text-[#5E6673] mb-1 block">{t('staking.amountUsd')}</label>
             <Input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] h-9 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
-              placeholder="Enter amount"
+              placeholder={t('staking.enterAmount')}
             />
           </div>
 
           <div>
-            <label className="text-[10px] text-[#5E6673] mb-1 block">Asset</label>
+            <label className="text-[10px] text-[#5E6673] mb-1 block">{t('staking.asset')}</label>
             <select
               value={selectedAsset}
               onChange={(e) => setSelectedAsset(e.target.value)}
@@ -821,21 +821,21 @@ function StakingCalculator({ t }: { t: (key: string) => string }) {
           </div>
 
           <div className="flex items-center justify-between text-xs bg-[#2B3139] rounded-lg px-3 py-2">
-            <span className="text-[#848E9C]">Effective APY</span>
+            <span className="text-[#848E9C]">{t('staking.effectiveApy')}</span>
             <span className="text-[#0ECB81] font-bold tabular-nums">{effectiveApy}%</span>
           </div>
 
           <div className="grid grid-cols-3 gap-2">
             <div className="bg-[#2B3139] rounded-lg p-2.5 text-center">
-              <p className="text-[9px] text-[#5E6673]">Daily</p>
+              <p className="text-[9px] text-[#5E6673]">{t('staking.daily')}</p>
               <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+${dailyReward.toFixed(2)}</p>
             </div>
             <div className="bg-[#2B3139] rounded-lg p-2.5 text-center">
-              <p className="text-[9px] text-[#5E6673]">Monthly</p>
+              <p className="text-[9px] text-[#5E6673]">{t('staking.monthly')}</p>
               <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+${monthlyReward.toFixed(2)}</p>
             </div>
             <div className="bg-[#2B3139] rounded-lg p-2.5 text-center">
-              <p className="text-[9px] text-[#5E6673]">Yearly</p>
+              <p className="text-[9px] text-[#5E6673]">{t('staking.yearly')}</p>
               <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+${yearlyReward.toFixed(2)}</p>
             </div>
           </div>

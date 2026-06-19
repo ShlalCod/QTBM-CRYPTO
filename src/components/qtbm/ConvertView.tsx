@@ -165,7 +165,7 @@ export default function ConvertView() {
           </Button>
           <h1 className="text-lg font-semibold text-[#EAECEF]">{t('convert.title')}</h1>
           <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[9px] px-1.5 py-0 h-5 font-semibold">
-            Instant
+            {t('convert.instant')}
           </Badge>
         </div>
 
@@ -211,7 +211,7 @@ export default function ConvertView() {
                   onClick={() => setFromAmount(fromToken.balance.toString())}
                   className="text-[10px] text-[#F0B90B] font-medium hover:underline"
                 >
-                  MAX
+                  {t('convert.max')}
                 </button>
               </div>
             </div>

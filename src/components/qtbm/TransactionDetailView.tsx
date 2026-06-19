@@ -101,15 +101,15 @@ function AnimatedNumber({ value, decimals = 4, prefix = '', suffix = '' }: {
 }
 
 // ── Time Ago ─────────────────────────────────────────────────────────────────
-function timeAgo(dateStr: string): string {
+function timeAgo(dateStr: string, t: (key: string) => string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const minutes = Math.floor(diff / 60000);
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
-  if (days > 0) return `${days}d ago`;
-  if (hours > 0) return `${hours}h ago`;
-  if (minutes > 0) return `${minutes}m ago`;
-  return 'Just now';
+  if (days > 0) return `${days}${t('transactionDetail.daysAgo')}`;
+  if (hours > 0) return `${hours}${t('transactionDetail.hoursAgo')}`;
+  if (minutes > 0) return `${minutes}${t('transactionDetail.minutesAgo')}`;
+  return t('transactionDetail.justNow');
 }
 
 // ── Main Component ───────────────────────────────────────────────────────────
@@ -302,7 +302,7 @@ export default function TransactionDetailView() {
                 <Separator className="bg-[#2B3139]/50" />
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-[#848E9C]">{t('transactionDetail.platformFee')}</span>
-                  <span className="text-xs text-[#0ECB81] tabular-nums">{tx.platformFee > 0 ? `$${tx.platformFeeUsd.toFixed(2)}` : 'Free'}</span>
+                  <span className="text-xs text-[#0ECB81] tabular-nums">{tx.platformFee > 0 ? `$${tx.platformFeeUsd.toFixed(2)}` : t('transactionDetail.free')}</span>
                 </div>
                 <Separator className="bg-[#2B3139]/50" />
                 <div className="flex items-center justify-between">
@@ -372,7 +372,7 @@ export default function TransactionDetailView() {
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-[#EAECEF]">{formatTimestamp(tx.timestamp)}</p>
-                  <p className="text-[10px] text-[#5E6673]">{timeAgo(tx.timestamp)}</p>
+                  <p className="text-[10px] text-[#5E6673]">{timeAgo(tx.timestamp, t)}</p>
                 </div>
               </div>
               <Separator className="bg-[#2B3139]/50" />

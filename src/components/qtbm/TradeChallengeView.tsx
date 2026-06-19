@@ -27,8 +27,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 const challenges = [
   {
     id: 'spot-master',
-    name: 'Spot Master',
-    description: 'Trade $25K in spot pairs',
+    nameKey: 'tradeChallenge.spotMaster',
+    descriptionKey: 'tradeChallenge.spotMasterDesc',
     reward: '$500',
     participants: 540,
     icon: Target,
@@ -36,8 +36,8 @@ const challenges = [
   },
   {
     id: 'futures-sprint',
-    name: 'Futures Sprint',
-    description: 'Open 10 futures positions',
+    nameKey: 'tradeChallenge.futuresSprint',
+    descriptionKey: 'tradeChallenge.futuresSprintDesc',
     reward: '$1,000',
     participants: 312,
     icon: Zap,
@@ -45,8 +45,8 @@ const challenges = [
   },
   {
     id: 'social-trader',
-    name: 'Social Trader',
-    description: 'Share 5 trade ideas',
+    nameKey: 'tradeChallenge.socialTrader',
+    descriptionKey: 'tradeChallenge.socialTraderDesc',
     reward: '$250',
     participants: 89,
     icon: MessageSquare,
@@ -54,8 +54,8 @@ const challenges = [
   },
   {
     id: 'newbie-quest',
-    name: 'Newbie Quest',
-    description: 'Complete 5 trades',
+    nameKey: 'tradeChallenge.newbieQuest',
+    descriptionKey: 'tradeChallenge.newbieQuestDesc',
     reward: '$100',
     participants: 1205,
     icon: Rocket,
@@ -72,12 +72,12 @@ const leaderboardData = [
 ];
 
 const myChallenges = [
-  { id: 'weekly-volume', name: 'Weekly Volume Challenge', progress: 25, detail: '$12,450 / $50,000' },
-  { id: 'newbie-quest', name: 'Newbie Quest', progress: 60, detail: '3/5 trades' },
+  { id: 'weekly-volume', nameKey: 'tradeChallenge.weeklyVolume', progress: 25, detail: '$12,450 / $50,000' },
+  { id: 'newbie-quest', nameKey: 'tradeChallenge.newbieQuest', progress: 60, detail: '3/5' },
 ];
 
 const pastChallenges = [
-  { id: 'past-1', name: 'December Sprint', reward: '$50', won: true },
+  { id: 'past-1', nameKey: 'tradeChallenge.decemberSprint', reward: '$50', won: true },
 ];
 
 export default function TradeChallengeView() {
@@ -228,8 +228,8 @@ export default function TradeChallengeView() {
                         <Icon className="h-4 w-4" style={{ color: challenge.color }} />
                       </div>
                       <div>
-                        <p className="text-xs font-semibold text-[#EAECEF]">{challenge.name}</p>
-                        <p className="text-[9px] text-[#5E6673]">{challenge.description}</p>
+                        <p className="text-xs font-semibold text-[#EAECEF]">{t(challenge.nameKey)}</p>
+                        <p className="text-[9px] text-[#5E6673]">{t(challenge.descriptionKey)}</p>
                         <div className="flex items-center gap-2 mt-0.5">
                           <span className="text-[9px] text-[#F0B90B] font-semibold">{t('tradeChallenge.win')} {challenge.reward}</span>
                           <span className="text-[8px] text-[#5E6673]">• {challenge.participants.toLocaleString()} {t('tradeChallenge.participants').toLowerCase()}</span>
@@ -260,7 +260,7 @@ export default function TradeChallengeView() {
               {myChallenges.map((challenge) => (
                 <div key={challenge.id} className="bg-[#0B0E11]/40 rounded-xl p-3">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs font-semibold text-[#EAECEF]">{challenge.name}</p>
+                    <p className="text-xs font-semibold text-[#EAECEF]">{t(challenge.nameKey)}</p>
                     <span className="text-xs font-bold text-[#F0B90B]">{challenge.progress}%</span>
                   </div>
                   <div className="w-full h-1.5 bg-[#2B3139] rounded-full overflow-hidden mb-1">
@@ -327,7 +327,7 @@ export default function TradeChallengeView() {
                 className="flex items-center justify-between p-3 rounded-xl bg-[#0B0E11]/30"
               >
                 <div>
-                  <p className="text-xs font-semibold text-[#EAECEF]">{challenge.name}</p>
+                  <p className="text-xs font-semibold text-[#EAECEF]">{t(challenge.nameKey)}</p>
                   <p className="text-[9px] text-[#5E6673]">{t('tradeChallenge.completed')}</p>
                 </div>
                 {challenge.won && (

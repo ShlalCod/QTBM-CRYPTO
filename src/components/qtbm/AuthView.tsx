@@ -24,11 +24,14 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from '@/components/ui/input-otp';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from '@/lib/i18n';
 
 type AuthStep = 'login' | 'register' | '2fa';
 
+type PasswordLevel = 'weak' | 'medium' | 'strong';
+
 // Password strength calculator
-function getPasswordStrength(password: string): { score: number; label: string; color: string } {
+function getPasswordStrength(password: string): { score: number; level: PasswordLevel; color: string } {
   let score = 0;
   if (password.length >= 8) score++;
   if (password.length >= 12) score++;
@@ -37,13 +40,14 @@ function getPasswordStrength(password: string): { score: number; label: string; 
   if (/[0-9]/.test(password)) score++;
   if (/[^A-Za-z0-9]/.test(password)) score++;
 
-  if (score <= 2) return { score: Math.round((score / 6) * 100), label: 'Weak', color: '#F6465D' };
-  if (score <= 4) return { score: Math.round((score / 6) * 100), label: 'Medium', color: '#F0B90B' };
-  return { score: Math.round((score / 6) * 100), label: 'Strong', color: '#0ECB81' };
+  if (score <= 2) return { score: Math.round((score / 6) * 100), level: 'weak', color: '#F6465D' };
+  if (score <= 4) return { score: Math.round((score / 6) * 100), level: 'medium', color: '#F0B90B' };
+  return { score: Math.round((score / 6) * 100), level: 'strong', color: '#0ECB81' };
 }
 
 export default function AuthView() {
   const { navigateTo, setUser, currentView } = useAppStore();
+  const { t } = useTranslation();
 
   const [step, setStep] = useState<AuthStep>(currentView === 'register' ? 'register' : 'login');
   const [isLoading, setIsLoading] = useState(false);
@@ -83,15 +87,15 @@ export default function AuthView() {
     setError('');
 
     if (!loginEmail.trim()) {
-      setError('Please enter your email or phone number');
+      setError(t('auth.errEnterEmailOrPhone'));
       return;
     }
     if (!loginPassword) {
-      setError('Please enter your password');
+      setError(t('auth.errEnterPassword'));
       return;
     }
     if (loginPassword.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('auth.errPasswordMin6'));
       return;
     }
 
@@ -105,7 +109,7 @@ export default function AuthView() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Login failed');
+        setError(data.error || t('auth.errLoginFailed'));
         return;
       }
 
@@ -128,34 +132,34 @@ export default function AuthView() {
       });
       navigateTo('home');
     } catch {
-      setError('Network error. Please try again.');
+      setError(t('auth.errNetwork'));
     } finally {
       setIsLoading(false);
     }
-  }, [loginEmail, loginPassword, setUser, navigateTo]);
+  }, [loginEmail, loginPassword, setUser, navigateTo, t]);
 
   const handleRegister = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     if (!regEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regEmail)) {
-      setError('Please enter a valid email address');
+      setError(t('auth.errValidEmail'));
       return;
     }
     if (regPhone && !/^\+?[\d\s-]{7,15}$/.test(regPhone)) {
-      setError('Please enter a valid phone number');
+      setError(t('auth.errValidPhone'));
       return;
     }
     if (regPassword.length < 8) {
-      setError('Password must be at least 8 characters');
+      setError(t('auth.errPasswordMin8'));
       return;
     }
     if (regPassword !== regConfirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.passwordsDoNotMatch'));
       return;
     }
     if (!agreeTerms) {
-      setError('You must agree to the Terms of Service');
+      setError(t('auth.errMustAgreeTerms'));
       return;
     }
 
@@ -175,7 +179,7 @@ export default function AuthView() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Registration failed');
+        setError(data.error || t('auth.errRegisterFailed'));
         return;
       }
 
@@ -191,18 +195,18 @@ export default function AuthView() {
       });
       navigateTo('home');
     } catch {
-      setError('Network error. Please try again.');
+      setError(t('auth.errNetwork'));
     } finally {
       setIsLoading(false);
     }
-  }, [regEmail, regPhone, regPassword, regConfirmPassword, referralCode, agreeTerms, setUser, navigateTo]);
+  }, [regEmail, regPhone, regPassword, regConfirmPassword, referralCode, agreeTerms, setUser, navigateTo, t]);
 
   const handle2FA = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     if (otpCode.length !== 6) {
-      setError('Please enter the 6-digit verification code');
+      setError(t('auth.errEnterCode'));
       return;
     }
 
@@ -216,7 +220,7 @@ export default function AuthView() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Verification failed');
+        setError(data.error || t('auth.errVerifyFailed'));
         return;
       }
 
@@ -232,11 +236,11 @@ export default function AuthView() {
       });
       navigateTo('home');
     } catch {
-      setError('Network error. Please try again.');
+      setError(t('auth.errNetwork'));
     } finally {
       setIsLoading(false);
     }
-  }, [otpCode, setUser, navigateTo]);
+  }, [otpCode, setUser, navigateTo, t]);
 
   const handleResendCode = useCallback(() => {
     setResendTimer(60);
@@ -289,7 +293,7 @@ export default function AuthView() {
           className="flex items-center gap-1 text-sm text-[#848E9C] hover:text-[#EAECEF] transition-colors mb-6"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Home
+          {t('auth.backToHome')}
         </button>
 
         <AnimatePresence mode="wait">
@@ -314,8 +318,8 @@ export default function AuthView() {
                     >
                       <span className="text-[#0B0E11] font-bold text-2xl">Q</span>
                     </motion.div>
-                    <h1 className="text-xl font-bold gradient-text">Log In to QTBM BANK</h1>
-                    <p className="text-xs text-[#5E6673] mt-1">Welcome back! Please enter your credentials.</p>
+                    <h1 className="text-xl font-bold gradient-text">{t('auth.loginTitle')}</h1>
+                    <p className="text-xs text-[#5E6673] mt-1">{t('auth.loginSubtitle')}</p>
                   </div>
 
                   {/* Error Display */}
@@ -328,12 +332,12 @@ export default function AuthView() {
                   <form onSubmit={handleLogin} className="space-y-4">
                     {/* Email/Phone Input */}
                     <div className="space-y-1.5">
-                      <Label className="text-xs text-[#848E9C] font-medium">Email or Phone</Label>
+                      <Label className="text-xs text-[#848E9C] font-medium">{t('auth.emailOrPhone')}</Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673]" />
                         <Input
                           type="text"
-                          placeholder="Enter email or phone"
+                          placeholder={t('auth.enterEmailOrPhone')}
                           value={loginEmail}
                           onChange={(e) => setLoginEmail(e.target.value)}
                           className="pl-9 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-11 text-sm input-focus-glow"
@@ -344,12 +348,12 @@ export default function AuthView() {
 
                     {/* Password Input */}
                     <div className="space-y-1.5">
-                      <Label className="text-xs text-[#848E9C] font-medium">Password</Label>
+                      <Label className="text-xs text-[#848E9C] font-medium">{t('auth.password')}</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673]" />
                         <Input
                           type={showLoginPassword ? 'text' : 'password'}
-                          placeholder="Enter your password"
+                          placeholder={t('auth.enterPassword')}
                           value={loginPassword}
                           onChange={(e) => setLoginPassword(e.target.value)}
                           className="pl-9 pr-10 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-11 text-sm input-focus-glow"
@@ -374,10 +378,10 @@ export default function AuthView() {
                           onCheckedChange={(checked) => setRememberMe(checked === true)}
                           className="data-[state=checked]:bg-[#F0B90B] data-[state=checked]:border-[#F0B90B]"
                         />
-                        <Label htmlFor="remember" className="text-xs text-[#848E9C] cursor-pointer">Remember me</Label>
+                        <Label htmlFor="remember" className="text-xs text-[#848E9C] cursor-pointer">{t('auth.rememberMe')}</Label>
                       </div>
                       <button type="button" className="text-xs text-[#F0B90B] hover:text-[#F0B90B]/80 transition-colors">
-                        Forgot Password?
+                        {t('auth.forgotPassword')}
                       </button>
                     </div>
 
@@ -390,12 +394,12 @@ export default function AuthView() {
                       {isLoading ? (
                         <div className="flex items-center gap-2">
                           <div className="w-4 h-4 border-2 border-[#0B0E11] border-t-transparent rounded-full animate-spin" />
-                          Logging in...
+                          {t('auth.loggingIn')}
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
                           <LogIn className="h-4 w-4" />
-                          Log In
+                          {t('auth.login')}
                         </div>
                       )}
                     </Button>
@@ -405,7 +409,7 @@ export default function AuthView() {
                   <div className="mt-6">
                     <div className="flex items-center gap-3 mb-4">
                       <Separator className="flex-1 bg-[#2B3139]" />
-                      <span className="text-[10px] text-[#5E6673] uppercase tracking-wider">Or continue with</span>
+                      <span className="text-[10px] text-[#5E6673] uppercase tracking-wider">{t('auth.orContinueWith')}</span>
                       <Separator className="flex-1 bg-[#2B3139]" />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -463,13 +467,13 @@ export default function AuthView() {
 
                   {/* Switch to Register with Toggle Animation */}
                   <div className="mt-6 text-center toggle-slide-animate">
-                    <span className="text-xs text-[#5E6673]">Don&apos;t have an account? </span>
+                    <span className="text-xs text-[#5E6673]">{t('auth.dontHaveAccount')} </span>
                     <button
                       type="button"
                       onClick={() => { setStep('register'); setError(''); }}
                       className="text-xs text-[#F0B90B] hover:text-[#F0B90B]/80 font-medium transition-colors"
                     >
-                      Sign Up
+                      {t('auth.signUp')}
                     </button>
                   </div>
                 </CardContent>
@@ -498,8 +502,8 @@ export default function AuthView() {
                     >
                       <span className="text-[#0B0E11] font-bold text-2xl">Q</span>
                     </motion.div>
-                    <h1 className="text-xl font-bold gradient-text">Create Account</h1>
-                    <p className="text-xs text-[#5E6673] mt-1">Join QTBM BANK and start trading today</p>
+                    <h1 className="text-xl font-bold gradient-text">{t('auth.registerTitle')}</h1>
+                    <p className="text-xs text-[#5E6673] mt-1">{t('auth.registerSubtitle')}</p>
                   </div>
 
                   {/* Error Display */}
@@ -512,12 +516,12 @@ export default function AuthView() {
                   <form onSubmit={handleRegister} className="space-y-4">
                     {/* Email Input */}
                     <div className="space-y-1.5">
-                      <Label className="text-xs text-[#848E9C] font-medium">Email <span className="text-[#F6465D]">*</span></Label>
+                      <Label className="text-xs text-[#848E9C] font-medium">{t('auth.email')} <span className="text-[#F6465D]">*</span></Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673]" />
                         <Input
                           type="email"
-                          placeholder="Enter your email"
+                          placeholder={t('auth.enterEmail')}
                           value={regEmail}
                           onChange={(e) => setRegEmail(e.target.value)}
                           className="pl-9 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-11 text-sm input-focus-glow"
@@ -528,7 +532,7 @@ export default function AuthView() {
 
                     {/* Phone Input */}
                     <div className="space-y-1.5">
-                      <Label className="text-xs text-[#848E9C] font-medium">Phone Number <span className="text-[#5E6673]">(optional)</span></Label>
+                      <Label className="text-xs text-[#848E9C] font-medium">{t('auth.phoneNumber')} <span className="text-[#5E6673]">{t('auth.optional')}</span></Label>
                       <div className="relative">
                         <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673]" />
                         <Input
@@ -544,12 +548,12 @@ export default function AuthView() {
 
                     {/* Password Input */}
                     <div className="space-y-1.5">
-                      <Label className="text-xs text-[#848E9C] font-medium">Password <span className="text-[#F6465D]">*</span></Label>
+                      <Label className="text-xs text-[#848E9C] font-medium">{t('auth.password')} <span className="text-[#F6465D]">*</span></Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673]" />
                         <Input
                           type={showRegPassword ? 'text' : 'password'}
-                          placeholder="At least 8 characters"
+                          placeholder={t('auth.atLeast8Chars')}
                           value={regPassword}
                           onChange={(e) => setRegPassword(e.target.value)}
                           className="pl-9 pr-10 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-11 text-sm input-focus-glow"
@@ -569,9 +573,9 @@ export default function AuthView() {
                           <div className="h-1.5 bg-[#2B3139] rounded-full overflow-hidden">
                             <div
                               className={`strength-meter ${
-                                passwordStrength.label === 'Weak'
+                                passwordStrength.level === 'weak'
                                   ? 'strength-meter-weak'
-                                  : passwordStrength.label === 'Medium'
+                                  : passwordStrength.level === 'medium'
                                   ? 'strength-meter-medium'
                                   : 'strength-meter-strong'
                               }`}
@@ -580,9 +584,9 @@ export default function AuthView() {
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-[10px]" style={{ color: passwordStrength.color }}>
-                              {passwordStrength.label}
+                              {t(`auth.${passwordStrength.level}`)}
                             </span>
-                            <span className="text-[10px] text-[#5E6673]">{regPassword.length}/8+ chars</span>
+                            <span className="text-[10px] text-[#5E6673]">{regPassword.length}{t('auth.passwordChars')}</span>
                           </div>
                         </div>
                       )}
@@ -590,12 +594,12 @@ export default function AuthView() {
 
                     {/* Confirm Password */}
                     <div className="space-y-1.5">
-                      <Label className="text-xs text-[#848E9C] font-medium">Confirm Password <span className="text-[#F6465D]">*</span></Label>
+                      <Label className="text-xs text-[#848E9C] font-medium">{t('auth.confirmPassword')} <span className="text-[#F6465D]">*</span></Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673]" />
                         <Input
                           type={showRegConfirmPassword ? 'text' : 'password'}
-                          placeholder="Re-enter your password"
+                          placeholder={t('auth.reenterPassword')}
                           value={regConfirmPassword}
                           onChange={(e) => setRegConfirmPassword(e.target.value)}
                           className="pl-9 pr-10 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-11 text-sm input-focus-glow"
@@ -610,18 +614,18 @@ export default function AuthView() {
                         </button>
                       </div>
                       {regConfirmPassword.length > 0 && regPassword !== regConfirmPassword && (
-                        <p className="text-[10px] text-[#F6465D] mt-1">Passwords do not match</p>
+                        <p className="text-[10px] text-[#F6465D] mt-1">{t('auth.passwordsDoNotMatch')}</p>
                       )}
                     </div>
 
                     {/* Referral Code */}
                     <div className="space-y-1.5">
-                      <Label className="text-xs text-[#848E9C] font-medium">Referral Code <span className="text-[#5E6673]">(optional)</span></Label>
+                      <Label className="text-xs text-[#848E9C] font-medium">{t('auth.referralCode')} <span className="text-[#5E6673]">{t('auth.optional')}</span></Label>
                       <div className="relative">
                         <ChevronRight className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673]" />
                         <Input
                           type="text"
-                          placeholder="Enter referral code"
+                          placeholder={t('auth.enterReferralCode')}
                           value={referralCode}
                           onChange={(e) => setReferralCode(e.target.value)}
                           className="pl-9 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-11 text-sm input-focus-glow"
@@ -638,10 +642,10 @@ export default function AuthView() {
                         className="data-[state=checked]:bg-[#F0B90B] data-[state=checked]:border-[#F0B90B] mt-0.5"
                       />
                       <Label htmlFor="terms" className="text-[11px] text-[#848E9C] leading-relaxed cursor-pointer">
-                        I agree to the{' '}
-                        <button type="button" className="text-[#F0B90B] hover:underline">Terms of Service</button>
-                        {' '}and{' '}
-                        <button type="button" className="text-[#F0B90B] hover:underline">Privacy Policy</button>
+                        {t('auth.iAgreeTo')}{' '}
+                        <button type="button" className="text-[#F0B90B] hover:underline">{t('auth.termsOfService')}</button>
+                        {' '}{t('auth.and')}{' '}
+                        <button type="button" className="text-[#F0B90B] hover:underline">{t('auth.privacyPolicy')}</button>
                       </Label>
                     </div>
 
@@ -654,12 +658,12 @@ export default function AuthView() {
                       {isLoading ? (
                         <div className="flex items-center gap-2">
                           <div className="w-4 h-4 border-2 border-[#0B0E11] border-t-transparent rounded-full animate-spin" />
-                          Creating Account...
+                          {t('auth.creatingAccount')}
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
                           <UserPlus className="h-4 w-4" />
-                          Create Account
+                          {t('auth.createAccount')}
                         </div>
                       )}
                     </Button>
@@ -667,13 +671,13 @@ export default function AuthView() {
 
                   {/* Switch to Login with Toggle Animation */}
                   <div className="mt-6 text-center toggle-slide-animate">
-                    <span className="text-xs text-[#5E6673]">Already have an account? </span>
+                    <span className="text-xs text-[#5E6673]">{t('auth.haveAccount')} </span>
                     <button
                       type="button"
                       onClick={() => { setStep('login'); setError(''); }}
                       className="text-xs text-[#F0B90B] hover:text-[#F0B90B]/80 font-medium transition-colors"
                     >
-                      Log In
+                      {t('auth.login')}
                     </button>
                   </div>
                 </CardContent>
@@ -702,8 +706,8 @@ export default function AuthView() {
                     >
                       <Fingerprint className="h-7 w-7 text-[#F0B90B]" />
                     </motion.div>
-                    <h1 className="text-xl font-bold gradient-text">Two-Factor Authentication</h1>
-                    <p className="text-xs text-[#5E6673] mt-1">Enter the 6-digit code from your authenticator app</p>
+                    <h1 className="text-xl font-bold gradient-text">{t('auth.twoFactor')}</h1>
+                    <p className="text-xs text-[#5E6673] mt-1">{t('auth.enterCodeDesc')}</p>
                   </div>
 
                   {/* Error Display */}
@@ -744,12 +748,12 @@ export default function AuthView() {
                       {isLoading ? (
                         <div className="flex items-center gap-2">
                           <div className="w-4 h-4 border-2 border-[#0B0E11] border-t-transparent rounded-full animate-spin" />
-                          Verifying...
+                          {t('auth.verifying')}
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
                           <Shield className="h-4 w-4" />
-                          Verify
+                          {t('auth.verify')}
                         </div>
                       )}
                     </Button>
@@ -758,7 +762,7 @@ export default function AuthView() {
                     <div className="text-center">
                       {resendTimer > 0 ? (
                         <p className="text-xs text-[#5E6673]">
-                          Resend code in <span className="text-[#F0B90B] font-medium">{resendTimer}s</span>
+                          {t('auth.resendCodeIn')} <span className="text-[#F0B90B] font-medium">{resendTimer}{t('auth.seconds')}</span>
                         </p>
                       ) : (
                         <button
@@ -766,7 +770,7 @@ export default function AuthView() {
                           onClick={handleResendCode}
                           className="text-xs text-[#F0B90B] hover:text-[#F0B90B]/80 font-medium transition-colors"
                         >
-                          Resend Code
+                          {t('auth.resendCode')}
                         </button>
                       )}
                     </div>
@@ -778,7 +782,7 @@ export default function AuthView() {
                       className="flex items-center gap-1 text-xs text-[#848E9C] hover:text-[#EAECEF] transition-colors mx-auto"
                     >
                       <ArrowLeft className="h-3 w-3" />
-                      Back to Login
+                      {t('auth.backToLogin')}
                     </button>
                   </form>
                 </CardContent>

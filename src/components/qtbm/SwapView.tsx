@@ -310,7 +310,7 @@ export default function SwapView() {
                   onClick={() => setFromAmount(fromToken.balance.toString())}
                   className="text-[10px] text-[#F0B90B] font-medium hover:underline"
                 >
-                  MAX
+                  {t('trade.max')}
                 </button>
               </div>
             </div>
@@ -484,7 +484,7 @@ export default function SwapView() {
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] text-[#5E6673]">{swap.time}</span>
                     <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[9px] px-1.5 py-0 h-4">
-                      {swap.status}
+                      {t('wallet.completed')}
                     </Badge>
                   </div>
                 </div>

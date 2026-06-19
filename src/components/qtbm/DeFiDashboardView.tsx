@@ -59,6 +59,7 @@ function AnimatedCounter({ target, prefix = '', suffix = '' }: { target: number;
 }
 
 function RiskGauge({ value }: { value: number }) {
+  const { t } = useTranslation();
   const radius = 70;
   const circumference = Math.PI * radius;
   const fillPercent = value / 100;
@@ -92,11 +93,11 @@ function RiskGauge({ value }: { value: number }) {
           {value}
         </text>
         <text x="90" y="88" textAnchor="middle" fill="#5E6673" fontSize="10">
-          /100
+          {t('defiDashboard.riskScoreOf')}
         </text>
       </svg>
       <Badge className={`${value < 35 ? 'bg-[#0ECB81]/10 text-[#0ECB81]' : value < 65 ? 'bg-[#F0B90B]/10 text-[#F0B90B]' : 'bg-[#F6465D]/10 text-[#F6465D]'} border-0 text-xs font-semibold mt-1`}>
-        {value < 35 ? 'Low' : value < 65 ? 'Moderate' : 'High'}
+        {value < 35 ? t('defiDashboard.riskLow') : value < 65 ? t('defiDashboard.riskModerate') : t('defiDashboard.riskHigh')}
       </Badge>
     </div>
   );
@@ -164,7 +165,7 @@ export default function DeFiDashboardView() {
                   +2.3%
                 </span>
               </div>
-              <p className="text-[10px] text-[#5E6673] mt-1">24h change</p>
+              <p className="text-[10px] text-[#5E6673] mt-1">{t('defiDashboard.change24h')}</p>
             </CardContent>
           </Card>
         </motion.div>
@@ -204,7 +205,7 @@ export default function DeFiDashboardView() {
                       <div>
                         <p className="text-sm font-semibold text-[#EAECEF]">{protocol.name}</p>
                         <Badge className="bg-[#2B3139] text-[#848E9C] border-0 text-[9px] px-1.5 py-0 h-4">
-                          {protocol.category.charAt(0).toUpperCase() + protocol.category.slice(1)}
+                          {protocol.category === 'lending' ? t('defiDashboard.lending') : protocol.category === 'dex' ? t('defiDashboard.dex') : protocol.category === 'yield' ? t('defiDashboard.yield') : t('defiDashboard.bridge')}
                         </Badge>
                       </div>
                     </div>

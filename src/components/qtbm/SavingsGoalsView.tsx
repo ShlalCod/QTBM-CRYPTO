@@ -97,21 +97,21 @@ const completedGoals: CompletedGoal[] = [
   },
 ];
 
-const savingsTips: SavingsTip[] = [
+const savingsTipsKeys = [
   {
     id: '1',
-    title: 'Automate your savings',
-    description: 'Set up recurring deposits to reach your goals faster. Even small amounts add up over time.',
+    titleKey: 'savingsGoals.tip1Title',
+    descKey: 'savingsGoals.tip1Desc',
   },
   {
     id: '2',
-    title: 'Use crypto yield products',
-    description: 'Earn passive income on your savings with our Earn products while working toward your goals.',
+    titleKey: 'savingsGoals.tip2Title',
+    descKey: 'savingsGoals.tip2Desc',
   },
   {
     id: '3',
-    title: 'Review and adjust monthly',
-    description: 'Check your progress regularly and adjust contributions to stay on track with your targets.',
+    titleKey: 'savingsGoals.tip3Title',
+    descKey: 'savingsGoals.tip3Desc',
   },
 ];
 
@@ -318,7 +318,7 @@ export default function SavingsGoalsView() {
                           <div className="flex items-center gap-4 mt-2 text-[10px] text-[#5E6673]">
                             <span className="flex items-center gap-1">
                               <DollarSign className="h-3 w-3" />
-                              ~${goal.monthlyEstimate}/mo
+                              ~${goal.monthlyEstimate}{t('savingsGoals.perMonth')}
                             </span>
                             <span className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
@@ -388,7 +388,7 @@ export default function SavingsGoalsView() {
             <h2 className="text-sm font-semibold text-[#EAECEF]">{t('savingsGoals.savingsTips')}</h2>
           </div>
           <div className="space-y-2">
-            {savingsTips.map((tip, index) => (
+            {savingsTipsKeys.map((tip, index) => (
               <motion.div
                 key={tip.id}
                 initial={{ opacity: 0, x: -10 }}
@@ -402,8 +402,8 @@ export default function SavingsGoalsView() {
                         <Lightbulb className="h-4 w-4 text-[#F0B90B]" />
                       </div>
                       <div>
-                        <h4 className="text-xs font-semibold text-[#EAECEF]">{tip.title}</h4>
-                        <p className="text-[10px] text-[#5E6673] mt-0.5 leading-relaxed">{tip.description}</p>
+                        <h4 className="text-xs font-semibold text-[#EAECEF]">{t(tip.titleKey)}</h4>
+                        <p className="text-[10px] text-[#5E6673] mt-0.5 leading-relaxed">{t(tip.descKey)}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -445,7 +445,7 @@ export default function SavingsGoalsView() {
                 <div>
                   <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1.5 block">{t('savingsGoals.goalName')}</label>
                   <Input
-                    placeholder="e.g. New Car"
+                    placeholder={t('savingsGoals.goalNamePlaceholder')}
                     value={goalName}
                     onChange={(e) => setGoalName(e.target.value)}
                     className="bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] focus:border-[#F0B90B]"

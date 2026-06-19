@@ -239,7 +239,7 @@ export default function PriceAlertsView() {
               onClick={() => setActiveTab(tab)}
             >
               <span className={activeTab === tab ? 'text-[#F0B90B]' : 'text-[#848E9C] hover:text-[#EAECEF]'}>
-                {tab === 'active' ? t('priceAlerts.activeAlerts') : tab === 'triggered' ? t('priceAlerts.triggeredHistory') : 'Expired'}
+                {tab === 'active' ? t('priceAlerts.activeAlerts') : tab === 'triggered' ? t('priceAlerts.triggeredHistory') : t('priceAlerts.expired')}
               </span>
               {activeTab === tab && (
                 <motion.div

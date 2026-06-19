@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
 import { mockMarketPairs, formatPrice, formatNumber } from '@/lib/mock-data';
 import {
   ArrowLeft,
@@ -48,6 +49,7 @@ const mockFuturesOrders = [
 
 export default function FuturesView() {
   const { goBack, livePrices, priceDirection } = useAppStore();
+  const { t } = useTranslation();
 
   const [selectedContract, setSelectedContract] = useState(perpContracts[0]);
   const [leverage, setLeverage] = useState(20);
@@ -99,14 +101,14 @@ export default function FuturesView() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-2">
-            <h1 className="text-base font-bold text-[#EAECEF]">Futures Trading</h1>
+            <h1 className="text-base font-bold text-[#EAECEF]">{t('trade.futuresTrading')}</h1>
             <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-0 text-[9px] px-1.5 py-0 h-4 font-semibold">
               PERP
             </Badge>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-[#5E6673]">Unrealized PnL</span>
+          <span className="text-[10px] text-[#5E6673]">{t('trade.unrealizedPnl')}</span>
           <span className={`text-sm font-bold tabular-nums ${totalUnrealizedPnl >= 0 ? 'text-[#0ECB81] pnl-glow-profit' : 'text-[#F6465D] pnl-glow-loss'}`}>
             {totalUnrealizedPnl >= 0 ? '+' : ''}{formatPrice(totalUnrealizedPnl)} USDT
           </span>
@@ -167,15 +169,15 @@ export default function FuturesView() {
               {/* Price Stats */}
               <div className="flex flex-wrap gap-4 text-[11px]">
                 <div>
-                  <span className="text-[#5E6673]">Mark </span>
+                  <span className="text-[#5E6673]">{t('trade.mark')} </span>
                   <span className="text-[#EAECEF] tabular-nums">{formatPrice(selectedContract.markPrice)}</span>
                 </div>
                 <div>
-                  <span className="text-[#5E6673]">Index </span>
+                  <span className="text-[#5E6673]">{t('trade.index')} </span>
                   <span className="text-[#EAECEF] tabular-nums">{formatPrice(selectedContract.indexPrice)}</span>
                 </div>
                 <div>
-                  <span className="text-[#5E6673]">Funding </span>
+                  <span className="text-[#5E6673]">{t('trade.funding')} </span>
                   <span className={`tabular-nums ${selectedContract.fundingRate >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
                     {selectedContract.fundingRate >= 0 ? '+' : ''}{selectedContract.fundingRate.toFixed(4)}%
                   </span>
@@ -183,7 +185,7 @@ export default function FuturesView() {
                 <div className="flex items-center gap-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#F0B90B] funding-dot-pulse" />
                   <Clock className="h-3 w-3 text-[#5E6673]" />
-                  <span className="text-[#5E6673]">Next </span>
+                  <span className="text-[#5E6673]">{t('trade.next')} </span>
                   <span className="text-[#F0B90B] tabular-nums font-medium">{formatCountdown(countdown)}</span>
                 </div>
               </div>
@@ -193,7 +195,7 @@ export default function FuturesView() {
           {/* Leverage + Position Mode */}
           <div className="bg-[#1E2329] rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-[#848E9C] font-medium">Leverage</span>
+              <span className="text-xs text-[#848E9C] font-medium">{t('trade.leverage')}</span>
               <div className="flex items-center gap-1.5">
                 <span className="text-xl font-bold text-[#F0B90B] tabular-nums">{leverage}x</span>
                 {/* Leverage gauge arc */}
@@ -248,7 +250,7 @@ export default function FuturesView() {
 
             {/* Position Mode Toggle */}
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-[#5E6673] mr-1">Position Mode:</span>
+              <span className="text-[10px] text-[#5E6673] mr-1">{t('trade.positionMode')}:</span>
               {(['cross', 'isolated'] as PositionMode[]).map((mode) => (
                 <button
                   key={mode}
@@ -259,7 +261,7 @@ export default function FuturesView() {
                       : 'bg-[#2B3139] text-[#5E6673] hover:text-[#848E9C] border border-transparent'
                   }`}
                 >
-                  {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                  {mode === 'cross' ? t('trade.cross') : t('trade.isolated')}
                 </button>
               ))}
             </div>
@@ -291,8 +293,8 @@ export default function FuturesView() {
                   <path d="M0,150 Q50,120 100,100 T200,80 T300,60 T400,40 L400,200 L0,200 Z" fill="url(#chartGrad)" />
                 </svg>
                 <div className="relative z-10 text-center">
-                  <p className="text-sm text-[#848E9C] font-medium">Futures Chart</p>
-                  <p className="text-[10px] text-[#5E6673] mt-1">{selectedContract.symbol} PERP · {leverage}x Leverage</p>
+                  <p className="text-sm text-[#848E9C] font-medium">{t('trade.futuresChart')}</p>
+                  <p className="text-[10px] text-[#5E6673] mt-1">{selectedContract.symbol} PERP · {leverage}x {t('trade.leverage')}</p>
                 </div>
               </div>
             </div>
@@ -310,7 +312,7 @@ export default function FuturesView() {
                   }`}
                 >
                   <TrendingUp className="h-4 w-4 inline mr-1" />
-                  Long
+                  {t('trade.long')}
                 </button>
                 <button
                   onClick={() => setSide('short')}
@@ -321,7 +323,7 @@ export default function FuturesView() {
                   }`}
                 >
                   <TrendingDown className="h-4 w-4 inline mr-1" />
-                  Short
+                  {t('trade.short')}
                 </button>
               </div>
 
@@ -337,7 +339,7 @@ export default function FuturesView() {
                         : 'text-[#5E6673] hover:text-[#848E9C]'
                     }`}
                   >
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                    {type === 'limit' ? t('trade.limit') : type === 'market' ? t('trade.market') : t('trade.stop')}
                   </button>
                 ))}
               </div>
@@ -346,7 +348,7 @@ export default function FuturesView() {
               {orderType !== 'market' && (
                 <div className="mb-2">
                   <label className="text-[10px] text-[#5E6673]">
-                    {orderType === 'stop' ? 'Trigger Price' : 'Price'}
+                    {orderType === 'stop' ? t('trade.triggerPrice') : t('trade.price')}
                   </label>
                   <div className="flex items-center bg-[#2B3139] rounded h-9 px-2 mt-0.5">
                     <button onClick={() => setPrice(formatPrice(Math.max(0, priceNum - (livePrice * 0.001))))} className="text-[#5E6673] hover:text-[#EAECEF] shrink-0">
@@ -369,7 +371,7 @@ export default function FuturesView() {
 
               {/* Amount Input */}
               <div className="mb-2">
-                <label className="text-[10px] text-[#5E6673]">Amount (Contracts)</label>
+                <label className="text-[10px] text-[#5E6673]">{t('trade.amountContracts')}</label>
                 <div className="flex items-center bg-[#2B3139] rounded h-9 px-2 mt-0.5">
                   <Input
                     type="number"
@@ -386,27 +388,27 @@ export default function FuturesView() {
               {amountNum > 0 && (
                 <div className="bg-[#0B0E11] rounded p-2.5 space-y-1.5 mb-2">
                   <div className="flex justify-between text-[10px]">
-                    <span className="text-[#5E6673]">Cost</span>
+                    <span className="text-[#5E6673]">{t('trade.cost')}</span>
                     <span className="text-[#EAECEF] tabular-nums">{formatPrice(cost)} USDT</span>
                   </div>
                   <div className="flex justify-between text-[10px]">
-                    <span className="text-[#5E6673]">Margin ({positionMode})</span>
+                    <span className="text-[#5E6673]">{t('trade.position')} ({positionMode === 'cross' ? t('trade.cross') : t('trade.isolated')})</span>
                     <span className="text-[#F0B90B] tabular-nums font-medium">{formatPrice(marginRequirement)} USDT</span>
                   </div>
                   <div className="flex justify-between text-[10px]">
-                    <span className="text-[#5E6673]">Est. Liquidation</span>
+                    <span className="text-[#5E6673]">{t('trade.estLiquidation')}</span>
                     <span className="text-[#F6465D] tabular-nums">{formatPrice(liquidationPrice)} USDT</span>
                   </div>
                   <div className="flex items-center gap-1 text-[9px] text-[#F6465D]/80 pt-1 border-t border-[#2B3139]">
                     <AlertTriangle className="h-3 w-3" />
-                    <span>Liquidation at ~{formatPrice(liquidationPrice)} with {leverage}x leverage</span>
+                    <span>{t('trade.liqAtPrice').replace('{price}', formatPrice(liquidationPrice)).replace('{leverage}', String(leverage))}</span>
                   </div>
                 </div>
               )}
 
               {/* Available Balance */}
               <div className="flex justify-between text-[10px] mb-3">
-                <span className="text-[#5E6673]">Available Balance</span>
+                <span className="text-[#5E6673]">{t('trade.availableBalance')}</span>
                 <span className="text-[#848E9C] tabular-nums">22,150.30 USDT</span>
               </div>
 
@@ -419,9 +421,9 @@ export default function FuturesView() {
                 }`}
               >
                 {side === 'long' ? (
-                  <><TrendingUp className="h-4 w-4 mr-1.5" />Long {selectedContract.base}</>
+                  <><TrendingUp className="h-4 w-4 mr-1.5" />{t('trade.long')} {selectedContract.base}</>
                 ) : (
-                  <><TrendingDown className="h-4 w-4 mr-1.5" />Short {selectedContract.base}</>
+                  <><TrendingDown className="h-4 w-4 mr-1.5" />{t('trade.short')} {selectedContract.base}</>
                 )}
               </Button>
             </div>
@@ -431,10 +433,10 @@ export default function FuturesView() {
           <div className="bg-[#1E2329] rounded-lg">
             <div className="flex items-center justify-between px-3 py-2.5 border-b border-[#2B3139]">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-[#848E9C]">Positions</span>
+                <span className="text-xs font-semibold text-[#848E9C]">{t('trade.positions')}</span>
                 <Badge className="bg-[#2B3139] text-[#848E9C] border-0 text-[9px] px-1.5 py-0 h-4">{mockFuturesPositions.length}</Badge>
               </div>
-              <span className="text-[10px] text-[#5E6673]">Total Margin: {formatPrice(mockFuturesPositions.reduce((s, p) => s + p.margin, 0))} USDT</span>
+              <span className="text-[10px] text-[#5E6673]">{t('trade.totalMargin')}: {formatPrice(mockFuturesPositions.reduce((s, p) => s + p.margin, 0))} USDT</span>
             </div>
 
             {/* Desktop Table */}
@@ -442,16 +444,16 @@ export default function FuturesView() {
               <table className="w-full text-[11px]">
                 <thead>
                   <tr className="text-[#5E6673] border-b border-[#2B3139]/50">
-                    <th className="text-left py-2 px-3 font-medium">Symbol</th>
-                    <th className="text-left py-2 px-3 font-medium">Side</th>
-                    <th className="text-right py-2 px-3 font-medium">Size</th>
-                    <th className="text-right py-2 px-3 font-medium">Entry</th>
-                    <th className="text-right py-2 px-3 font-medium">Mark</th>
-                    <th className="text-right py-2 px-3 font-medium">Liq. Price</th>
-                    <th className="text-right py-2 px-3 font-medium">Margin</th>
-                    <th className="text-right py-2 px-3 font-medium">PnL</th>
-                    <th className="text-right py-2 px-3 font-medium">ROE%</th>
-                    <th className="text-center py-2 px-3 font-medium">Action</th>
+                    <th className="text-left py-2 px-3 font-medium">{t('trade.symbol')}</th>
+                    <th className="text-left py-2 px-3 font-medium">{t('trade.side')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.size')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.entry')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.mark')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.liqPrice')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.position')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.pnl')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.roe')}%</th>
+                    <th className="text-center py-2 px-3 font-medium">{t('trade.action')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -467,7 +469,7 @@ export default function FuturesView() {
                         </td>
                         <td className="py-2.5 px-3">
                           <span className={`font-semibold ${pos.side === 'long' ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
-                            {pos.side === 'long' ? 'Long' : 'Short'}
+                            {pos.side === 'long' ? t('trade.long') : t('trade.short')}
                           </span>
                         </td>
                         <td className="py-2.5 px-3 text-right text-[#EAECEF] tabular-nums">{pos.size}</td>
@@ -483,7 +485,7 @@ export default function FuturesView() {
                         </td>
                         <td className="py-2.5 px-3 text-center">
                           <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-[#F6465D] hover:text-[#F6465D] hover:bg-[#F6465D]/10">
-                            Close
+                            {t('trade.close')}
                           </Button>
                         </td>
                       </tr>
@@ -503,38 +505,38 @@ export default function FuturesView() {
                       <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
                         pos.side === 'long' ? 'bg-[#0ECB81]/10 text-[#0ECB81]' : 'bg-[#F6465D]/10 text-[#F6465D]'
                       }`}>
-                        {pos.side === 'long' ? 'Long' : 'Short'} {pos.leverage}x
+                        {pos.side === 'long' ? t('trade.long') : t('trade.short')} {pos.leverage}x
                       </span>
                     </div>
                     <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-[#F6465D] hover:text-[#F6465D] hover:bg-[#F6465D]/10">
-                      Close
+                      {t('trade.close')}
                     </Button>
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-[10px]">
                     <div>
-                      <span className="text-[#5E6673]">Size</span>
+                      <span className="text-[#5E6673]">{t('trade.size')}</span>
                       <p className="text-[#EAECEF] tabular-nums">{pos.size}</p>
                     </div>
                     <div>
-                      <span className="text-[#5E6673]">Entry</span>
+                      <span className="text-[#5E6673]">{t('trade.entry')}</span>
                       <p className="text-[#848E9C] tabular-nums">{formatPrice(pos.entryPrice)}</p>
                     </div>
                     <div>
-                      <span className="text-[#5E6673]">Mark</span>
+                      <span className="text-[#5E6673]">{t('trade.mark')}</span>
                       <p className="text-[#EAECEF] tabular-nums">{formatPrice(livePrices[pos.symbol] || pos.markPrice)}</p>
                     </div>
                     <div>
-                      <span className="text-[#5E6673]">Liq. Price</span>
+                      <span className="text-[#5E6673]">{t('trade.liqPrice')}</span>
                       <p className="text-[#F6465D]/80 tabular-nums">{formatPrice(pos.liqPrice)}</p>
                     </div>
                     <div>
-                      <span className="text-[#5E6673]">PnL</span>
+                      <span className="text-[#5E6673]">{t('trade.pnl')}</span>
                       <p className={`font-medium tabular-nums ${pos.pnl >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
                         {pos.pnl >= 0 ? '+' : ''}{formatPrice(pos.pnl)}
                       </p>
                     </div>
                     <div>
-                      <span className="text-[#5E6673]">ROE%</span>
+                      <span className="text-[#5E6673]">{t('trade.roe')}%</span>
                       <p className={`font-medium tabular-nums ${pos.roe >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
                         {pos.roe >= 0 ? '+' : ''}{pos.roe.toFixed(2)}%
                       </p>
@@ -548,19 +550,19 @@ export default function FuturesView() {
           {/* Order History */}
           <div className="bg-[#1E2329] rounded-lg">
             <div className="px-3 py-2.5 border-b border-[#2B3139]">
-              <span className="text-xs font-semibold text-[#848E9C]">Order History</span>
+              <span className="text-xs font-semibold text-[#848E9C]">{t('trade.orderHistory')}</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-[11px]">
                 <thead>
                   <tr className="text-[#5E6673] border-b border-[#2B3139]/50">
-                    <th className="text-left py-2 px-3 font-medium">Symbol</th>
-                    <th className="text-left py-2 px-3 font-medium">Side</th>
-                    <th className="text-left py-2 px-3 font-medium">Type</th>
-                    <th className="text-right py-2 px-3 font-medium">Price</th>
-                    <th className="text-right py-2 px-3 font-medium">Amount</th>
-                    <th className="text-center py-2 px-3 font-medium">Status</th>
-                    <th className="text-right py-2 px-3 font-medium">Time</th>
+                    <th className="text-left py-2 px-3 font-medium">{t('trade.symbol')}</th>
+                    <th className="text-left py-2 px-3 font-medium">{t('trade.side')}</th>
+                    <th className="text-left py-2 px-3 font-medium">{t('trade.type')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.price')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.amount')}</th>
+                    <th className="text-center py-2 px-3 font-medium">{t('trade.status')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.time')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -569,10 +571,10 @@ export default function FuturesView() {
                       <td className="py-2 px-3 text-[#EAECEF] font-medium">{order.symbol}</td>
                       <td className="py-2 px-3">
                         <span className={`font-medium ${order.side === 'long' ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
-                          {order.side === 'long' ? 'Long' : 'Short'}
+                          {order.side === 'long' ? t('trade.long') : t('trade.short')}
                         </span>
                       </td>
-                      <td className="py-2 px-3 text-[#848E9C] capitalize">{order.type}</td>
+                      <td className="py-2 px-3 text-[#848E9C] capitalize">{order.type === 'limit' ? t('trade.limit') : order.type === 'market' ? t('trade.market') : t('trade.stop')}</td>
                       <td className="py-2 px-3 text-right text-[#EAECEF] tabular-nums">{formatPrice(order.price)}</td>
                       <td className="py-2 px-3 text-right text-[#848E9C] tabular-nums">{order.amount}</td>
                       <td className="py-2 px-3 text-center">
@@ -581,7 +583,7 @@ export default function FuturesView() {
                           order.status === 'filled' ? 'bg-[#0ECB81]/10 text-[#0ECB81]' :
                           'bg-[#F6465D]/10 text-[#F6465D]'
                         }`}>
-                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                          {order.status === 'pending' ? t('wallet.pending') : order.status === 'filled' ? t('trade.filled') : t('trade.cancel')}
                         </Badge>
                       </td>
                       <td className="py-2 px-3 text-right text-[#5E6673]">{order.time}</td>
@@ -596,10 +598,9 @@ export default function FuturesView() {
           <div className="bg-[#F6465D]/5 border border-[#F6465D]/20 rounded-lg p-3 flex items-start gap-2">
             <AlertTriangle className="h-4 w-4 text-[#F6465D] shrink-0 mt-0.5" />
             <div>
-              <p className="text-[11px] text-[#F6465D] font-medium">Futures Trading Risk Warning</p>
+              <p className="text-[11px] text-[#F6465D] font-medium">{t('trade.futuresRiskTitle')}</p>
               <p className="text-[10px] text-[#848E9C] mt-0.5">
-                Futures trading involves high leverage and significant risk of loss. You may lose all of your invested capital. 
-                Please ensure you fully understand the risks involved before trading.
+                {t('trade.futuresRiskDesc')}
               </p>
             </div>
           </div>

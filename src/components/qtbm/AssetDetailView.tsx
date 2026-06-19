@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
 import { mockAssets, mockWalletBalances, formatPrice, formatNumber } from '@/lib/mock-data';
 import {
   ArrowLeft,
@@ -91,6 +92,7 @@ const assetDescriptions: Record<string, string> = {
 
 export default function AssetDetailView() {
   const { goBack, selectedAsset, navigateTo } = useAppStore();
+  const { t } = useTranslation();
   
   const asset = mockAssets.find(a => a.symbol === selectedAsset) || mockAssets[0];
   const balance = mockWalletBalances.find(b => b.asset === asset.symbol);
@@ -112,12 +114,12 @@ export default function AssetDetailView() {
   const isPositive = asset.changePercent24h >= 0;
 
   const statsItems = [
-    { label: 'Market Cap', value: '$' + formatNumber(asset.marketCap), icon: Globe },
-    { label: '24h Volume', value: '$' + formatNumber(asset.volume24h), icon: BarChart3 },
-    { label: '24h High', value: '$' + formatPrice(asset.high24h), icon: TrendingUp },
-    { label: '24h Low', value: '$' + formatPrice(asset.low24h), icon: TrendingDown },
-    { label: 'Circulating Supply', value: formatNumber(asset.marketCap / asset.price), icon: CircleDot },
-    { label: 'Max Supply', value: asset.symbol === 'BTC' ? '21,000,000' : asset.symbol === 'ETH' ? '∞' : 'N/A', icon: Coins },
+    { label: t('assetDetail.marketCap'), value: '$' + formatNumber(asset.marketCap), icon: Globe },
+    { label: t('assetDetail.volume24h'), value: '$' + formatNumber(asset.volume24h), icon: BarChart3 },
+    { label: t('assetDetail.high24h'), value: '$' + formatPrice(asset.high24h), icon: TrendingUp },
+    { label: t('assetDetail.low24h'), value: '$' + formatPrice(asset.low24h), icon: TrendingDown },
+    { label: t('assetDetail.circulatingSupply'), value: formatNumber(asset.marketCap / asset.price), icon: CircleDot },
+    { label: t('assetDetail.maxSupply'), value: asset.symbol === 'BTC' ? '21,000,000' : asset.symbol === 'ETH' ? '∞' : t('assetDetail.notAvailable'), icon: Coins },
   ];
 
   return (
@@ -165,11 +167,11 @@ export default function AssetDetailView() {
                     )}
                     {isPositive ? '+' : ''}{asset.changePercent24h.toFixed(2)}%
                   </Badge>
-                  <span className="text-xs text-[#5E6673]">24h</span>
+                  <span className="text-xs text-[#5E6673]">{t('assetDetail.h24')}</span>
                 </div>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-[#5E6673]">24h Change</span>
+                <span className="text-[10px] text-[#5E6673]">{t('assetDetail.change24h')}</span>
                 <span className={`text-sm font-semibold tabular-nums ${isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
                   {isPositive ? '+' : ''}{formatPrice(Math.abs(asset.change24h))}
                 </span>
@@ -184,7 +186,7 @@ export default function AssetDetailView() {
         {/* Stats Grid */}
         <Card className="bg-[#1E2329] border-[#2B3139]">
           <CardContent className="p-4">
-            <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">Market Statistics</h3>
+            <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">{t('assetDetail.marketStatistics')}</h3>
             <div className="grid grid-cols-2 gap-3">
               {statsItems.map((item) => {
                 const Icon = item.icon;
@@ -206,10 +208,10 @@ export default function AssetDetailView() {
         {balance && (
           <Card className="bg-[#1E2329] border-[#2B3139]">
             <CardContent className="p-4">
-              <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">Your {asset.symbol} Balance</h3>
+              <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">{t('assetDetail.your')} {asset.symbol} {t('assetDetail.balance')}</h3>
               <div className="grid grid-cols-3 gap-3">
                 <div className="bg-[#2B3139] rounded-lg p-3">
-                  <span className="text-[10px] text-[#5E6673] block">Total</span>
+                  <span className="text-[10px] text-[#5E6673] block">{t('assetDetail.total')}</span>
                   <p className="text-sm font-semibold text-[#EAECEF] tabular-nums mt-0.5">
                     {balance.total.toLocaleString('en-US', { maximumFractionDigits: 4 })}
                   </p>
@@ -218,13 +220,13 @@ export default function AssetDetailView() {
                   </p>
                 </div>
                 <div className="bg-[#2B3139] rounded-lg p-3">
-                  <span className="text-[10px] text-[#5E6673] block">Available</span>
+                  <span className="text-[10px] text-[#5E6673] block">{t('assetDetail.available')}</span>
                   <p className="text-sm font-semibold text-[#0ECB81] tabular-nums mt-0.5">
                     {balance.available.toLocaleString('en-US', { maximumFractionDigits: 4 })}
                   </p>
                 </div>
                 <div className="bg-[#2B3139] rounded-lg p-3">
-                  <span className="text-[10px] text-[#5E6673] block">In Orders</span>
+                  <span className="text-[10px] text-[#5E6673] block">{t('assetDetail.inOrders')}</span>
                   <p className="text-sm font-semibold text-[#F0B90B] tabular-nums mt-0.5">
                     {balance.locked.toLocaleString('en-US', { maximumFractionDigits: 4 })}
                   </p>
@@ -239,22 +241,22 @@ export default function AssetDetailView() {
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <Info className="h-4 w-4 text-[#F0B90B]" />
-              <h3 className="text-sm font-semibold text-[#EAECEF]">About {asset.name}</h3>
+              <h3 className="text-sm font-semibold text-[#EAECEF]">{t('assetDetail.about')} {asset.name}</h3>
             </div>
             <p className="text-xs text-[#848E9C] leading-relaxed">
-              {assetDescriptions[asset.symbol] || `${asset.name} is a digital asset traded on QTBM BANK. It represents a blockchain-based cryptocurrency with a market cap of $${formatNumber(asset.marketCap)} and 24-hour trading volume of $${formatNumber(asset.volume24h)}.`}
+              {assetDescriptions[asset.symbol] || `${asset.name} ${t('assetDetail.genericAbout')} $${formatNumber(asset.marketCap)} ${t('assetDetail.andVolume')} $${formatNumber(asset.volume24h)}.`}
             </p>
             
             <div className="mt-3 flex flex-wrap gap-2">
               <Badge variant="outline" className="text-[10px] h-5 border-[#2B3139] text-[#848E9C]">
-                #{mockAssets.indexOf(asset) + 1} by Market Cap
+                #{mockAssets.indexOf(asset) + 1} {t('assetDetail.rankByMarketCap')}
               </Badge>
               <Badge variant="outline" className="text-[10px] h-5 border-[#2B3139] text-[#848E9C]">
                 {asset.symbol}/USDT
               </Badge>
               {balance && (
                 <Badge variant="outline" className="text-[10px] h-5 border-[#0ECB81]/30 text-[#0ECB81]">
-                  In Portfolio
+                  {t('assetDetail.inPortfolio')}
                 </Badge>
               )}
             </div>
@@ -271,7 +273,7 @@ export default function AssetDetailView() {
             className="bg-[#0ECB81] hover:bg-[#0ECB81]/90 text-[#0B0E11] font-semibold h-11"
           >
             <ShoppingCart className="h-4 w-4 mr-1.5" />
-            Trade
+            {t('assetDetail.trade')}
           </Button>
           <Button
             onClick={() => {
@@ -281,7 +283,7 @@ export default function AssetDetailView() {
             className="bg-[#2B3139] hover:bg-[#363C45] text-[#EAECEF] font-semibold h-11 border border-[#2B3139]"
           >
             <ArrowDownRight className="h-4 w-4 mr-1.5" />
-            Deposit
+            {t('actions.deposit')}
           </Button>
           <Button
             onClick={() => {
@@ -291,7 +293,7 @@ export default function AssetDetailView() {
             className="bg-[#2B3139] hover:bg-[#363C45] text-[#EAECEF] font-semibold h-11 border border-[#2B3139]"
           >
             <ArrowUpRight className="h-4 w-4 mr-1.5" />
-            Withdraw
+            {t('actions.withdraw')}
           </Button>
         </div>
 

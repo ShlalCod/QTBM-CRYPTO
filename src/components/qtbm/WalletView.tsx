@@ -37,22 +37,23 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from '@/lib/i18n';
 
 type WalletTab = 'spot' | 'funding' | 'earn' | 'futures';
 
-const walletTabs: { id: WalletTab; label: string; color: string; icon: React.ElementType }[] = [
-  { id: 'spot', label: 'Spot', color: 'text-[#2B7DE9]', icon: Wallet },
-  { id: 'funding', label: 'Funding', color: 'text-[#0ECB81]', icon: Landmark },
-  { id: 'earn', label: 'Earn', color: 'text-[#F0B90B]', icon: PiggyBank },
-  { id: 'futures', label: 'Futures', color: 'text-[#F6465D]', icon: Flame },
+const walletTabs: { id: WalletTab; color: string; icon: React.ElementType }[] = [
+  { id: 'spot', color: 'text-[#2B7DE9]', icon: Wallet },
+  { id: 'funding', color: 'text-[#0ECB81]', icon: Landmark },
+  { id: 'earn', color: 'text-[#F0B90B]', icon: PiggyBank },
+  { id: 'futures', color: 'text-[#F6465D]', icon: Flame },
 ];
 
-const statusConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
-  confirmed: { icon: CheckCircle2, color: 'text-[#0ECB81]', label: 'Confirmed' },
-  completed: { icon: CheckCircle2, color: 'text-[#0ECB81]', label: 'Completed' },
-  processing: { icon: Loader2, color: 'text-[#F0B90B]', label: 'Processing' },
-  pending: { icon: Clock, color: 'text-[#848E9C]', label: 'Pending' },
-  failed: { icon: XCircle, color: 'text-[#F6465D]', label: 'Failed' },
+const statusConfig: Record<string, { icon: React.ElementType; color: string }> = {
+  confirmed: { icon: CheckCircle2, color: 'text-[#0ECB81]' },
+  completed: { icon: CheckCircle2, color: 'text-[#0ECB81]' },
+  processing: { icon: Loader2, color: 'text-[#F0B90B]' },
+  pending: { icon: Clock, color: 'text-[#848E9C]' },
+  failed: { icon: XCircle, color: 'text-[#F6465D]' },
 };
 
 const typeConfig: Record<string, { icon: React.ElementType; color: string; bgColor: string }> = {
@@ -89,13 +90,14 @@ function AnimatedCounter({ value, duration = 1200 }: { value: number; duration?:
 
 // ── Transaction Flow Visualization ────────────────────────────────────────────
 function TransactionFlow() {
+  const { t } = useTranslation();
   const pendingDeposits = 3;
   const pendingWithdrawals = 1;
   const pendingWallet = 5;
 
   return (
     <div className="bg-[#1E2329] rounded-xl p-4 border border-[#2B3139]">
-      <h4 className="text-xs font-semibold text-[#848E9C] mb-3">Transaction Flow</h4>
+      <h4 className="text-xs font-semibold text-[#848E9C] mb-3">{t('wallet.transactionFlow')}</h4>
       <div className="flex items-center justify-between relative">
         {/* Deposit Node */}
         <div className="flex flex-col items-center z-10">
@@ -105,7 +107,7 @@ function TransactionFlow() {
               {pendingDeposits}
             </span>
           </div>
-          <span className="text-[10px] text-[#848E9C] mt-1.5 font-medium">Deposit</span>
+          <span className="text-[10px] text-[#848E9C] mt-1.5 font-medium">{t('wallet.deposit')}</span>
         </div>
 
         {/* Flow line 1: Deposit → Wallet */}
@@ -123,7 +125,7 @@ function TransactionFlow() {
               {pendingWallet}
             </span>
           </div>
-          <span className="text-[10px] text-[#F0B90B] mt-1.5 font-semibold">Wallet</span>
+          <span className="text-[10px] text-[#F0B90B] mt-1.5 font-semibold">{t('wallet.title')}</span>
         </div>
 
         {/* Flow line 2: Wallet → Withdraw */}
@@ -140,7 +142,7 @@ function TransactionFlow() {
               {pendingWithdrawals}
             </span>
           </div>
-          <span className="text-[10px] text-[#848E9C] mt-1.5 font-medium">Withdraw</span>
+          <span className="text-[10px] text-[#848E9C] mt-1.5 font-medium">{t('wallet.withdraw')}</span>
         </div>
       </div>
     </div>
@@ -149,6 +151,7 @@ function TransactionFlow() {
 
 // ── Portfolio Performance 7-Day Area Chart ────────────────────────────────────
 function PortfolioPerformanceChart() {
+  const { t } = useTranslation();
   const data = useMemo(() => {
     // Simulated 7-day portfolio values
     const values = [42150, 42800, 41950, 43500, 43100, 44200, 44850];
@@ -179,7 +182,7 @@ function PortfolioPerformanceChart() {
   return (
     <div className="bg-[#1E2329] rounded-xl p-4 border border-[#2B3139]">
       <div className="flex items-center justify-between mb-2">
-        <h4 className="text-xs font-semibold text-[#848E9C]">Portfolio Performance</h4>
+        <h4 className="text-xs font-semibold text-[#848E9C]">{t('wallet.portfolioPerformance')}</h4>
         <div className="flex items-center gap-1">
           {isPositive ? (
             <TrendingUp className="h-3 w-3 text-[#0ECB81]" />
@@ -255,6 +258,7 @@ type AllocSegment = {
 
 // Allocation ring/donut chart
 function AllocationRing({ allocations }: { allocations: { label: string; value: number; color: string }[] }) {
+  const { t } = useTranslation();
   const total = allocations.reduce((s, a) => s + a.value, 0) || 1;
   const radius = 40;
   const circumference = 2 * Math.PI * radius;
@@ -290,13 +294,14 @@ function AllocationRing({ allocations }: { allocations: { label: string; value: 
         ))}
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-[10px] text-[#848E9C] font-medium">Portfolio</span>
+        <span className="text-[10px] text-[#848E9C] font-medium">{t('wallet.portfolio')}</span>
       </div>
     </div>
   );
 }
 
 export default function WalletView() {
+  const { t } = useTranslation();
   const { navigateTo } = useAppStore();
   const [showBalance, setShowBalance] = useState(true);
   const [activeTab, setActiveTab] = useState<WalletTab>('spot');
@@ -333,10 +338,10 @@ export default function WalletView() {
           <CardContent className="p-5 relative z-10">
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-[#848E9C] floating-label">Estimated Balance</span>
+                <span className="text-xs text-[#848E9C] floating-label">{t('wallet.estimatedBalance')}</span>
                 <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded ${activeTabConfig.color} bg-current/10`}>
                   <TabIcon className={`h-2.5 w-2.5 ${activeTabConfig.color}`} />
-                  <span className={`text-[9px] font-medium ${activeTabConfig.color}`}>{activeTabConfig.label}</span>
+                  <span className={`text-[9px] font-medium ${activeTabConfig.color}`}>{t('wallet.' + activeTabConfig.id)}</span>
                 </div>
               </div>
               <button
@@ -374,9 +379,9 @@ export default function WalletView() {
                   </span>
                 </>
               ) : (
-                <span className="text-xs text-[#5E6673]">24h PnL: ****</span>
+                <span className="text-xs text-[#5E6673]">{t('wallet.pnl24h')}: ****</span>
               )}
-              <span className="text-[10px] text-[#5E6673] ml-1">24h PnL</span>
+              <span className="text-[10px] text-[#5E6673] ml-1">{t('wallet.pnl24h')}</span>
             </div>
             {/* Allocation ring chart */}
             <div className="flex items-center gap-4 mt-3">
@@ -418,7 +423,7 @@ export default function WalletView() {
                 }`}
               >
                 <Icon className="h-3.5 w-3.5" />
-                {tab.label}
+                {t('wallet.' + tab.id)}
               </button>
             );
           })}
@@ -427,22 +432,22 @@ export default function WalletView() {
         {/* Quick Actions */}
         <div className="grid grid-cols-4 gap-3">
           {[
-            { icon: ArrowDownRight, label: 'Deposit', view: 'deposit' as const, color: 'text-[#0ECB81]' },
-            { icon: ArrowUpRight, label: 'Withdraw', view: 'withdraw' as const, color: 'text-[#F6465D]' },
-            { icon: ArrowLeftRight, label: 'Transfer', view: 'transfer' as const, color: 'text-[#F0B90B]' },
-            { icon: CreditCard, label: 'Buy Crypto', view: 'trade' as const, color: 'text-[#848E9C]' },
+            { icon: ArrowDownRight, labelKey: 'wallet.deposit', view: 'deposit' as const, color: 'text-[#0ECB81]' },
+            { icon: ArrowUpRight, labelKey: 'wallet.withdraw', view: 'withdraw' as const, color: 'text-[#F6465D]' },
+            { icon: ArrowLeftRight, labelKey: 'wallet.transfer', view: 'transfer' as const, color: 'text-[#F0B90B]' },
+            { icon: CreditCard, labelKey: 'wallet.buyCrypto', view: 'trade' as const, color: 'text-[#848E9C]' },
           ].map((action) => {
             const Icon = action.icon;
             return (
               <button
-                key={action.label}
+                key={action.labelKey}
                 onClick={() => navigateTo(action.view)}
                 className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-[#1E2329] hover:bg-[#2B3139] transition-colors active:scale-95"
               >
                 <div className="w-10 h-10 rounded-full bg-[#2B3139] flex items-center justify-center">
                   <Icon className={`h-5 w-5 ${action.color}`} />
                 </div>
-                <span className="text-[10px] text-[#848E9C] font-medium">{action.label}</span>
+                <span className="text-[10px] text-[#848E9C] font-medium">{t(action.labelKey)}</span>
               </button>
             );
           })}
@@ -458,8 +463,8 @@ export default function WalletView() {
               <Shield className="h-5 w-5 text-[#F0B90B]" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-[#EAECEF]">Earn up to 12% APY</p>
-              <p className="text-xs text-[#848E9C]">Stake your crypto and earn rewards</p>
+              <p className="text-sm font-semibold text-[#EAECEF]">{t('wallet.earnUpToApy')}</p>
+              <p className="text-xs text-[#848E9C]">{t('wallet.stakeAndEarn')}</p>
             </div>
             <Button
               variant="ghost"
@@ -470,7 +475,7 @@ export default function WalletView() {
                 navigateTo('earn');
               }}
             >
-              Go →
+              {t('wallet.go')} →
             </Button>
           </CardContent>
         </Card>
@@ -482,7 +487,7 @@ export default function WalletView() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-[#EAECEF]">
-              {activeTab === 'spot' ? 'Spot Assets' : activeTab === 'funding' ? 'Funding Assets' : activeTab === 'earn' ? 'Earn Assets' : 'Futures Assets'}
+              {activeTab === 'spot' ? t('wallet.spotAssets') : activeTab === 'funding' ? t('wallet.fundingAssets') : activeTab === 'earn' ? t('wallet.earnAssets') : t('wallet.futuresAssets')}
             </h3>
             <div className="flex items-center gap-2">
               {smallAssets.length > 0 && (
@@ -490,7 +495,7 @@ export default function WalletView() {
                   onClick={() => setShowSmallAssets(!showSmallAssets)}
                   className="text-[10px] text-[#F0B90B] hover:text-[#F0B90B]/80 flex items-center gap-1"
                 >
-                  {showSmallAssets ? 'Hide' : 'Show'} small assets
+                  {showSmallAssets ? t('wallet.hide') : t('wallet.show')} {t('wallet.smallAssets').toLowerCase()}
                   {showSmallAssets ? (
                     <ChevronUp className="h-3 w-3" />
                   ) : (
@@ -503,10 +508,10 @@ export default function WalletView() {
 
           {/* Asset Header */}
           <div className="grid grid-cols-12 gap-2 px-3 py-1.5 text-[10px] text-[#5E6673] font-medium uppercase tracking-wider">
-            <div className="col-span-4">Asset</div>
-            <div className="col-span-2 text-right">Available</div>
-            <div className="col-span-2 text-right">Value</div>
-            <div className="col-span-4 text-right">7d Trend</div>
+            <div className="col-span-4">{t('wallet.asset')}</div>
+            <div className="col-span-2 text-right">{t('wallet.available')}</div>
+            <div className="col-span-2 text-right">{t('wallet.value')}</div>
+            <div className="col-span-4 text-right">{t('wallet.trend7d')}</div>
           </div>
 
           <div className="space-y-0.5">
@@ -565,25 +570,25 @@ export default function WalletView() {
                         <div className="bg-[#1E2329] rounded-lg p-4 mx-2 mb-2 space-y-3 animate-slide-up">
                           <div className="grid grid-cols-2 gap-3 text-xs">
                             <div>
-                              <span className="text-[#5E6673]">Available</span>
+                              <span className="text-[#5E6673]">{t('wallet.available')}</span>
                               <p className="text-[#EAECEF] font-medium tabular-nums mt-0.5">
                                 {balance.available} {balance.asset}
                               </p>
                             </div>
                             <div>
-                              <span className="text-[#5E6673]">In Order</span>
+                              <span className="text-[#5E6673]">{t('wallet.inOrder')}</span>
                               <p className="text-[#EAECEF] font-medium tabular-nums mt-0.5">
                                 {balance.locked} {balance.asset}
                               </p>
                             </div>
                             <div>
-                              <span className="text-[#5E6673]">USD Value</span>
+                              <span className="text-[#5E6673]">{t('wallet.usdValue')}</span>
                               <p className="text-[#EAECEF] font-medium tabular-nums mt-0.5">
                                 ${formatPrice(balance.usdValue)}
                               </p>
                             </div>
                             <div>
-                              <span className="text-[#5E6673]">BTC Value</span>
+                              <span className="text-[#5E6673]">{t('wallet.btcValue')}</span>
                               <p className="text-[#EAECEF] font-medium tabular-nums mt-0.5">
                                 {balance.btcValue.toFixed(6)} BTC
                               </p>
@@ -597,7 +602,7 @@ export default function WalletView() {
                                 navigateTo('trade');
                               }}
                             >
-                              Trade
+                              {t('actions.trade')}
                             </Button>
                             <Button
                               variant="outline"
@@ -607,7 +612,7 @@ export default function WalletView() {
                                 navigateTo('deposit');
                               }}
                             >
-                              Deposit
+                              {t('wallet.deposit')}
                             </Button>
                             <Button
                               variant="outline"
@@ -617,7 +622,7 @@ export default function WalletView() {
                                 navigateTo('withdraw');
                               }}
                             >
-                              Withdraw
+                              {t('wallet.withdraw')}
                             </Button>
                           </div>
                         </div>
@@ -636,7 +641,7 @@ export default function WalletView() {
             onClick={() => setShowHistory(!showHistory)}
             className="w-full flex items-center justify-between mb-3"
           >
-            <h3 className="text-sm font-semibold text-[#EAECEF]">Transaction History</h3>
+            <h3 className="text-sm font-semibold text-[#EAECEF]">{t('wallet.transactionHistory')}</h3>
             {showHistory ? (
               <ChevronUp className="h-4 w-4 text-[#5E6673]" />
             ) : (
@@ -662,7 +667,7 @@ export default function WalletView() {
                         const typeBg = typeConfig[tx.type]?.bgColor || 'bg-[#848E9C]/10';
                         const StatusIcon = statusConfig[tx.status]?.icon || Clock;
                         const statusColor = statusConfig[tx.status]?.color || 'text-[#848E9C]';
-                        const statusLabel = statusConfig[tx.status]?.label || tx.status;
+                        const statusLabel = t('wallet.' + tx.status);
                         const isIncoming = tx.amount >= 0;
 
                         return (

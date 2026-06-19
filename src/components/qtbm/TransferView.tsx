@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
 import { mockAssets, mockWalletBalances, formatPrice, getTimeAgo } from '@/lib/mock-data';
 import {
   ArrowLeft,
@@ -23,11 +24,11 @@ import { toast } from 'sonner';
 
 type WalletType = 'spot' | 'funding' | 'earn' | 'futures';
 
-const walletOptions: { id: WalletType; label: string; description: string }[] = [
-  { id: 'spot', label: 'Spot Wallet', description: 'Trading balance' },
-  { id: 'funding', label: 'Funding Wallet', description: 'P2P & deposits' },
-  { id: 'earn', label: 'Earn Wallet', description: 'Savings & staking' },
-  { id: 'futures', label: 'Futures Wallet', description: 'Futures trading' },
+const walletOptions: { id: WalletType; labelKey: string; descriptionKey: string }[] = [
+  { id: 'spot', labelKey: 'wallet.spotWallet', descriptionKey: 'wallet.tradingBalance' },
+  { id: 'funding', labelKey: 'wallet.fundingWallet', descriptionKey: 'wallet.p2pDeposits' },
+  { id: 'earn', labelKey: 'wallet.earnWallet', descriptionKey: 'wallet.savingsStaking' },
+  { id: 'futures', labelKey: 'wallet.futuresWallet', descriptionKey: 'wallet.futuresTradingDesc' },
 ];
 
 // Mock transfer history
@@ -39,11 +40,11 @@ const mockTransferHistory = [
   { id: '5', asset: 'SOL', icon: '◎', amount: 50, from: 'Earn', to: 'Spot', status: 'completed' as const, time: '2024-01-11T08:15:00Z' },
 ];
 
-const statusConfig: Record<string, { color: string; bg: string; label: string }> = {
-  completed: { color: 'text-[#0ECB81]', bg: 'bg-[#0ECB81]/10', label: 'Completed' },
-  processing: { color: 'text-[#F0B90B]', bg: 'bg-[#F0B90B]/10', label: 'Processing' },
-  pending: { color: 'text-[#848E9C]', bg: 'bg-[#848E9C]/10', label: 'Pending' },
-  failed: { color: 'text-[#F6465D]', bg: 'bg-[#F6465D]/10', label: 'Failed' },
+const statusConfig: Record<string, { color: string; bg: string; labelKey: string }> = {
+  completed: { color: 'text-[#0ECB81]', bg: 'bg-[#0ECB81]/10', labelKey: 'wallet.completed' },
+  processing: { color: 'text-[#F0B90B]', bg: 'bg-[#F0B90B]/10', labelKey: 'wallet.processing' },
+  pending: { color: 'text-[#848E9C]', bg: 'bg-[#848E9C]/10', labelKey: 'wallet.pending' },
+  failed: { color: 'text-[#F6465D]', bg: 'bg-[#F6465D]/10', labelKey: 'wallet.failed' },
 };
 
 // Get balance for a wallet type (simulate different balances per wallet)
@@ -62,6 +63,7 @@ function getWalletBalance(asset: string, walletType: WalletType): number {
 
 export default function TransferView() {
   const { goBack } = useAppStore();
+  const { t } = useTranslation();
   const [fromWallet, setFromWallet] = useState<WalletType>('spot');
   const [toWallet, setToWallet] = useState<WalletType>('funding');
   const [selectedAsset, setSelectedAsset] = useState('USDT');
@@ -94,7 +96,9 @@ export default function TransferView() {
     setTimeout(() => {
       setIsTransferring(false);
       setAmount('');
-      toast.success(`Successfully transferred ${numAmount} ${selectedAsset} from ${walletOptions.find(w => w.id === fromWallet)?.label} to ${walletOptions.find(w => w.id === toWallet)?.label}`);
+      const fromLabel = t(walletOptions.find(w => w.id === fromWallet)?.labelKey || '');
+      const toLabel = t(walletOptions.find(w => w.id === toWallet)?.labelKey || '');
+      toast.success(t('wallet.transferSuccess').replace('{amount}', String(numAmount)).replace('{asset}', selectedAsset).replace('{from}', fromLabel).replace('{to}', toLabel));
     }, 1200);
   };
 
@@ -109,7 +113,7 @@ export default function TransferView() {
           >
             <ArrowLeft className="h-5 w-5 text-[#EAECEF]" />
           </button>
-          <h1 className="text-lg font-bold text-[#EAECEF]">Transfer</h1>
+          <h1 className="text-lg font-bold text-[#EAECEF]">{t('wallet.transfer')}</h1>
         </div>
 
         {/* From/To Wallet Selection */}
@@ -117,7 +121,7 @@ export default function TransferView() {
           <CardContent className="p-4">
             {/* From Wallet */}
             <div>
-              <label className="text-xs text-[#848E9C] font-medium mb-2 block">From</label>
+              <label className="text-xs text-[#848E9C] font-medium mb-2 block">{t('wallet.from')}</label>
               <div className="relative">
                 <button
                   onClick={() => { setShowFromDropdown(!showFromDropdown); setShowToDropdown(false); setShowAssetDropdown(false); }}
@@ -134,10 +138,10 @@ export default function TransferView() {
                     </div>
                     <div className="text-left">
                       <p className="text-sm font-semibold text-[#EAECEF]">
-                        {walletOptions.find(w => w.id === fromWallet)?.label}
+                        {t(walletOptions.find(w => w.id === fromWallet)?.labelKey || '')}
                       </p>
                       <p className="text-[10px] text-[#5E6673]">
-                        {walletOptions.find(w => w.id === fromWallet)?.description}
+                        {t(walletOptions.find(w => w.id === fromWallet)?.descriptionKey || '')}
                       </p>
                     </div>
                   </div>
@@ -174,8 +178,8 @@ export default function TransferView() {
                             {wallet.id === 'spot' ? 'S' : wallet.id === 'funding' ? 'F' : wallet.id === 'earn' ? 'E' : 'X'}
                           </div>
                           <div className="text-left">
-                            <p className="text-sm font-medium text-[#EAECEF]">{wallet.label}</p>
-                            <p className="text-[10px] text-[#5E6673]">{wallet.description}</p>
+                            <p className="text-sm font-medium text-[#EAECEF]">{t(wallet.labelKey)}</p>
+                            <p className="text-[10px] text-[#5E6673]">{t(wallet.descriptionKey)}</p>
                           </div>
                           {fromWallet === wallet.id && (
                             <CheckCircle2 className="h-4 w-4 text-[#F0B90B] ml-auto" />
@@ -200,7 +204,7 @@ export default function TransferView() {
 
             {/* To Wallet */}
             <div>
-              <label className="text-xs text-[#848E9C] font-medium mb-2 block">To</label>
+              <label className="text-xs text-[#848E9C] font-medium mb-2 block">{t('wallet.to')}</label>
               <div className="relative">
                 <button
                   onClick={() => { setShowToDropdown(!showToDropdown); setShowFromDropdown(false); setShowAssetDropdown(false); }}
@@ -217,10 +221,10 @@ export default function TransferView() {
                     </div>
                     <div className="text-left">
                       <p className="text-sm font-semibold text-[#EAECEF]">
-                        {walletOptions.find(w => w.id === toWallet)?.label}
+                        {t(walletOptions.find(w => w.id === toWallet)?.labelKey || '')}
                       </p>
                       <p className="text-[10px] text-[#5E6673]">
-                        {walletOptions.find(w => w.id === toWallet)?.description}
+                        {t(walletOptions.find(w => w.id === toWallet)?.descriptionKey || '')}
                       </p>
                     </div>
                   </div>
@@ -256,8 +260,8 @@ export default function TransferView() {
                             {wallet.id === 'spot' ? 'S' : wallet.id === 'funding' ? 'F' : wallet.id === 'earn' ? 'E' : 'X'}
                           </div>
                           <div className="text-left">
-                            <p className="text-sm font-medium text-[#EAECEF]">{wallet.label}</p>
-                            <p className="text-[10px] text-[#5E6673]">{wallet.description}</p>
+                            <p className="text-sm font-medium text-[#EAECEF]">{t(wallet.labelKey)}</p>
+                            <p className="text-[10px] text-[#5E6673]">{t(wallet.descriptionKey)}</p>
                           </div>
                           {toWallet === wallet.id && (
                             <CheckCircle2 className="h-4 w-4 text-[#F0B90B] ml-auto" />
@@ -275,7 +279,7 @@ export default function TransferView() {
         {/* Asset Selection */}
         <Card className="bg-[#1E2329] border-[#2B3139]">
           <CardContent className="p-4">
-            <label className="text-xs text-[#848E9C] font-medium mb-2 block">Asset</label>
+            <label className="text-xs text-[#848E9C] font-medium mb-2 block">{t('wallet.asset')}</label>
             <div className="relative">
               <button
                 onClick={() => { setShowAssetDropdown(!showAssetDropdown); setShowFromDropdown(false); setShowToDropdown(false); }}
@@ -292,7 +296,7 @@ export default function TransferView() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-[#848E9C] tabular-nums">
-                    Available: {availableBalance.toFixed(4)} {selectedAsset}
+                    {t('wallet.available')}: {availableBalance.toFixed(4)} {selectedAsset}
                   </span>
                   <ChevronDown className={`h-4 w-4 text-[#848E9C] transition-transform ${showAssetDropdown ? 'rotate-180' : ''}`} />
                 </div>
@@ -350,9 +354,9 @@ export default function TransferView() {
           <CardContent className="p-4 space-y-4">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs text-[#848E9C] font-medium">Amount</label>
+                <label className="text-xs text-[#848E9C] font-medium">{t('trade.amount')}</label>
                 <span className="text-xs text-[#5E6673]">
-                  Available: <span className="text-[#EAECEF] tabular-nums">{availableBalance.toFixed(4)}</span> {selectedAsset}
+                  {t('wallet.available')}: <span className="text-[#EAECEF] tabular-nums">{availableBalance.toFixed(4)}</span> {selectedAsset}
                 </span>
               </div>
               <div className="relative">
@@ -367,34 +371,34 @@ export default function TransferView() {
                   onClick={handleMax}
                   className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1 text-[10px] font-semibold text-[#F0B90B] bg-[#F0B90B]/10 rounded hover:bg-[#F0B90B]/20 transition-colors"
                 >
-                  MAX
+                  {t('wallet.max')}
                 </button>
               </div>
               {numAmount > availableBalance && (
-                <p className="text-[10px] text-[#F6465D] mt-1">Insufficient balance</p>
+                <p className="text-[10px] text-[#F6465D] mt-1">{t('wallet.insufficientBalance')}</p>
               )}
             </div>
 
             {/* Transfer summary */}
             <div className="bg-[#2B3139] rounded-lg p-3 space-y-2 text-xs">
               <div className="flex justify-between">
-                <span className="text-[#848E9C]">From</span>
-                <span className="text-[#EAECEF]">{walletOptions.find(w => w.id === fromWallet)?.label}</span>
+                <span className="text-[#848E9C]">{t('wallet.from')}</span>
+                <span className="text-[#EAECEF]">{t(walletOptions.find(w => w.id === fromWallet)?.labelKey || '')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#848E9C]">To</span>
-                <span className="text-[#EAECEF]">{walletOptions.find(w => w.id === toWallet)?.label}</span>
+                <span className="text-[#848E9C]">{t('wallet.to')}</span>
+                <span className="text-[#EAECEF]">{t(walletOptions.find(w => w.id === toWallet)?.labelKey || '')}</span>
               </div>
               <Separator className="bg-[#0B0E11]" />
               <div className="flex justify-between">
-                <span className="text-[#848E9C]">Transfer Amount</span>
+                <span className="text-[#848E9C]">{t('wallet.transferAmount')}</span>
                 <span className="text-[#0ECB81] font-semibold tabular-nums">
                   {numAmount > 0 ? numAmount.toFixed(6) : '0.00'} {selectedAsset}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#848E9C]">Fee</span>
-                <span className="text-[#0ECB81] font-medium">Free</span>
+                <span className="text-[#848E9C]">{t('wallet.fee')}</span>
+                <span className="text-[#0ECB81] font-medium">{t('wallet.free')}</span>
               </div>
             </div>
 
@@ -407,11 +411,11 @@ export default function TransferView() {
               {isTransferring ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Transferring...
+                  {t('wallet.transferring')}
                 </>
               ) : (
                 <>
-                  Transfer
+                  {t('wallet.transfer')}
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </>
               )}
@@ -423,7 +427,7 @@ export default function TransferView() {
         <Card className="bg-[#1E2329] border-[#2B3139]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-[#EAECEF]">Recent Transfers</h3>
+              <h3 className="text-sm font-semibold text-[#EAECEF]">{t('wallet.recentTransfers')}</h3>
             </div>
 
             <div className="space-y-2">
@@ -448,7 +452,7 @@ export default function TransferView() {
                       </div>
                     </div>
                     <Badge className={`text-[9px] h-4 px-1.5 border-0 ${status.color} ${status.bg}`}>
-                      {status.label}
+                      {t(status.labelKey)}
                     </Badge>
                   </div>
                 );

@@ -192,7 +192,7 @@ export default function SettingsView() {
                   <Smartphone className="h-5 w-5 text-[#848E9C]" />
                   <div>
                     <span className="text-sm text-[#EAECEF]">{t('settings.deviceManagement')}</span>
-                    <p className="text-[10px] text-[#5E6673]">2 active devices</p>
+                    <p className="text-[10px] text-[#5E6673]">{t('settings.activeDevicesCount')}</p>
                   </div>
                 </div>
                 <ChevronRight className="h-4 w-4 text-[#5E6673]" />
@@ -226,7 +226,7 @@ export default function SettingsView() {
                     }`}
                   >
                     <span className="text-base">🇺🇸</span>
-                    <span>English</span>
+                    <span>{t('settings.english')}</span>
                     {language === 'en' && <Check className="h-3.5 w-3.5" />}
                   </button>
                   <button
@@ -238,14 +238,14 @@ export default function SettingsView() {
                     }`}
                   >
                     <span className="text-base">🇸🇦</span>
-                    <span>العربية</span>
+                    <span>{t('settings.arabic')}</span>
                     {language === 'ar' && <Check className="h-3.5 w-3.5" />}
                   </button>
                 </div>
                 {language === 'ar' && (
                   <div className="text-[10px] text-[#0ECB81] mt-2 flex items-center gap-1">
                     <div className="w-1.5 h-1.5 rounded-full bg-[#0ECB81] animate-pulse-soft" />
-                    RTL layout enabled
+                    {t('settings.rtlEnabled')}
                   </div>
                 )}
               </div>

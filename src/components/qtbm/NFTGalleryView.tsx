@@ -125,7 +125,7 @@ export default function NFTGalleryView() {
                     </div>
                     <div className="mt-1">
                       <span className={`text-xs font-semibold ${collection.changeColor}`}>{collection.change}</span>
-                      <span className="text-[10px] text-[#5E6673] ml-1">24h</span>
+                      <span className="text-[10px] text-[#5E6673] ml-1">{t('nftGallery.h24')}</span>
                     </div>
                   </CardContent>
                 </Card>

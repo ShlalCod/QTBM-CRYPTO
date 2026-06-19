@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -28,47 +29,48 @@ type KYCLevel = 'basic' | 'intermediate' | 'advanced';
 
 const kycLevels: {
   id: KYCLevel;
-  label: string;
-  description: string;
+  labelKey: string;
+  descriptionKey: string;
   withdrawalLimit: string;
-  features: string[];
-  required: string[];
+  featuresKeys: string[];
+  requiredKeys: string[];
 }[] = [
   {
     id: 'basic',
-    label: 'Basic',
-    description: 'Email & phone verification',
+    labelKey: 'kyc.basic',
+    descriptionKey: 'kyc.basicDesc',
     withdrawalLimit: '2 BTC/day',
-    features: ['Spot trading', 'P2P trading', 'Basic deposits'],
-    required: ['Email verification', 'Phone number'],
+    featuresKeys: ['kyc.featSpotTrading', 'kyc.featP2PTrading', 'kyc.featBasicDeposits'],
+    requiredKeys: ['kyc.reqEmail', 'kyc.reqPhone'],
   },
   {
     id: 'intermediate',
-    label: 'Intermediate',
-    description: 'Identity document verification',
+    labelKey: 'kyc.intermediate',
+    descriptionKey: 'kyc.intermediateDesc',
     withdrawalLimit: '100 BTC/day',
-    features: ['All Basic features', 'Futures trading', 'Earn products', 'Higher limits'],
-    required: ['Government ID', 'Selfie verification', 'Address proof'],
+    featuresKeys: ['kyc.featAllBasic', 'kyc.featFuturesTrading', 'kyc.featEarnProducts', 'kyc.featHigherLimits'],
+    requiredKeys: ['kyc.reqGovId', 'kyc.reqSelfie', 'kyc.reqAddressProof'],
   },
   {
     id: 'advanced',
-    label: 'Advanced',
-    description: 'Enhanced due diligence',
-    withdrawalLimit: 'Unlimited',
-    features: ['All Intermediate features', 'Institutional features', 'API access', 'Unlimited withdrawals'],
-    required: ['Proof of income', 'Source of funds', 'Additional documentation'],
+    labelKey: 'kyc.advanced',
+    descriptionKey: 'kyc.advancedDesc',
+    withdrawalLimit: 'kyc.unlimited',
+    featuresKeys: ['kyc.featAllIntermediate', 'kyc.featInstitutional', 'kyc.featApiAccess', 'kyc.featUnlimitedWithdrawals'],
+    requiredKeys: ['kyc.reqProofIncome', 'kyc.reqSourceFunds', 'kyc.reqAdditionalDocs'],
   },
 ];
 
 const verificationSteps = [
-  { id: 1, label: 'Personal Information', status: 'completed', icon: User },
-  { id: 2, label: 'Document Upload', status: 'current', icon: FileText },
-  { id: 3, label: 'Selfie Verification', status: 'pending', icon: Camera },
-  { id: 4, label: 'Review & Submit', status: 'pending', icon: Shield },
+  { id: 1, labelKey: 'kyc.personalInfo', status: 'completed', icon: User },
+  { id: 2, labelKey: 'kyc.documentUploadStep', status: 'current', icon: FileText },
+  { id: 3, labelKey: 'kyc.selfieVerificationStep', status: 'pending', icon: Camera },
+  { id: 4, labelKey: 'kyc.reviewSubmit', status: 'pending', icon: Shield },
 ];
 
 export default function KYCView() {
   const { navigateTo, user } = useAppStore();
+  const { t } = useTranslation();
   const [selectedLevel, setSelectedLevel] = useState<KYCLevel>('intermediate');
   const [uploadState, setUploadState] = useState<Record<string, string>>({});
 
@@ -95,8 +97,8 @@ export default function KYCView() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-lg font-bold text-[#EAECEF]">KYC Verification</h1>
-            <p className="text-xs text-[#848E9C]">Verify your identity to unlock full features</p>
+            <h1 className="text-lg font-bold text-[#EAECEF]">{t('kyc.verifyTitle')}</h1>
+            <p className="text-xs text-[#848E9C]">{t('kyc.verifySubtitle')}</p>
           </div>
         </div>
 
@@ -105,7 +107,7 @@ export default function KYCView() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-xs text-[#848E9C]">Current Status</p>
+                <p className="text-xs text-[#848E9C]">{t('kyc.currentStatus')}</p>
                 <div className="flex items-center gap-2 mt-0.5">
                   {user.kycStatus === 'verified' ? (
                     <CheckCircle2 className="h-4 w-4 text-[#0ECB81] check-pop-animate" />
@@ -118,10 +120,10 @@ export default function KYCView() {
                     user.kycStatus === 'verified' ? 'text-[#0ECB81] neon-glow-green' : 'text-[#EAECEF]'
                   }`}>
                     {user.kycStatus === 'verified'
-                      ? 'Verified'
+                      ? t('kyc.verified')
                       : user.kycStatus === 'pending'
-                      ? 'Under Review'
-                      : 'Not Verified'}
+                      ? t('kyc.underReview')
+                      : t('kyc.notVerified')}
                   </span>
                 </div>
               </div>
@@ -134,12 +136,12 @@ export default function KYCView() {
                     : 'bg-[#F6465D]/10 text-[#F6465D]'
                 }`}
               >
-                Level {currentLevelIndex + 1}
+                {t('kyc.level')} {currentLevelIndex + 1}
               </Badge>
             </div>
             <Progress value={progressPercent} className="h-2 bg-[#2B3139]" />
             <p className="text-[10px] text-[#5E6673] mt-1.5">
-              {completedSteps} of {totalSteps} steps completed
+              {completedSteps} {t('kyc.stepsCompleted')} {totalSteps}
             </p>
           </CardContent>
         </Card>
@@ -147,7 +149,7 @@ export default function KYCView() {
         {/* KYC Level Progress */}
         <div>
           <h3 className="text-[10px] font-semibold text-[#5E6673] uppercase tracking-wider px-1 mb-2">
-            Verification Levels
+            {t('kyc.verificationLevels')}
           </h3>
           <div className="space-y-2">
             {kycLevels.map((level, index) => {
@@ -180,23 +182,23 @@ export default function KYCView() {
                         )}
                         <div>
                           <span className="text-sm font-semibold text-[#EAECEF]">
-                            {level.label}
+                            {t(level.labelKey)}
                           </span>
-                          <p className="text-[10px] text-[#5E6673]">{level.description}</p>
+                          <p className="text-[10px] text-[#5E6673]">{t(level.descriptionKey)}</p>
                         </div>
                       </div>
                       <Badge variant="outline" className="text-[9px] border-[#2B3139] text-[#848E9C]">
-                        {level.withdrawalLimit}
+                        {level.withdrawalLimit === 'kyc.unlimited' ? t('kyc.unlimited') : level.withdrawalLimit}
                       </Badge>
                     </div>
                     {isActive && (
                       <div className="mt-3 pt-3 border-t border-[#2B3139]">
-                        <p className="text-[10px] text-[#5E6673] mb-1.5">Requirements:</p>
+                        <p className="text-[10px] text-[#5E6673] mb-1.5">{t('kyc.requirements')}</p>
                         <div className="space-y-1">
-                          {level.required.map((req) => (
+                          {level.requiredKeys.map((req) => (
                             <div key={req} className="flex items-center gap-1.5">
                               <CheckCircle2 className="h-3 w-3 text-[#0ECB81]" />
-                              <span className="text-xs text-[#848E9C]">{req}</span>
+                              <span className="text-xs text-[#848E9C]">{t(req)}</span>
                             </div>
                           ))}
                         </div>
@@ -212,7 +214,7 @@ export default function KYCView() {
         {/* Verification Steps */}
         <div>
           <h3 className="text-[10px] font-semibold text-[#5E6673] uppercase tracking-wider px-1 mb-2">
-            Verification Steps
+            {t('kyc.verificationSteps')}
           </h3>
           <Card className="bg-[#1E2329] border-[#2B3139]">
             <CardContent className="p-0">
@@ -248,14 +250,14 @@ export default function KYCView() {
                               : 'text-[#5E6673]'
                           }`}
                         >
-                          {step.label}
+                          {t(step.labelKey)}
                         </p>
                         <p className="text-[10px] text-[#3E444D]">
                           {step.status === 'completed'
-                            ? 'Completed'
+                            ? t('kyc.stepCompleted')
                             : step.status === 'current'
-                            ? 'In progress'
-                            : 'Pending'}
+                            ? t('kyc.stepInProgress')
+                            : t('kyc.stepPending')}
                         </p>
                       </div>
                       {step.status === 'current' && (
@@ -280,15 +282,15 @@ export default function KYCView() {
         {/* Document Upload Section */}
         <div>
           <h3 className="text-[10px] font-semibold text-[#5E6673] uppercase tracking-wider px-1 mb-2">
-            Document Upload
+            {t('kyc.documentUpload')}
           </h3>
           <Card className="bg-[#1E2329] border-[#2B3139]">
             <CardContent className="p-4 space-y-3 fancy-scrollbar max-h-64 overflow-y-auto">
               {[
-                { id: 'id-front', label: 'ID Card (Front)', desc: 'Upload front of your ID' },
-                { id: 'id-back', label: 'ID Card (Back)', desc: 'Upload back of your ID' },
-                { id: 'selfie', label: 'Selfie with ID', desc: 'Hold your ID next to your face' },
-                { id: 'address', label: 'Proof of Address', desc: 'Utility bill or bank statement' },
+                { id: 'id-front', labelKey: 'kyc.idFront', descKey: 'kyc.idFrontDesc' },
+                { id: 'id-back', labelKey: 'kyc.idBack', descKey: 'kyc.idBackDesc' },
+                { id: 'selfie', labelKey: 'kyc.selfieWithId', descKey: 'kyc.selfieDesc' },
+                { id: 'address', labelKey: 'kyc.proofOfAddressDoc', descKey: 'kyc.proofDesc' },
               ].map((doc) => (
                 <div
                   key={doc.id}
@@ -305,8 +307,8 @@ export default function KYCView() {
                       <FileText className="h-5 w-5 text-[#5E6673]" />
                     )}
                     <div>
-                      <p className="text-xs font-medium text-[#EAECEF]">{doc.label}</p>
-                      <p className="text-[10px] text-[#5E6673]">{doc.desc}</p>
+                      <p className="text-xs font-medium text-[#EAECEF]">{t(doc.labelKey)}</p>
+                      <p className="text-[10px] text-[#5E6673]">{t(doc.descKey)}</p>
                     </div>
                   </div>
                   {uploadState[doc.id] ? (
@@ -316,7 +318,7 @@ export default function KYCView() {
                           <path d="M2 5 L4 7 L8 3" stroke="#0ECB81" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="draw-checkmark" />
                         </svg>
                       </motion.div>
-                      Uploaded
+                      {t('kyc.uploaded')}
                     </Badge>
                   ) : (
                     <Button
@@ -326,7 +328,7 @@ export default function KYCView() {
                       onClick={() => handleFileUpload(doc.id)}
                     >
                       <Upload className="h-3 w-3 mr-1" />
-                      Upload
+                      {t('kyc.upload')}
                     </Button>
                   )}
                 </div>
@@ -337,7 +339,7 @@ export default function KYCView() {
 
         {/* Submit Button */}
         <Button className="w-full gradient-submit-btn text-[#0B0E11] font-semibold h-11 ripple-effect">
-          Submit for Verification
+          {t('kyc.submitForVerification')}
         </Button>
       </div>
     </ScrollArea>

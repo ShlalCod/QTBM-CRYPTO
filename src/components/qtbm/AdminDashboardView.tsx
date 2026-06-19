@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
 import { formatNumber } from '@/lib/mock-data';
 import {
   ArrowLeft,
@@ -37,10 +38,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Mock data for admin dashboard
 const statsCards = [
-  { title: 'Total Users', value: '284,592', change: '+12.5%', positive: true, icon: Users, color: 'text-[#0ECB81]', bgGradient: 'from-[#0ECB81]/10 to-[#0ECB81]/5' },
-  { title: '24h Volume', value: '$1.82B', change: '+8.3%', positive: true, icon: TrendingUp, color: 'text-[#F0B90B]', bgGradient: 'from-[#F0B90B]/10 to-[#F0B90B]/5' },
-  { title: 'Active Orders', value: '42,891', change: '-2.1%', positive: false, icon: Activity, color: 'text-[#0ECB81]', bgGradient: 'from-[#0ECB81]/10 to-[#0ECB81]/5' },
-  { title: 'Platform Revenue', value: '$4.2M', change: '+18.7%', positive: true, icon: DollarSign, color: 'text-[#F0B90B]', bgGradient: 'from-[#F0B90B]/10 to-[#F0B90B]/5' },
+  { titleKey: 'admin.totalUsers', value: '284,592', change: '+12.5%', positive: true, icon: Users, color: 'text-[#0ECB81]', bgGradient: 'from-[#0ECB81]/10 to-[#0ECB81]/5' },
+  { titleKey: 'admin.volume24h', value: '$1.82B', change: '+8.3%', positive: true, icon: TrendingUp, color: 'text-[#F0B90B]', bgGradient: 'from-[#F0B90B]/10 to-[#F0B90B]/5' },
+  { titleKey: 'admin.activeOrders', value: '42,891', change: '-2.1%', positive: false, icon: Activity, color: 'text-[#0ECB81]', bgGradient: 'from-[#0ECB81]/10 to-[#0ECB81]/5' },
+  { titleKey: 'admin.platformRevenue', value: '$4.2M', change: '+18.7%', positive: true, icon: DollarSign, color: 'text-[#F0B90B]', bgGradient: 'from-[#F0B90B]/10 to-[#F0B90B]/5' },
 ];
 
 const mockUsers = [
@@ -66,10 +67,10 @@ const mockKYCQueue = [
 ];
 
 const systemHealth = [
-  { name: 'API Uptime', value: 99.97, unit: '%', status: 'healthy' as const, icon: Server },
-  { name: 'Avg Response Time', value: 42, unit: 'ms', status: 'healthy' as const, icon: Zap },
-  { name: 'WebSocket Connections', value: 12847, unit: '', status: 'healthy' as const, icon: Wifi },
-  { name: 'Database Size', value: 78, unit: '%', status: 'warning' as const, icon: Database },
+  { nameKey: 'admin.metricApiUptime', value: 99.97, unit: '%', status: 'healthy' as const, icon: Server },
+  { nameKey: 'admin.metricAvgResponse', value: 42, unit: 'ms', status: 'healthy' as const, icon: Zap },
+  { nameKey: 'admin.metricWebsocket', value: 12847, unit: '', status: 'healthy' as const, icon: Wifi },
+  { nameKey: 'admin.metricDatabaseSize', value: 78, unit: '%', status: 'warning' as const, icon: Database },
 ];
 
 const mockAuditLogs = [
@@ -92,6 +93,7 @@ const mockAnnouncements = [
 
 export default function AdminDashboardView() {
   const { goBack } = useAppStore();
+  const { t } = useTranslation();
   const [userSearch, setUserSearch] = useState('');
   const [orderFilter, setOrderFilter] = useState<'all' | 'pending' | 'flagged'>('all');
 
@@ -109,17 +111,17 @@ export default function AdminDashboardView() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-2">
-            <h1 className="text-base font-bold text-[#EAECEF]">Admin Dashboard</h1>
+            <h1 className="text-base font-bold text-[#EAECEF]">{t('admin.title')}</h1>
             <Badge className="bg-[#F6465D]/10 text-[#F6465D] border-0 text-[9px] px-1.5 py-0 h-4 font-semibold flex items-center gap-0.5">
               <Shield className="h-2.5 w-2.5" />
-              ADMIN
+              {t('admin.adminBadge')}
             </Badge>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-8 text-xs">
             <Bell className="h-4 w-4 mr-1" />
-            <span className="hidden sm:inline">Alerts</span>
+            <span className="hidden sm:inline">{t('admin.alerts')}</span>
             <Badge className="ml-1 bg-[#F6465D] text-white text-[8px] px-1 py-0 h-3 min-w-3 border-0">3</Badge>
           </Button>
         </div>
@@ -133,7 +135,7 @@ export default function AdminDashboardView() {
               const Icon = stat.icon;
               return (
                 <div
-                  key={stat.title}
+                  key={stat.titleKey}
                   className={`bg-gradient-to-br ${stat.bgGradient} from-30% border border-[#2B3139] rounded-lg p-4`}
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -145,7 +147,7 @@ export default function AdminDashboardView() {
                     </Badge>
                   </div>
                   <p className="text-xl font-bold text-[#EAECEF] tabular-nums">{stat.value}</p>
-                  <p className="text-[10px] text-[#5E6673] mt-0.5">{stat.title}</p>
+                  <p className="text-[10px] text-[#5E6673] mt-0.5">{t(stat.titleKey)}</p>
                 </div>
               );
             })}
@@ -156,13 +158,13 @@ export default function AdminDashboardView() {
             <div className="flex items-center justify-between px-3 py-2.5 border-b border-[#2B3139]">
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-[#848E9C]" />
-                <span className="text-xs font-semibold text-[#848E9C]">Users Management</span>
+                <span className="text-xs font-semibold text-[#848E9C]">{t('admin.usersManagement')}</span>
                 <Badge className="bg-[#2B3139] text-[#848E9C] border-0 text-[9px] px-1.5 py-0 h-4">{mockUsers.length}</Badge>
               </div>
               <div className="relative w-48">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#5E6673]" />
                 <Input
-                  placeholder="Search users..."
+                  placeholder={t('admin.searchUsers')}
                   value={userSearch}
                   onChange={(e) => setUserSearch(e.target.value)}
                   className="h-7 text-[11px] pl-8 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#3B4451] focus:border-[#F0B90B]"
@@ -173,13 +175,13 @@ export default function AdminDashboardView() {
               <table className="w-full text-[11px]">
                 <thead>
                   <tr className="text-[#5E6673] border-b border-[#2B3139]/50">
-                    <th className="text-left py-2 px-3 font-medium">User</th>
-                    <th className="text-left py-2 px-3 font-medium">Email</th>
-                    <th className="text-center py-2 px-3 font-medium">KYC</th>
-                    <th className="text-center py-2 px-3 font-medium">Role</th>
-                    <th className="text-center py-2 px-3 font-medium">Status</th>
-                    <th className="text-right py-2 px-3 font-medium">Last Active</th>
-                    <th className="text-center py-2 px-3 font-medium">Actions</th>
+                    <th className="text-left py-2 px-3 font-medium">{t('admin.user')}</th>
+                    <th className="text-left py-2 px-3 font-medium">{t('admin.email')}</th>
+                    <th className="text-center py-2 px-3 font-medium">{t('admin.kyc')}</th>
+                    <th className="text-center py-2 px-3 font-medium">{t('admin.role')}</th>
+                    <th className="text-center py-2 px-3 font-medium">{t('admin.status')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('admin.lastActive')}</th>
+                    <th className="text-center py-2 px-3 font-medium">{t('admin.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -226,18 +228,18 @@ export default function AdminDashboardView() {
                           {user.status === 'active' ? (
                             <Button variant="ghost" size="sm" className="h-6 px-2 text-[9px] text-[#F6465D] hover:text-[#F6465D] hover:bg-[#F6465D]/10">
                               <Ban className="h-3 w-3 mr-0.5" />
-                              Suspend
+                              {t('admin.suspend')}
                             </Button>
                           ) : (
                             <Button variant="ghost" size="sm" className="h-6 px-2 text-[9px] text-[#0ECB81] hover:text-[#0ECB81] hover:bg-[#0ECB81]/10">
                               <UserCheck className="h-3 w-3 mr-0.5" />
-                              Reactivate
+                              {t('admin.reactivate')}
                             </Button>
                           )}
                           {user.kycStatus === 'pending' && (
                             <Button variant="ghost" size="sm" className="h-6 px-2 text-[9px] text-[#F0B90B] hover:text-[#F0B90B] hover:bg-[#F0B90B]/10">
                               <Eye className="h-3 w-3 mr-0.5" />
-                              Verify
+                              {t('admin.verify')}
                             </Button>
                           )}
                         </div>
@@ -256,7 +258,7 @@ export default function AdminDashboardView() {
               <div className="flex items-center justify-between px-3 py-2.5 border-b border-[#2B3139]">
                 <div className="flex items-center gap-2">
                   <Activity className="h-4 w-4 text-[#848E9C]" />
-                  <span className="text-xs font-semibold text-[#848E9C]">Orders Overview</span>
+                  <span className="text-xs font-semibold text-[#848E9C]">{t('admin.ordersOverview')}</span>
                 </div>
                 <div className="flex gap-0.5">
                   {(['all', 'pending', 'flagged'] as const).map((filter) => (
@@ -269,7 +271,7 @@ export default function AdminDashboardView() {
                           : 'text-[#5E6673] hover:text-[#848E9C]'
                       }`}
                     >
-                      {filter.charAt(0).toUpperCase() + filter.slice(1)}
+                      {filter === 'all' ? t('admin.filterAll') : filter === 'pending' ? t('admin.filterPending') : t('admin.filterFlagged')}
                     </button>
                   ))}
                 </div>
@@ -288,13 +290,13 @@ export default function AdminDashboardView() {
                     <path d="M0,60 Q40,50 80,35 T160,40 T240,25 T320,30 T400,15" fill="none" stroke="#F0B90B" strokeWidth="2" />
                     <path d="M0,60 Q40,50 80,35 T160,40 T240,25 T320,30 T400,15 L400,80 L0,80 Z" fill="url(#adminChartGrad)" />
                   </svg>
-                  <span className="relative z-10 text-[9px] text-[#5E6673]">24h Order Volume</span>
+                  <span className="relative z-10 text-[9px] text-[#5E6673]">{t('admin.orderVolume24h')}</span>
                 </div>
               </div>
 
               {/* Flagged Orders */}
               <div className="px-3 pb-3">
-                <p className="text-[10px] text-[#5E6673] font-semibold mb-2">Flagged Orders</p>
+                <p className="text-[10px] text-[#5E6673] font-semibold mb-2">{t('admin.flaggedOrders')}</p>
                 <div className="space-y-2">
                   {mockFlaggedOrders.map((order) => (
                     <div key={order.id} className="flex items-center justify-between bg-[#0B0E11] rounded p-2">
@@ -323,9 +325,9 @@ export default function AdminDashboardView() {
               <div className="flex items-center justify-between px-3 py-2.5 border-b border-[#2B3139]">
                 <div className="flex items-center gap-2">
                   <Shield className="h-4 w-4 text-[#848E9C]" />
-                  <span className="text-xs font-semibold text-[#848E9C]">KYC Queue</span>
+                  <span className="text-xs font-semibold text-[#848E9C]">{t('admin.kycQueue')}</span>
                   <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-0 text-[9px] px-1.5 py-0 h-4 font-medium">
-                    {mockKYCQueue.length} Pending
+                    {mockKYCQueue.length} {t('admin.pendingCount')}
                   </Badge>
                 </div>
               </div>
@@ -345,17 +347,17 @@ export default function AdminDashboardView() {
                       <div className="flex gap-1">
                         <Button variant="ghost" size="sm" className="h-6 px-2 text-[9px] text-[#0ECB81] hover:text-[#0ECB81] hover:bg-[#0ECB81]/10">
                           <CheckCircle2 className="h-3 w-3 mr-0.5" />
-                          Approve
+                          {t('admin.approve')}
                         </Button>
                         <Button variant="ghost" size="sm" className="h-6 px-2 text-[9px] text-[#F6465D] hover:text-[#F6465D] hover:bg-[#F6465D]/10">
                           <XCircle className="h-3 w-3 mr-0.5" />
-                          Reject
+                          {t('admin.reject')}
                         </Button>
                       </div>
                     </div>
                     <div className="flex items-center gap-3 text-[9px] text-[#5E6673]">
                       <span className="flex items-center gap-0.5"><FileText className="h-2.5 w-2.5" />{kyc.docType}</span>
-                      <span>Submitted: {kyc.submittedDate}</span>
+                      <span>{t('admin.submitted')}: {kyc.submittedDate}</span>
                     </div>
                   </div>
                 ))}
@@ -370,27 +372,27 @@ export default function AdminDashboardView() {
               <div className="flex items-center justify-between px-3 py-2.5 border-b border-[#2B3139]">
                 <div className="flex items-center gap-2">
                   <Server className="h-4 w-4 text-[#848E9C]" />
-                  <span className="text-xs font-semibold text-[#848E9C]">System Health</span>
+                  <span className="text-xs font-semibold text-[#848E9C]">{t('admin.systemHealth')}</span>
                 </div>
                 <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[9px] px-1.5 py-0 h-4 font-medium">
-                  Operational
+                  {t('admin.operational')}
                 </Badge>
               </div>
               <div className="p-3 space-y-3">
                 {systemHealth.map((item) => {
                   const Icon = item.icon;
-                  const barValue = item.name === 'API Uptime' ? item.value :
-                                   item.name === 'Avg Response Time' ? Math.max(0, 100 - (item.value / 200 * 100)) :
-                                   item.name === 'WebSocket Connections' ? Math.min(100, (item.value / 20000 * 100)) :
+                  const barValue = item.nameKey === 'admin.metricApiUptime' ? item.value :
+                                   item.nameKey === 'admin.metricAvgResponse' ? Math.max(0, 100 - (item.value / 200 * 100)) :
+                                   item.nameKey === 'admin.metricWebsocket' ? Math.min(100, (item.value / 20000 * 100)) :
                                    item.value;
                   return (
-                    <div key={item.name}>
+                    <div key={item.nameKey}>
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-1.5">
                           <Icon className={`h-3.5 w-3.5 ${
                             item.status === 'healthy' ? 'text-[#0ECB81]' : 'text-[#F0B90B]'
                           }`} />
-                          <span className="text-[11px] text-[#848E9C]">{item.name}</span>
+                          <span className="text-[11px] text-[#848E9C]">{t(item.nameKey)}</span>
                         </div>
                         <span className={`text-[11px] font-medium tabular-nums ${
                           item.status === 'healthy' ? 'text-[#0ECB81]' : 'text-[#F0B90B]'
@@ -417,7 +419,7 @@ export default function AdminDashboardView() {
               <div className="flex items-center justify-between px-3 py-2.5 border-b border-[#2B3139]">
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-[#848E9C]" />
-                  <span className="text-xs font-semibold text-[#848E9C]">Recent Audit Logs</span>
+                  <span className="text-xs font-semibold text-[#848E9C]">{t('admin.recentAuditLogs')}</span>
                 </div>
               </div>
               <ScrollArea className="h-64">
@@ -428,11 +430,11 @@ export default function AdminDashboardView() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className="text-[10px] text-[#EAECEF] font-medium">{log.action}</span>
-                          <span className="text-[9px] text-[#5E6673]">by</span>
+                          <span className="text-[9px] text-[#5E6673]">{t('admin.by')}</span>
                           <span className="text-[10px] text-[#F0B90B]">{log.admin}</span>
                         </div>
                         <div className="flex items-center gap-2 text-[9px] text-[#5E6673]">
-                          <span>Target: {log.target}</span>
+                          <span>{t('admin.target')}: {log.target}</span>
                           <span>·</span>
                           <span>{log.timestamp}</span>
                         </div>
@@ -452,24 +454,24 @@ export default function AdminDashboardView() {
             <div className="flex items-center justify-between px-3 py-2.5 border-b border-[#2B3139]">
               <div className="flex items-center gap-2">
                 <Megaphone className="h-4 w-4 text-[#848E9C]" />
-                <span className="text-xs font-semibold text-[#848E9C]">Announcements</span>
+                <span className="text-xs font-semibold text-[#848E9C]">{t('admin.announcements')}</span>
                 <Badge className="bg-[#2B3139] text-[#848E9C] border-0 text-[9px] px-1.5 py-0 h-4">{mockAnnouncements.length}</Badge>
               </div>
               <Button size="sm" className="h-7 bg-[#F0B90B] hover:bg-[#F0B90B]/90 text-[#0B0E11] text-[10px] font-semibold px-3">
                 <Plus className="h-3 w-3 mr-1" />
-                New Announcement
+                {t('admin.newAnnouncement')}
               </Button>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-[11px]">
                 <thead>
                   <tr className="text-[#5E6673] border-b border-[#2B3139]/50">
-                    <th className="text-left py-2 px-3 font-medium">ID</th>
-                    <th className="text-left py-2 px-3 font-medium">Title</th>
-                    <th className="text-center py-2 px-3 font-medium">Type</th>
-                    <th className="text-right py-2 px-3 font-medium">Date</th>
-                    <th className="text-center py-2 px-3 font-medium">Status</th>
-                    <th className="text-center py-2 px-3 font-medium">Actions</th>
+                    <th className="text-left py-2 px-3 font-medium">{t('admin.id')}</th>
+                    <th className="text-left py-2 px-3 font-medium">{t('admin.annTitle')}</th>
+                    <th className="text-center py-2 px-3 font-medium">{t('admin.type')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('admin.date')}</th>
+                    <th className="text-center py-2 px-3 font-medium">{t('admin.status')}</th>
+                    <th className="text-center py-2 px-3 font-medium">{t('admin.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
 import { mockEarnProducts, mockEarnSubscriptions, formatPrice, formatNumber } from '@/lib/mock-data';
 import {
   TrendingUp,
@@ -26,6 +27,7 @@ type EarnTab = 'flexible' | 'locked' | 'staking';
 
 // Earnings Calculator Component
 function EarnCalculator({ products }: { products: EarnProduct[] }) {
+  const { t } = useTranslation();
   const [calcAmount, setCalcAmount] = useState('1000');
   const [selectedProduct, setSelectedProduct] = useState<string>(products[0]?.id || '');
   const product = products.find(p => p.id === selectedProduct) || products[0];
@@ -39,17 +41,17 @@ function EarnCalculator({ products }: { products: EarnProduct[] }) {
     <div className="space-y-3">
       <div className="flex gap-2">
         <div className="flex-1">
-          <label className="text-[10px] text-[#5E6673]">Amount (USD)</label>
+          <label className="text-[10px] text-[#5E6673]">{t('earn.amountUsd')}</label>
           <Input
             type="number"
             value={calcAmount}
             onChange={(e) => setCalcAmount(e.target.value)}
             className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] h-8 text-xs mt-0.5 focus:border-[#F0B90B]"
-            placeholder="Enter amount"
+            placeholder={t('earn.enterAmount')}
           />
         </div>
         <div className="flex-1">
-          <label className="text-[10px] text-[#5E6673]">Product</label>
+          <label className="text-[10px] text-[#5E6673]">{t('earn.product')}</label>
           <select
             value={selectedProduct}
             onChange={(e) => setSelectedProduct(e.target.value)}
@@ -65,15 +67,15 @@ function EarnCalculator({ products }: { products: EarnProduct[] }) {
       </div>
       <div className="grid grid-cols-3 gap-2">
         <div className="bg-[#2B3139] rounded-lg p-2.5 text-center">
-          <p className="text-[9px] text-[#5E6673]">Daily</p>
+          <p className="text-[9px] text-[#5E6673]">{t('earn.daily')}</p>
           <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+${dailyEarning.toFixed(2)}</p>
         </div>
         <div className="bg-[#2B3139] rounded-lg p-2.5 text-center">
-          <p className="text-[9px] text-[#5E6673]">Monthly</p>
+          <p className="text-[9px] text-[#5E6673]">{t('earn.monthly')}</p>
           <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+${monthlyEarning.toFixed(2)}</p>
         </div>
         <div className="bg-[#2B3139] rounded-lg p-2.5 text-center">
-          <p className="text-[9px] text-[#5E6673]">Yearly</p>
+          <p className="text-[9px] text-[#5E6673]">{t('earn.yearly')}</p>
           <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+${yearlyEarning.toFixed(2)}</p>
         </div>
       </div>
@@ -81,14 +83,15 @@ function EarnCalculator({ products }: { products: EarnProduct[] }) {
   );
 }
 
-const earnTabs: { id: EarnTab; label: string; icon: React.ElementType }[] = [
-  { id: 'flexible', label: 'Flexible', icon: TrendingUp },
-  { id: 'locked', label: 'Locked', icon: Lock },
-  { id: 'staking', label: 'Staking', icon: Shield },
+const earnTabs: { id: EarnTab; labelKey: string; icon: React.ElementType }[] = [
+  { id: 'flexible', labelKey: 'earn.flexible', icon: TrendingUp },
+  { id: 'locked', labelKey: 'earn.locked', icon: Lock },
+  { id: 'staking', labelKey: 'earn.staking', icon: Shield },
 ];
 
 export default function EarnView() {
   const { navigateTo } = useAppStore();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<EarnTab>('flexible');
   const [subscribeProduct, setSubscribeProduct] = useState<EarnProduct | null>(null);
   const [subscribeAmount, setSubscribeAmount] = useState('');
@@ -117,8 +120,8 @@ export default function EarnView() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-lg font-bold text-[#EAECEF]">QTBM Earn</h1>
-            <p className="text-xs text-[#848E9C]">Grow your crypto holdings</p>
+            <h1 className="text-lg font-bold text-[#EAECEF]">{t('earn.header')}</h1>
+            <p className="text-xs text-[#848E9C]">{t('earn.subtitle')}</p>
           </div>
         </div>
 
@@ -127,9 +130,9 @@ export default function EarnView() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-[#848E9C]">Total Earned</p>
+                <p className="text-xs text-[#848E9C]">{t('earn.totalEarned')}</p>
                 <p className="text-xl font-bold text-[#0ECB81] tabular-nums">$23.11</p>
-                <p className="text-[10px] text-[#5E6673]">Across 3 active subscriptions</p>
+                <p className="text-[10px] text-[#5E6673]">{t('earn.acrossSubs').replace('{count}', '3')}</p>
               </div>
               <div className="w-12 h-12 bg-[#F0B90B]/10 rounded-full flex items-center justify-center">
                 <Zap className="h-6 w-6 text-[#F0B90B]" />
@@ -153,7 +156,7 @@ export default function EarnView() {
                 }`}
               >
                 <Icon className="h-3.5 w-3.5" />
-                {tab.label}
+                {t(tab.labelKey)}
               </button>
             );
           })}
@@ -164,9 +167,9 @@ export default function EarnView() {
           onClick={() => setShowMySubs(!showMySubs)}
           className="w-full flex items-center justify-between py-2"
         >
-          <span className="text-sm font-semibold text-[#EAECEF]">My Subscriptions</span>
+          <span className="text-sm font-semibold text-[#EAECEF]">{t('earn.mySubscriptions')}</span>
           <Badge variant="outline" className="text-[10px] border-[#2B3139] text-[#848E9C]">
-            {showMySubs ? 'Hide' : 'Show'}
+            {showMySubs ? t('earn.hide') : t('earn.show')}
           </Badge>
         </button>
 
@@ -189,7 +192,7 @@ export default function EarnView() {
                           {sub.amount} {sub.asset}
                         </p>
                         <p className="text-[10px] text-[#5E6673]">
-                          {sub.type === 'flexible' ? 'Flexible' : sub.type === 'locked' ? `Locked ${sub.endDate ? '- ' + new Date(sub.endDate).toLocaleDateString() : ''}` : 'Staking'}
+                          {sub.type === 'flexible' ? t('earn.flexible') : sub.type === 'locked' ? `${t('earn.locked')} ${sub.endDate ? '- ' + new Date(sub.endDate).toLocaleDateString() : ''}` : t('earn.staking')}
                         </p>
                       </div>
                     </div>
@@ -213,7 +216,7 @@ export default function EarnView() {
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <Zap className="h-4 w-4 text-[#F0B90B]" />
-              <h3 className="text-sm font-semibold text-[#EAECEF]">Earnings Calculator</h3>
+              <h3 className="text-sm font-semibold text-[#EAECEF]">{t('earn.earningsCalculator')}</h3>
             </div>
             <EarnCalculator products={filteredProducts} />
           </CardContent>
@@ -224,7 +227,7 @@ export default function EarnView() {
         {/* Earn Products */}
         <div>
           <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">
-            {activeTab === 'flexible' ? 'Flexible Products' : activeTab === 'locked' ? 'Locked Products' : 'Staking Products'}
+            {activeTab === 'flexible' ? t('earn.flexibleProducts') : activeTab === 'locked' ? t('earn.lockedProducts') : t('earn.stakingProducts')}
           </h3>
 
           <div className="space-y-2">
@@ -248,18 +251,18 @@ export default function EarnView() {
                                 : 'bg-[#8B5CF6]/10 text-[#8B5CF6]'
                             }`}
                           >
-                            {product.type === 'flexible' ? 'Flexible' : product.type === 'locked' ? `${product.duration}d` : 'Staking'}
+                            {product.type === 'flexible' ? t('earn.flexible') : product.type === 'locked' ? `${product.duration}d` : t('earn.staking')}
                           </Badge>
                           {/* Popular badge on high APY products */}
                           {product.apr >= 8 && (
                             <Badge className="text-[8px] border-0 h-4 px-1.5 bg-[#F6465D]/15 text-[#F6465D] hot-badge badge-shimmer font-bold">
-                              Popular
+                              {t('earn.popular')}
                             </Badge>
                           )}
                         </div>
                         <p className="text-[10px] text-[#5E6673]">
-                          Min: {product.minAmount} {product.asset}
-                          {product.maxAmount ? ` · Max: ${product.maxAmount} ${product.asset}` : ''}
+                          {t('earn.min')}: {product.minAmount} {product.asset}
+                          {product.maxAmount ? ` · ${t('earn.max')}: ${product.maxAmount} ${product.asset}` : ''}
                         </p>
                       </div>
                     </div>
@@ -303,30 +306,30 @@ export default function EarnView() {
           <DialogContent className="bg-[#1E2329] border-[#2B3139] text-[#EAECEF]">
             <DialogHeader>
               <DialogTitle className="text-[#EAECEF]">
-                Subscribe to {subscribeProduct?.asset} {subscribeProduct?.type === 'flexible' ? 'Flexible' : subscribeProduct?.type === 'locked' ? `Locked (${subscribeProduct?.duration}d)` : 'Staking'}
+                {t('earn.subscribeTo')} {subscribeProduct?.asset} {subscribeProduct?.type === 'flexible' ? t('earn.flexible') : subscribeProduct?.type === 'locked' ? `${t('earn.locked')} (${subscribeProduct?.duration}d)` : t('earn.staking')}
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#848E9C]">APR</span>
+                <span className="text-[#848E9C]">{t('earn.apr')}</span>
                 <span className="text-[#0ECB81] font-semibold">{subscribeProduct?.apr}%</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#848E9C]">Min Amount</span>
+                <span className="text-[#848E9C]">{t('earn.minAmount')}</span>
                 <span className="text-[#EAECEF]">{subscribeProduct?.minAmount} {subscribeProduct?.asset}</span>
               </div>
               {subscribeProduct?.duration && (
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-[#848E9C]">Duration</span>
-                  <span className="text-[#EAECEF]">{subscribeProduct.duration} days</span>
+                  <span className="text-[#848E9C]">{t('earn.duration')}</span>
+                  <span className="text-[#EAECEF]">{subscribeProduct.duration} {t('earn.days')}</span>
                 </div>
               )}
               <div className="space-y-2">
-                <label className="text-xs text-[#848E9C]">Amount ({subscribeProduct?.asset})</label>
+                <label className="text-xs text-[#848E9C]">{t('earn.amountAsset')} ({subscribeProduct?.asset})</label>
                 <div className="relative">
                   <Input
                     type="number"
-                    placeholder={`Enter ${subscribeProduct?.asset} amount`}
+                    placeholder={t('earn.enterAssetAmount')}
                     value={subscribeAmount}
                     onChange={(e) => setSubscribeAmount(e.target.value)}
                     className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] pr-16 h-11 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
@@ -337,7 +340,7 @@ export default function EarnView() {
                     className="absolute right-1 top-1 h-9 text-[#F0B90B] text-xs font-semibold hover:bg-[#F0B90B]/10"
                     onClick={() => setSubscribeAmount(String(subscribeProduct?.maxAmount || subscribeProduct?.available || ''))}
                   >
-                    MAX
+                    {t('earn.maxButton')}
                   </Button>
                 </div>
                 <div className="flex gap-2">
@@ -360,13 +363,13 @@ export default function EarnView() {
               {subscribeAmount && subscribeProduct && (
                 <div className="bg-[#2B3139] rounded-lg p-3 space-y-1.5 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-[#848E9C]">Estimated Daily</span>
+                    <span className="text-[#848E9C]">{t('earn.estimatedDaily')}</span>
                     <span className="text-[#0ECB81] tabular-nums">
                       +{((parseFloat(subscribeAmount) * subscribeProduct.apr) / 365).toFixed(6)} {subscribeProduct.asset}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#848E9C]">Estimated Yearly</span>
+                    <span className="text-[#848E9C]">{t('earn.estimatedYearly')}</span>
                     <span className="text-[#0ECB81] tabular-nums">
                       +{(parseFloat(subscribeAmount) * subscribeProduct.apr / 100).toFixed(6)} {subscribeProduct.asset}
                     </span>
@@ -380,7 +383,7 @@ export default function EarnView() {
                 onClick={handleSubscribe}
                 disabled={!subscribeAmount || parseFloat(subscribeAmount) <= 0}
               >
-                Confirm Subscription
+                {t('earn.confirmSubscription')}
               </Button>
             </DialogFooter>
           </DialogContent>

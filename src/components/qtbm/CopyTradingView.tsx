@@ -251,7 +251,7 @@ export default function CopyTradingView() {
           </Button>
           <h1 className="text-lg font-semibold text-[#EAECEF]">{t('copyTrading.title')}</h1>
           <Badge className="bg-gradient-to-r from-[#0ECB81] to-[#0ECB81]/70 text-white border-0 text-[9px] px-2 py-0.5 font-bold">
-            Beta
+            {t('copyTrading.beta')}
           </Badge>
         </div>
 
@@ -270,7 +270,7 @@ export default function CopyTradingView() {
             <CardContent className="p-5 relative z-10">
               <div className="flex items-center gap-2 mb-3">
                 <BarChart3 className="h-5 w-5 text-[#F0B90B]" />
-                <h2 className="text-sm font-semibold text-[#EAECEF]">Copy Trading Overview</h2>
+                <h2 className="text-sm font-semibold text-[#EAECEF]">{t('copyTrading.overview')}</h2>
               </div>
 
               <div className="grid grid-cols-2 gap-3 mb-4">
@@ -282,28 +282,28 @@ export default function CopyTradingView() {
                 </div>
                 {/* Active Copies */}
                 <div className="bg-[#0B0E11]/50 rounded-xl p-3">
-                  <p className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1">Active Copies</p>
+                  <p className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1">{t('copyTrading.activeCopies')}</p>
                   <p className="text-lg font-bold text-[#EAECEF]">3</p>
-                  <p className="text-[10px] text-[#848E9C]">traders</p>
+                  <p className="text-[10px] text-[#848E9C]">{t('copyTrading.traders')}</p>
                 </div>
                 {/* Total Invested */}
                 <div className="bg-[#0B0E11]/50 rounded-xl p-3">
                   <p className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1">{t('copyTrading.invested')}</p>
                   <p className="text-lg font-bold text-[#F0B90B]">$8,500.00</p>
-                  <p className="text-[10px] text-[#848E9C]">total</p>
+                  <p className="text-[10px] text-[#848E9C]">{t('copyTrading.total')}</p>
                 </div>
                 {/* Avg ROI */}
                 <div className="bg-[#0B0E11]/50 rounded-xl p-3">
-                  <p className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1">Avg. ROI</p>
+                  <p className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1">{t('copyTrading.avgRoi')}</p>
                   <p className="text-lg font-bold text-[#0ECB81]">+12.3%</p>
-                  <p className="text-[10px] text-[#0ECB81]">30d</p>
+                  <p className="text-[10px] text-[#0ECB81]">{t('copyTrading.last30d')}</p>
                 </div>
               </div>
 
               {/* Mini PnL Chart */}
               <div className="bg-[#0B0E11]/30 rounded-xl p-3">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium">Cumulative PnL (30d)</p>
+                  <p className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium">{t('copyTrading.cumulativePnl')}</p>
                   <TrendingUp className="h-3.5 w-3.5 text-[#0ECB81]" />
                 </div>
                 <PnlOverviewChart />
@@ -366,7 +366,7 @@ export default function CopyTradingView() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Zap className="h-4 w-4 text-[#0ECB81]" />
-                  <h3 className="text-sm font-medium text-[#EAECEF]">Active Copies</h3>
+                  <h3 className="text-sm font-medium text-[#EAECEF]">{t('copyTrading.activeCopies')}</h3>
                 </div>
                 {activeCopies.map((copy, idx) => (
                   <ActiveCopyCard key={copy.id} copy={copy} index={idx} t={t} />
@@ -377,7 +377,7 @@ export default function CopyTradingView() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <StopCircle className="h-4 w-4 text-[#5E6673]" />
-                  <h3 className="text-sm font-medium text-[#848E9C]">Closed Copies</h3>
+                  <h3 className="text-sm font-medium text-[#848E9C]">{t('copyTrading.closedCopies')}</h3>
                 </div>
                 {closedCopies.map((copy, idx) => (
                   <ClosedCopyCard key={copy.id} copy={copy} index={idx} t={t} />
@@ -479,14 +479,14 @@ function TraderCard({ trader, index, onCopy, t }: { trader: Trader; index: numbe
                   {isVerified && (
                     <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[8px] px-1.5 py-0 h-4 gap-0.5">
                       <Check className="h-2.5 w-2.5" />
-                      Verified
+                      {t('copyTrading.verified')}
                     </Badge>
                   )}
                   {/* Top Trader Badge with Shimmer */}
                   {isTopTrader && (
                     <Badge className="bg-gradient-to-r from-[#FFD700]/20 to-[#F0B90B]/20 text-[#FFD700] border-[#FFD700]/30 text-[8px] px-1.5 py-0 h-4 gap-0.5 shimmer relative overflow-hidden">
                       <Crown className="h-2.5 w-2.5" />
-                      Top
+                      {t('copyTrading.top')}
                     </Badge>
                   )}
                 </div>
@@ -538,7 +538,7 @@ function TraderCard({ trader, index, onCopy, t }: { trader: Trader; index: numbe
               {trader.risk === 'Very High' && (
                 <span className="inline-block animate-pulse mr-0.5">&#9679;</span>
               )}
-              {t('copyTrading.riskLevel')}: {trader.risk}
+              {t('copyTrading.riskLevel')}: {trader.risk === 'Low' ? t('copyTrading.riskLow') : trader.risk === 'Medium' ? t('copyTrading.riskMedium') : trader.risk === 'High' ? t('copyTrading.riskHigh') : t('copyTrading.riskVeryHigh')}
             </Badge>
           </div>
 
@@ -592,7 +592,7 @@ function ActiveCopyCard({ copy, index, t }: { copy: ActiveCopy; index: number; t
               </div>
               <div>
                 <p className="text-sm font-semibold text-[#EAECEF]">{t('copyTrading.copyTrader')}: {copy.traderName}</p>
-                <p className="text-[10px] text-[#5E6673]">{copy.daysActive} days active &bull; {copy.openPositions} open positions</p>
+                <p className="text-[10px] text-[#5E6673]">{copy.daysActive} {t('copyTrading.daysActive')} &bull; {copy.openPositions} {t('copyTrading.openPositions')}</p>
               </div>
             </div>
             <div className="text-right">
@@ -624,7 +624,7 @@ function ActiveCopyCard({ copy, index, t }: { copy: ActiveCopy; index: number; t
                 className="h-7 text-[10px] border-[#2B3139] text-[#848E9C] hover:bg-[#2B3139] hover:text-[#EAECEF] px-3"
               >
                 <Settings2 className="h-3 w-3 mr-1" />
-                Details
+                {t('copyTrading.details')}
               </Button>
               <Button
                 variant="outline"
@@ -666,7 +666,7 @@ function ClosedCopyCard({ copy, index, t }: { copy: ClosedCopy; index: number; t
               </div>
               <div>
                 <p className="text-xs font-medium text-[#848E9C]">{copy.traderName}</p>
-                <p className="text-[9px] text-[#5E6673]">{copy.duration} &bull; {copy.reason === 'manual' ? 'Manual Close' : 'Stop Loss'}</p>
+                <p className="text-[9px] text-[#5E6673]">{copy.duration} &bull; {copy.reason === 'manual' ? t('copyTrading.manualClose') : t('copyTrading.stopLossClose')}</p>
               </div>
             </div>
             <div className="text-right">
@@ -689,11 +689,11 @@ function LeaderboardTab({ t, onCopy }: { t: (key: string) => string; onCopy: (na
         {/* Table Header */}
         <div className="grid grid-cols-12 gap-1 px-4 py-2.5 border-b border-[#2B3139] bg-[#0B0E11]/30">
           <span className="col-span-1 text-[9px] text-[#5E6673] font-semibold uppercase">#</span>
-          <span className="col-span-3 text-[9px] text-[#5E6673] font-semibold uppercase">Trader</span>
+          <span className="col-span-3 text-[9px] text-[#5E6673] font-semibold uppercase">{t('copyTrading.trader')}</span>
           <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-right">{t('copyTrading.roi')}</span>
           <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-right">{t('copyTrading.winRate')}</span>
           <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-right">{t('copyTrading.copiers')}</span>
-          <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-right">Chart</span>
+          <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-right">{t('copyTrading.chart')}</span>
         </div>
 
         {/* Table Body */}
@@ -732,7 +732,7 @@ function LeaderboardTab({ t, onCopy }: { t: (key: string) => string; onCopy: (na
         <div className="px-4 py-3 bg-[#F0B90B]/5 border-t border-[#F0B90B]/20">
           <div className="grid grid-cols-12 gap-1 items-center">
             <span className="col-span-1 text-[10px] text-[#F0B90B] font-bold">#156</span>
-            <span className="col-span-3 text-[11px] font-medium text-[#F0B90B]">You</span>
+            <span className="col-span-3 text-[11px] font-medium text-[#F0B90B]">{t('copyTrading.you')}</span>
             <span className="col-span-2 text-[11px] font-semibold text-[#0ECB81] text-right">+12.3%</span>
             <span className="col-span-2 text-[10px] text-[#848E9C] text-right">—</span>
             <span className="col-span-2 text-[10px] text-[#848E9C] text-right">—</span>
@@ -812,10 +812,10 @@ function CopyTraderDialog({
               <h3 className="text-sm font-semibold text-[#EAECEF]">{trader.name}</h3>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className={cn('text-[10px] font-semibold', trader.roi > 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]')}>
-                  ROI +{trader.roi}%
+                  {t('copyTrading.roi')} +{trader.roi}%
                 </span>
                 <Badge className={cn('text-[8px] px-1.5 py-0 border', riskStyle.bg, riskStyle.text, riskStyle.border)}>
-                  {trader.risk}
+                  {trader.risk === 'Low' ? t('copyTrading.riskLow') : trader.risk === 'Medium' ? t('copyTrading.riskMedium') : trader.risk === 'High' ? t('copyTrading.riskHigh') : t('copyTrading.riskVeryHigh')}
                 </Badge>
               </div>
             </div>
@@ -834,7 +834,7 @@ function CopyTraderDialog({
           {/* Investment Amount */}
           <div>
             <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1.5 block">
-              Investment Amount ($100 - $10,000)
+              {t('copyTrading.investmentAmount')}
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5E6673] text-sm">$</span>
@@ -846,18 +846,18 @@ function CopyTraderDialog({
                   'pl-7 bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] h-10 text-sm',
                   !isValidAmount && investmentAmount ? 'border-[#F6465D]/50 focus:border-[#F6465D]' : 'focus:border-[#F0B90B]'
                 )}
-                placeholder="Enter amount"
+                placeholder={t('copyTrading.enterAmount')}
               />
             </div>
             {!isValidAmount && investmentAmount && (
-              <p className="text-[10px] text-[#F6465D] mt-1">Amount must be between $100 and $10,000</p>
+              <p className="text-[10px] text-[#F6465D] mt-1">{t('copyTrading.amountMustBe')}</p>
             )}
           </div>
 
           {/* Copy Mode */}
           <div>
             <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1.5 block">
-              Copy Mode
+              {t('copyTrading.copyMode')}
             </label>
             <div className="grid grid-cols-2 gap-2">
               <button
@@ -870,7 +870,7 @@ function CopyTraderDialog({
                 )}
               >
                 <SlidersHorizontal className="h-3.5 w-3.5 mx-auto mb-1" />
-                Fixed Amount
+                {t('copyTrading.fixedAmount')}
               </button>
               <button
                 onClick={() => setCopyMode('proportional')}
@@ -882,7 +882,7 @@ function CopyTraderDialog({
                 )}
               >
                 <BarChart3 className="h-3.5 w-3.5 mx-auto mb-1" />
-                Proportional
+                {t('copyTrading.proportional')}
               </button>
             </div>
           </div>
@@ -891,7 +891,7 @@ function CopyTraderDialog({
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium">
-                Max Position Size
+                {t('copyTrading.maxPositionSize')}
               </label>
               <span className="text-[11px] font-semibold text-[#F0B90B]">{maxPositionSize[0]}%</span>
             </div>
@@ -913,7 +913,7 @@ function CopyTraderDialog({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1.5 block">
-                Stop Loss (%)
+                {t('copyTrading.stopLoss')}
               </label>
               <Input
                 type="number"
@@ -925,7 +925,7 @@ function CopyTraderDialog({
             </div>
             <div>
               <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1.5 block">
-                Take Profit (%)
+                {t('copyTrading.takeProfit')}
               </label>
               <Input
                 type="number"
@@ -941,7 +941,7 @@ function CopyTraderDialog({
           <div className="bg-[#F6465D]/5 border border-[#F6465D]/15 rounded-lg p-3 flex gap-2.5">
             <AlertTriangle className="h-4 w-4 text-[#F6465D] shrink-0 mt-0.5" />
             <p className="text-[10px] text-[#848E9C] leading-relaxed">
-              Copy trading involves significant risk. Past performance does not guarantee future results. You may lose some or all of your invested capital. Only invest what you can afford to lose.
+              {t('copyTrading.riskWarning')}
             </p>
           </div>
 

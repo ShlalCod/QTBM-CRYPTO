@@ -42,8 +42,8 @@ interface ActiveBot {
 
 interface BotTemplate {
   id: string;
-  name: string;
-  description: string;
+  nameKey: string;
+  descriptionKey: string;
   icon: React.ElementType;
   iconColor: string;
   iconBg: string;
@@ -85,12 +85,12 @@ const activeBots: ActiveBot[] = [
 ];
 
 const botTemplates: BotTemplate[] = [
-  { id: 'grid', name: 'Grid Trading', description: 'Buy low, sell high in range', icon: Grid3x3, iconColor: 'text-[#F0B90B]', iconBg: 'bg-[#F0B90B]/10' },
-  { id: 'dca', name: 'DCA', description: 'Dollar Cost Average', icon: TrendingDown, iconColor: 'text-[#0ECB81]', iconBg: 'bg-[#0ECB81]/10' },
-  { id: 'arbitrage', name: 'Arbitrage', description: 'Cross-exchange', icon: ArrowLeftRight, iconColor: 'text-[#627EEA]', iconBg: 'bg-[#627EEA]/10' },
-  { id: 'rebalancing', name: 'Rebalancing', description: 'Auto portfolio', icon: PieChart, iconColor: 'text-[#F0B90B]', iconBg: 'bg-[#F0B90B]/10' },
-  { id: 'signal', name: 'Signal Bot', description: 'Follow signals', icon: Radio, iconColor: 'text-[#0ECB81]', iconBg: 'bg-[#0ECB81]/10' },
-  { id: 'martingale', name: 'Martingale', description: 'Position sizing', icon: Dices, iconColor: 'text-[#F6465D]', iconBg: 'bg-[#F6465D]/10' },
+  { id: 'grid', nameKey: 'strategyBot.gridTrading', descriptionKey: 'strategyBot.gridTradingDesc', icon: Grid3x3, iconColor: 'text-[#F0B90B]', iconBg: 'bg-[#F0B90B]/10' },
+  { id: 'dca', nameKey: 'strategyBot.dca', descriptionKey: 'strategyBot.dcaDesc', icon: TrendingDown, iconColor: 'text-[#0ECB81]', iconBg: 'bg-[#0ECB81]/10' },
+  { id: 'arbitrage', nameKey: 'strategyBot.arbitrage', descriptionKey: 'strategyBot.arbitrageDesc', icon: ArrowLeftRight, iconColor: 'text-[#627EEA]', iconBg: 'bg-[#627EEA]/10' },
+  { id: 'rebalancing', nameKey: 'strategyBot.rebalancing', descriptionKey: 'strategyBot.rebalancingDesc', icon: PieChart, iconColor: 'text-[#F0B90B]', iconBg: 'bg-[#F0B90B]/10' },
+  { id: 'signal', nameKey: 'strategyBot.signalBot', descriptionKey: 'strategyBot.signalBotDesc', icon: Radio, iconColor: 'text-[#0ECB81]', iconBg: 'bg-[#0ECB81]/10' },
+  { id: 'martingale', nameKey: 'strategyBot.martingale', descriptionKey: 'strategyBot.martingaleDesc', icon: Dices, iconColor: 'text-[#F6465D]', iconBg: 'bg-[#F6465D]/10' },
 ];
 
 const botHistory: BotHistoryEntry[] = [
@@ -153,7 +153,7 @@ export default function StrategyBotView() {
           </Button>
           <h1 className="text-lg font-semibold text-[#EAECEF]">{t('strategyBot.title')}</h1>
           <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[9px] px-1.5 py-0 h-5 font-semibold">
-            Auto
+            {t('strategyBot.auto')}
           </Badge>
         </div>
 
@@ -190,7 +190,7 @@ export default function StrategyBotView() {
                                 {t('status.active')}
                               </Badge>
                             </div>
-                            <p className="text-[11px] text-[#5E6673] mt-0.5 capitalize">{bot.type === 'grid' ? 'Grid Trading' : 'DCA'}</p>
+                            <p className="text-[11px] text-[#5E6673] mt-0.5 capitalize">{bot.type === 'grid' ? t('strategyBot.gridTrading') : t('strategyBot.dca')}</p>
                           </div>
                         </div>
                         <div className="text-right">
@@ -253,8 +253,8 @@ export default function StrategyBotView() {
                       <div className="w-10 h-10 rounded-xl bg-[#2B3139] flex items-center justify-center mb-3">
                         <TemplateIcon className={`h-5 w-5 ${template.iconColor}`} />
                       </div>
-                      <h3 className="text-sm font-semibold text-[#EAECEF] mb-0.5">{template.name}</h3>
-                      <p className="text-[10px] text-[#5E6673] mb-3">{template.description}</p>
+                      <h3 className="text-sm font-semibold text-[#EAECEF] mb-0.5">{t(template.nameKey)}</h3>
+                      <p className="text-[10px] text-[#5E6673] mb-3">{t(template.descriptionKey)}</p>
                       <Button
                         onClick={() => handleCreate(template)}
                         className="w-full h-8 text-xs font-semibold rounded-lg bg-gradient-to-r from-[#F0B90B] to-[#F0B90B]/80 text-[#0B0E11] hover:opacity-90 shadow-md shadow-[#F0B90B]/15 press-scale"
@@ -342,7 +342,7 @@ export default function StrategyBotView() {
               <div className="flex items-center justify-between p-4 border-b border-[#2B3139] sticky top-0 bg-[#1E2329] z-10">
                 <div className="flex items-center gap-2">
                   {React.createElement(selectedTemplate.icon, { className: `h-5 w-5 ${selectedTemplate.iconColor}` })}
-                  <h3 className="text-sm font-semibold text-[#EAECEF]">{selectedTemplate.name} {t('strategyBot.bot')}</h3>
+                  <h3 className="text-sm font-semibold text-[#EAECEF]">{t(selectedTemplate.nameKey)} {t('strategyBot.bot')}</h3>
                 </div>
                 <Button variant="ghost" size="icon" className="h-7 w-7 text-[#848E9C]" onClick={() => setShowCreateModal(false)}>
                   <X className="h-4 w-4" />

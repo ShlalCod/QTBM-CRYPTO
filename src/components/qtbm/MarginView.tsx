@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
 import { formatPrice, formatNumber } from '@/lib/mock-data';
 import {
   ArrowLeft,
@@ -47,6 +48,7 @@ const mockBorrowHistory = [
 
 export default function MarginView() {
   const { goBack, livePrices } = useAppStore();
+  const { t } = useTranslation();
 
   const [selectedAsset, setSelectedAsset] = useState(marginAssets[0]);
   const [activeTab, setActiveTab] = useState<'trade' | 'borrow' | 'repay'>('trade');
@@ -84,7 +86,7 @@ export default function MarginView() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-2">
-            <h1 className="text-base font-bold text-[#EAECEF]">Margin Trading</h1>
+            <h1 className="text-base font-bold text-[#EAECEF]">{t('trade.marginTradingTitle')}</h1>
             <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-0 text-[9px] px-1.5 py-0 h-4 font-semibold">
               3x-5x
             </Badge>
@@ -92,11 +94,11 @@ export default function MarginView() {
         </div>
         <div className="flex items-center gap-1.5">
           <Shield className="h-3.5 w-3.5 text-[#5E6673]" />
-          <span className="text-[10px] text-[#5E6673]">Risk: </span>
+          <span className="text-[10px] text-[#5E6673]">{t('trade.risk')}: </span>
           <span className={`text-[10px] font-semibold risk-meter-animate ${
             riskLevel === 'safe' ? 'text-[#0ECB81] glow-pulse-green' : riskLevel === 'moderate' ? 'text-[#F0B90B] glow-pulse-yellow' : 'text-[#F6465D] glow-pulse-red'
           }`}>
-            {riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1)}
+            {riskLevel === 'safe' ? t('trade.safe') : riskLevel === 'moderate' ? t('trade.moderate') : t('trade.danger')}
           </span>
         </div>
       </div>
@@ -107,35 +109,35 @@ export default function MarginView() {
           <div className="bg-[#1E2329] rounded-lg p-4">
             <h2 className="text-xs font-semibold text-[#848E9C] mb-3 flex items-center gap-1.5">
               <CircleDollarSign className="h-3.5 w-3.5" />
-              Margin Account Summary
+              {t('trade.accountSummary')}
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div>
-                <span className="text-[10px] text-[#5E6673]">Total Equity</span>
+                <span className="text-[10px] text-[#5E6673]">{t('trade.totalEquity')}</span>
                 <p className="text-base font-bold text-[#EAECEF] tabular-nums mt-0.5">{formatPrice(totalEquity)}</p>
                 <p className="text-[9px] text-[#5E6673]">USD</p>
               </div>
               <div>
-                <span className="text-[10px] text-[#5E6673]">Total Borrowed</span>
+                <span className="text-[10px] text-[#5E6673]">{t('trade.totalBorrowed')}</span>
                 <p className="text-base font-bold text-[#F6465D] tabular-nums mt-0.5">{formatPrice(totalBorrowedUSD)}</p>
                 <p className="text-[9px] text-[#5E6673]">USD</p>
               </div>
               <div>
-                <span className="text-[10px] text-[#5E6673]">Total Interest</span>
+                <span className="text-[10px] text-[#5E6673]">{t('trade.totalInterest')}</span>
                 <p className="text-base font-bold text-[#F0B90B] tabular-nums mt-0.5">{totalInterest.toFixed(4)}</p>
-                <p className="text-[9px] text-[#5E6673]">Accrued</p>
+                <p className="text-[9px] text-[#5E6673]">{t('trade.accrued')}</p>
               </div>
               <div>
-                <span className="text-[10px] text-[#5E6673]">Margin Level</span>
+                <span className="text-[10px] text-[#5E6673]">{t('trade.marginLevel')}</span>
                 <p className="text-base font-bold text-[#0ECB81] tabular-nums mt-0.5">{(totalEquity / totalBorrowedUSD * 100).toFixed(0)}%</p>
-                <p className="text-[9px] text-[#5E6673]">Health</p>
+                <p className="text-[9px] text-[#5E6673]">{t('trade.health')}</p>
               </div>
             </div>
 
             {/* Risk Level Bar */}
             <div className="mt-3">
               <div className="flex items-center justify-between text-[9px] text-[#5E6673] mb-1">
-                <span>Risk Level</span>
+                <span>{t('trade.riskLevel')}</span>
                 <span className={`font-semibold ${riskLevel === 'safe' ? 'text-[#0ECB81]' : riskLevel === 'moderate' ? 'text-[#F0B90B]' : 'text-[#F6465D]'}`}>
                   {riskPercent.toFixed(0)}%
                 </span>
@@ -149,16 +151,16 @@ export default function MarginView() {
                 />
               </div>
               <div className="flex justify-between mt-1 text-[8px] text-[#5E6673]">
-                <span>Safe</span>
-                <span>Moderate</span>
-                <span>Danger</span>
+                <span>{t('trade.safe')}</span>
+                <span>{t('trade.moderate')}</span>
+                <span>{t('trade.danger')}</span>
               </div>
             </div>
 
             {riskLevel === 'danger' && (
               <div className="mt-3 bg-[#F6465D]/5 border border-[#F6465D]/20 rounded p-2 flex items-center gap-1.5">
                 <AlertTriangle className="h-3.5 w-3.5 text-[#F6465D] shrink-0" />
-                <span className="text-[10px] text-[#F6465D]">Warning: Your margin level is dangerously low. Consider repaying loans or adding collateral.</span>
+                <span className="text-[10px] text-[#F6465D]">{t('trade.marginWarning')}</span>
               </div>
             )}
           </div>
@@ -175,7 +177,7 @@ export default function MarginView() {
                     : 'text-[#5E6673] hover:text-[#848E9C]'
                 }`}
               >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {tab === 'trade' ? t('trade.title') : tab === 'borrow' ? t('trade.borrow') : t('trade.repay')}
               </button>
             ))}
           </div>
@@ -185,7 +187,7 @@ export default function MarginView() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {/* Asset Selector */}
               <div className="bg-[#1E2329] rounded-lg p-3">
-                <label className="text-[10px] text-[#5E6673] mb-1.5 block">Select Asset</label>
+                <label className="text-[10px] text-[#5E6673] mb-1.5 block">{t('trade.selectAsset')}</label>
                 <div className="space-y-1 max-h-40 overflow-y-auto">
                   {marginAssets.map((a) => (
                     <button
@@ -220,7 +222,7 @@ export default function MarginView() {
                     }`}
                   >
                     <TrendingUp className="h-4 w-4 inline mr-1" />
-                    Buy / Long
+                    {t('trade.buyLong')}
                   </button>
                   <button
                     onClick={() => setSide('sell')}
@@ -231,7 +233,7 @@ export default function MarginView() {
                     }`}
                   >
                     <TrendingDown className="h-4 w-4 inline mr-1" />
-                    Sell / Short
+                    {t('trade.sellShort')}
                   </button>
                 </div>
 
@@ -248,7 +250,7 @@ export default function MarginView() {
                             : 'bg-[#2B3139] text-[#5E6673] border border-transparent'
                         }`}
                       >
-                        {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                        {mode === 'cross' ? t('trade.cross') : t('trade.isolated')}
                       </button>
                     ))}
                   </div>
@@ -281,7 +283,7 @@ export default function MarginView() {
                           : 'text-[#5E6673] hover:text-[#848E9C]'
                       }`}
                     >
-                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                      {type === 'limit' ? t('trade.limit') : type === 'market' ? t('trade.market') : t('trade.stop')}
                     </button>
                   ))}
                 </div>
@@ -289,7 +291,7 @@ export default function MarginView() {
                 {/* Price */}
                 {orderType === 'limit' && (
                   <div className="mb-2">
-                    <label className="text-[10px] text-[#5E6673]">Price</label>
+                    <label className="text-[10px] text-[#5E6673]">{t('trade.price')}</label>
                     <div className="flex items-center bg-[#2B3139] rounded h-8 px-2 mt-0.5">
                       <button onClick={() => setTradePrice(formatPrice(Math.max(0, priceNum - (currentPrice * 0.001))))} className="text-[#5E6673] hover:text-[#EAECEF] shrink-0">
                         <Minus className="h-3 w-3" />
@@ -311,7 +313,7 @@ export default function MarginView() {
 
                 {/* Amount */}
                 <div className="mb-2">
-                  <label className="text-[10px] text-[#5E6673]">Amount</label>
+                  <label className="text-[10px] text-[#5E6673]">{t('trade.amount')}</label>
                   <div className="flex items-center bg-[#2B3139] rounded h-8 px-2 mt-0.5">
                     <Input
                       type="number"
@@ -328,15 +330,15 @@ export default function MarginView() {
                 {amountNum > 0 && (
                   <div className="bg-[#0B0E11] rounded p-2 space-y-1 mb-2">
                     <div className="flex justify-between text-[10px]">
-                      <span className="text-[#5E6673]">Total</span>
+                      <span className="text-[#5E6673]">{t('trade.total')}</span>
                       <span className="text-[#EAECEF] tabular-nums">{formatPrice(totalCost)} USDT</span>
                     </div>
                     <div className="flex justify-between text-[10px]">
-                      <span className="text-[#5E6673]">Margin Required</span>
+                      <span className="text-[#5E6673]">{t('trade.marginRatio')}</span>
                       <span className="text-[#F0B90B] tabular-nums font-medium">{formatPrice(marginRequired)} USDT</span>
                     </div>
                     <div className="flex justify-between text-[10px]">
-                      <span className="text-[#5E6673]">Leverage</span>
+                      <span className="text-[#5E6673]">{t('trade.leverage')}</span>
                       <span className="text-[#EAECEF] tabular-nums">{marginLeverage}x</span>
                     </div>
                   </div>
@@ -349,7 +351,7 @@ export default function MarginView() {
                       : 'bg-[#F6465D] hover:bg-[#F6465D]/90 text-white'
                   }`}
                 >
-                  {side === 'buy' ? 'Buy / Long' : 'Sell / Short'} {selectedAsset.asset}
+                  {side === 'buy' ? t('trade.buyLong') : t('trade.sellShort')} {selectedAsset.asset}
                 </Button>
               </div>
             </div>
@@ -360,12 +362,12 @@ export default function MarginView() {
             <div className="bg-[#1E2329] rounded-lg p-4 max-w-lg">
               <h3 className="text-sm font-semibold text-[#EAECEF] mb-3 flex items-center gap-1.5">
                 <DollarSign className="h-4 w-4 text-[#F0B90B]" />
-                Borrow Asset
+                {t('trade.borrowAsset')}
               </h3>
 
               {/* Asset Select */}
               <div className="mb-3">
-                <label className="text-[10px] text-[#5E6673]">Asset</label>
+                <label className="text-[10px] text-[#5E6673]">{t('trade.asset')}</label>
                 <div className="flex gap-1 mt-0.5 flex-wrap">
                   {marginAssets.map((a) => (
                     <button
@@ -386,8 +388,8 @@ export default function MarginView() {
               {/* Borrow Amount */}
               <div className="mb-3">
                 <div className="flex justify-between text-[10px] mb-1">
-                  <span className="text-[#5E6673]">Borrow Amount</span>
-                  <span className="text-[#848E9C]">Available: {selectedAsset.available.toFixed(4)} {selectedAsset.asset}</span>
+                  <span className="text-[#5E6673]">{t('trade.borrowAmount')}</span>
+                  <span className="text-[#848E9C]">{t('trade.available')}: {selectedAsset.available.toFixed(4)} {selectedAsset.asset}</span>
                 </div>
                 <div className="flex items-center bg-[#2B3139] rounded h-9 px-2">
                   <Input
@@ -404,25 +406,25 @@ export default function MarginView() {
               {/* Interest Info */}
               <div className="bg-[#0B0E11] rounded p-2.5 space-y-1.5 mb-3">
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-[#5E6673]">Daily Interest Rate</span>
+                  <span className="text-[#5E6673]">{t('trade.dailyInterestRate')}</span>
                   <span className="text-[#F0B90B] tabular-nums">{(selectedAsset.interestRate * 100).toFixed(4)}%</span>
                 </div>
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-[#5E6673]">Hourly Interest</span>
+                  <span className="text-[#5E6673]">{t('trade.hourlyInterest')}</span>
                   <span className="text-[#848E9C] tabular-nums">{(parseFloat(borrowAmount) * selectedAsset.interestRate / 24).toFixed(6)} {selectedAsset.asset}</span>
                 </div>
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-[#5E6673]">Outstanding Debt</span>
+                  <span className="text-[#5E6673]">{t('trade.outstandingDebt')}</span>
                   <span className="text-[#F6465D] tabular-nums">{selectedAsset.borrowed.toFixed(4)} {selectedAsset.asset}</span>
                 </div>
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-[#5E6673]">Accrued Interest</span>
+                  <span className="text-[#5E6673]">{t('trade.accruedInterest')}</span>
                   <span className="text-[#F0B90B] tabular-nums">{selectedAsset.interest.toFixed(6)} {selectedAsset.asset}</span>
                 </div>
               </div>
 
               <Button className="w-full bg-[#F0B90B] hover:bg-[#F0B90B]/90 text-[#0B0E11] font-semibold h-10 text-sm">
-                Borrow {selectedAsset.asset}
+                {t('trade.borrow')} {selectedAsset.asset}
               </Button>
             </div>
           )}
@@ -432,12 +434,12 @@ export default function MarginView() {
             <div className="bg-[#1E2329] rounded-lg p-4 max-w-lg">
               <h3 className="text-sm font-semibold text-[#EAECEF] mb-3 flex items-center gap-1.5">
                 <ArrowRightLeft className="h-4 w-4 text-[#0ECB81]" />
-                Repay Loan
+                {t('trade.repayLoan')}
               </h3>
 
               {/* Asset Select */}
               <div className="mb-3">
-                <label className="text-[10px] text-[#5E6673]">Asset</label>
+                <label className="text-[10px] text-[#5E6673]">{t('trade.asset')}</label>
                 <div className="flex gap-1 mt-0.5 flex-wrap">
                   {marginAssets.filter(a => a.borrowed > 0).map((a) => (
                     <button
@@ -458,8 +460,8 @@ export default function MarginView() {
               {/* Repay Amount */}
               <div className="mb-3">
                 <div className="flex justify-between text-[10px] mb-1">
-                  <span className="text-[#5E6673]">Repay Amount</span>
-                  <span className="text-[#848E9C]">Debt: {selectedAsset.borrowed.toFixed(4)} {selectedAsset.asset}</span>
+                  <span className="text-[#5E6673]">{t('trade.repayAmount')}</span>
+                  <span className="text-[#848E9C]">{t('trade.debt')}: {selectedAsset.borrowed.toFixed(4)} {selectedAsset.asset}</span>
                 </div>
                 <div className="flex items-center bg-[#2B3139] rounded h-9 px-2">
                   <Input
@@ -476,7 +478,7 @@ export default function MarginView() {
                     className="h-6 px-2 text-[9px] text-[#F0B90B] hover:text-[#F0B90B] hover:bg-[#F0B90B]/10 ml-1"
                     onClick={() => setRepayAmount((selectedAsset.borrowed + selectedAsset.interest).toFixed(6))}
                   >
-                    MAX
+                    {t('trade.max')}
                   </Button>
                 </div>
               </div>
@@ -484,21 +486,21 @@ export default function MarginView() {
               {/* Repay Summary */}
               <div className="bg-[#0B0E11] rounded p-2.5 space-y-1.5 mb-3">
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-[#5E6673]">Outstanding Principal</span>
+                  <span className="text-[#5E6673]">{t('trade.outstandingPrincipal')}</span>
                   <span className="text-[#F6465D] tabular-nums">{selectedAsset.borrowed.toFixed(4)} {selectedAsset.asset}</span>
                 </div>
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-[#5E6673]">Interest to Repay</span>
+                  <span className="text-[#5E6673]">{t('trade.interestToRepay')}</span>
                   <span className="text-[#F0B90B] tabular-nums">{selectedAsset.interest.toFixed(6)} {selectedAsset.asset}</span>
                 </div>
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-[#5E6673]">Total to Repay</span>
+                  <span className="text-[#5E6673]">{t('trade.totalToRepay')}</span>
                   <span className="text-[#EAECEF] tabular-nums font-medium">{(selectedAsset.borrowed + selectedAsset.interest).toFixed(4)} {selectedAsset.asset}</span>
                 </div>
               </div>
 
               <Button className="w-full bg-[#0ECB81] hover:bg-[#0ECB81]/90 text-white font-semibold h-10 text-sm">
-                Repay {selectedAsset.asset}
+                {t('trade.repay')} {selectedAsset.asset}
               </Button>
             </div>
           )}
@@ -506,22 +508,22 @@ export default function MarginView() {
           {/* Open Margin Positions */}
           <div className="bg-[#1E2329] rounded-lg">
             <div className="flex items-center justify-between px-3 py-2.5 border-b border-[#2B3139]">
-              <span className="text-xs font-semibold text-[#848E9C]">Margin Positions</span>
+              <span className="text-xs font-semibold text-[#848E9C]">{t('trade.marginPositions')}</span>
               <Badge className="bg-[#2B3139] text-[#848E9C] border-0 text-[9px] px-1.5 py-0 h-4">{mockMarginPositions.length}</Badge>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-[11px]">
                 <thead>
                   <tr className="text-[#5E6673] border-b border-[#2B3139]/50">
-                    <th className="text-left py-2 px-3 font-medium">Asset</th>
-                    <th className="text-left py-2 px-3 font-medium">Side</th>
-                    <th className="text-right py-2 px-3 font-medium">Size</th>
-                    <th className="text-right py-2 px-3 font-medium">Entry</th>
-                    <th className="text-right py-2 px-3 font-medium">Current</th>
-                    <th className="text-right py-2 px-3 font-medium">Margin</th>
-                    <th className="text-right py-2 px-3 font-medium">PnL</th>
-                    <th className="text-right py-2 px-3 font-medium">ROE%</th>
-                    <th className="text-left py-2 px-3 font-medium">Mode</th>
+                    <th className="text-left py-2 px-3 font-medium">{t('trade.asset')}</th>
+                    <th className="text-left py-2 px-3 font-medium">{t('trade.side')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.size')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.entry')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.current')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.position')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.pnl')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.roe')}%</th>
+                    <th className="text-left py-2 px-3 font-medium">{t('trade.positionMode')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -538,7 +540,7 @@ export default function MarginView() {
                         </td>
                         <td className="py-2.5 px-3">
                           <span className={`font-semibold ${pos.side === 'long' ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
-                            {pos.side === 'long' ? 'Long' : 'Short'}
+                            {pos.side === 'long' ? t('trade.long') : t('trade.short')}
                           </span>
                         </td>
                         <td className="py-2.5 px-3 text-right text-[#EAECEF] tabular-nums">{pos.size}</td>
@@ -555,7 +557,7 @@ export default function MarginView() {
                           <Badge className={`text-[8px] px-1.5 py-0 h-3.5 border-0 font-medium ${
                             pos.mode === 'cross' ? 'bg-[#F0B90B]/10 text-[#F0B90B]' : 'bg-[#848E9C]/10 text-[#848E9C]'
                           }`}>
-                            {pos.mode.charAt(0).toUpperCase() + pos.mode.slice(1)}
+                            {pos.mode === 'cross' ? t('trade.cross') : t('trade.isolated')}
                           </Badge>
                         </td>
                       </tr>
@@ -569,17 +571,17 @@ export default function MarginView() {
           {/* Borrow History */}
           <div className="bg-[#1E2329] rounded-lg">
             <div className="px-3 py-2.5 border-b border-[#2B3139]">
-              <span className="text-xs font-semibold text-[#848E9C]">Borrow & Repay History</span>
+              <span className="text-xs font-semibold text-[#848E9C]">{t('trade.borrowRepayHistory')}</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-[11px]">
                 <thead>
                   <tr className="text-[#5E6673] border-b border-[#2B3139]/50">
-                    <th className="text-left py-2 px-3 font-medium">Asset</th>
-                    <th className="text-left py-2 px-3 font-medium">Action</th>
-                    <th className="text-right py-2 px-3 font-medium">Amount</th>
-                    <th className="text-right py-2 px-3 font-medium">Interest Rate</th>
-                    <th className="text-right py-2 px-3 font-medium">Date</th>
+                    <th className="text-left py-2 px-3 font-medium">{t('trade.asset')}</th>
+                    <th className="text-left py-2 px-3 font-medium">{t('trade.action')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.amount')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.interestRate')}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t('trade.date')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -590,7 +592,7 @@ export default function MarginView() {
                         <Badge className={`text-[9px] px-1.5 py-0 h-4 border-0 font-medium ${
                           record.action === 'borrow' ? 'bg-[#F6465D]/10 text-[#F6465D]' : 'bg-[#0ECB81]/10 text-[#0ECB81]'
                         }`}>
-                          {record.action.charAt(0).toUpperCase() + record.action.slice(1)}
+                          {record.action === 'borrow' ? t('trade.borrow') : t('trade.repay')}
                         </Badge>
                       </td>
                       <td className="py-2 px-3 text-right text-[#EAECEF] tabular-nums">{record.amount}</td>
@@ -607,10 +609,9 @@ export default function MarginView() {
           <div className="bg-[#F0B90B]/5 border border-[#F0B90B]/20 rounded-lg p-3 flex items-start gap-2">
             <AlertTriangle className="h-4 w-4 text-[#F0B90B] shrink-0 mt-0.5" />
             <div>
-              <p className="text-[11px] text-[#F0B90B] font-medium">Margin Trading Notice</p>
+              <p className="text-[11px] text-[#F0B90B] font-medium">{t('trade.marginNoticeTitle')}</p>
               <p className="text-[10px] text-[#848E9C] mt-0.5">
-                Margin trading amplifies both gains and losses. Interest accrues hourly on borrowed assets.
-                Monitor your margin level closely to avoid liquidation.
+                {t('trade.marginNoticeDesc')}
               </p>
             </div>
           </div>

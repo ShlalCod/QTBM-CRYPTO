@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useTranslation } from '@/lib/i18n';
 import { mockAssets, mockWalletBalances, formatPrice, getTimeAgo } from '@/lib/mock-data';
 import {
   ArrowLeft,
@@ -69,15 +70,16 @@ const mockWithdrawalHistory = [
   { id: '5', asset: 'SOL', icon: '◎', network: 'Solana', amount: 30, fee: 0.01, status: 'failed' as const, address: '5FHw...9kNp', time: '2024-01-12T09:45:00Z' },
 ];
 
-const statusConfig: Record<string, { color: string; bg: string; label: string; icon: React.ElementType }> = {
-  completed: { color: 'text-[#0ECB81]', bg: 'bg-[#0ECB81]/10', label: 'Completed', icon: CheckCircle2 },
-  processing: { color: 'text-[#F0B90B]', bg: 'bg-[#F0B90B]/10', label: 'Processing', icon: Loader2 },
-  pending: { color: 'text-[#848E9C]', bg: 'bg-[#848E9C]/10', label: 'Pending', icon: Clock },
-  failed: { color: 'text-[#F6465D]', bg: 'bg-[#F6465D]/10', label: 'Failed', icon: XCircle },
+const statusConfig: Record<string, { color: string; bg: string; labelKey: string; icon: React.ElementType }> = {
+  completed: { color: 'text-[#0ECB81]', bg: 'bg-[#0ECB81]/10', labelKey: 'wallet.completed', icon: CheckCircle2 },
+  processing: { color: 'text-[#F0B90B]', bg: 'bg-[#F0B90B]/10', labelKey: 'wallet.processing', icon: Loader2 },
+  pending: { color: 'text-[#848E9C]', bg: 'bg-[#848E9C]/10', labelKey: 'wallet.pending', icon: Clock },
+  failed: { color: 'text-[#F6465D]', bg: 'bg-[#F6465D]/10', labelKey: 'wallet.failed', icon: XCircle },
 };
 
 export default function WithdrawView() {
   const { goBack, selectedAsset } = useAppStore();
+  const { t } = useTranslation();
   const [selectedSymbol, setSelectedSymbol] = useState(selectedAsset || 'BTC');
   const [selectedNetwork, setSelectedNetwork] = useState('');
   const [showAssetDropdown, setShowAssetDropdown] = useState(false);
@@ -126,9 +128,9 @@ export default function WithdrawView() {
     try {
       const text = await navigator.clipboard.readText();
       setAddress(text.trim());
-      toast.success('Address pasted');
+      toast.success(t('wallet.addressPasted'));
     } catch {
-      toast.error('Failed to paste from clipboard');
+      toast.error(t('wallet.pasteFailed'));
     }
   };
 
@@ -140,7 +142,7 @@ export default function WithdrawView() {
 
   const handleVerifyAndSubmit = () => {
     if (verificationCode.length < 6) {
-      toast.error('Please enter the full verification code');
+      toast.error(t('wallet.enterFullCode'));
       return;
     }
     setIsSubmitting(true);
@@ -150,7 +152,7 @@ export default function WithdrawView() {
       setVerificationCode('');
       setAddress('');
       setAmount('');
-      toast.success(`Withdrawal of ${numAmount} ${selectedSymbol} submitted successfully`);
+      toast.success(t('wallet.withdrawSubmitted').replace('{amount}', String(numAmount)).replace('{asset}', selectedSymbol));
     }, 1500);
   };
 
@@ -169,15 +171,15 @@ export default function WithdrawView() {
             {mockAssets.find(a => a.symbol === selectedSymbol)?.icon || '?'}
           </div>
           <div>
-            <h1 className="text-lg font-bold text-[#EAECEF]">Withdraw</h1>
-            <p className="text-[10px] text-[#848E9C]">{selectedSymbol} • {currentNetwork?.name || 'Select network'}</p>
+            <h1 className="text-lg font-bold text-[#EAECEF]">{t('wallet.withdraw')}</h1>
+            <p className="text-[10px] text-[#848E9C]">{selectedSymbol} • {currentNetwork?.name || t('wallet.selectNetworkPrompt')}</p>
           </div>
         </div>
 
         {/* Select Asset */}
         <Card className="bg-[#1E2329] border-[#2B3139]">
           <CardContent className="p-4">
-            <label className="text-xs text-[#848E9C] font-medium mb-2 block">Select Asset</label>
+            <label className="text-xs text-[#848E9C] font-medium mb-2 block">{t('wallet.selectAsset')}</label>
             <div className="relative">
               <button
                 onClick={() => { setShowAssetDropdown(!showAssetDropdown); setShowNetworkDropdown(false); }}
@@ -194,7 +196,7 @@ export default function WithdrawView() {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-[#848E9C] tabular-nums">
-                    Available: {available.toLocaleString('en-US', { maximumFractionDigits: 4 })} {selectedSymbol}
+                    {t('wallet.available')}: {available.toLocaleString('en-US', { maximumFractionDigits: 4 })} {selectedSymbol}
                   </span>
                   <ChevronDown className={`h-4 w-4 text-[#848E9C] transition-transform ${showAssetDropdown ? 'rotate-180' : ''}`} />
                 </div>
@@ -211,7 +213,7 @@ export default function WithdrawView() {
                   >
                     <div className="p-2">
                       <Input
-                        placeholder="Search asset..."
+                        placeholder={t('wallet.searchAsset')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-8 text-sm"
@@ -265,7 +267,7 @@ export default function WithdrawView() {
         {networks.length > 0 && (
           <Card className="bg-[#1E2329] border-[#2B3139]">
             <CardContent className="p-4">
-              <label className="text-xs text-[#848E9C] font-medium mb-2 block">Select Network</label>
+              <label className="text-xs text-[#848E9C] font-medium mb-2 block">{t('wallet.selectNetwork')}</label>
               <div className="grid gap-2">
                 {networks.map((network) => (
                   <button
@@ -278,7 +280,7 @@ export default function WithdrawView() {
                     <div className="text-left">
                       <p className="text-sm font-medium text-[#EAECEF]">{network.name}</p>
                       <p className="text-[10px] text-[#5E6673]">
-                        Fee: {network.fee} {network.feeAsset} • Min: {network.minWithdraw} {selectedSymbol}
+                        {t('wallet.fee')}: {network.fee} {network.feeAsset} • {t('wallet.minWithdraw')}: {network.minWithdraw} {selectedSymbol}
                       </p>
                     </div>
                     {selectedNetwork === network.id && (
@@ -303,10 +305,10 @@ export default function WithdrawView() {
             <CardContent className="p-4 space-y-4">
               {/* Address Input */}
               <div>
-                <label className="text-xs text-[#848E9C] font-medium mb-2 block">Withdrawal Address</label>
+                <label className="text-xs text-[#848E9C] font-medium mb-2 block">{t('wallet.withdrawalAddress')}</label>
                 <div className="relative">
                   <Input
-                    placeholder={`Enter ${selectedSymbol} ${currentNetwork.name} address`}
+                    placeholder={`${selectedSymbol} ${currentNetwork.name}`}
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-11 pr-20 text-sm font-mono focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
@@ -316,7 +318,7 @@ export default function WithdrawView() {
                     className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 px-2 py-1 text-[10px] text-[#F0B90B] hover:text-[#F0B90B]/80 bg-[#F0B90B]/10 rounded transition-colors"
                   >
                     <ClipboardPaste className="h-3 w-3" />
-                    Paste
+                    {t('wallet.paste')}
                   </button>
                 </div>
               </div>
@@ -324,9 +326,9 @@ export default function WithdrawView() {
               {/* Amount Input */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs text-[#848E9C] font-medium">Amount</label>
+                  <label className="text-xs text-[#848E9C] font-medium">{t('trade.amount')}</label>
                   <span className="text-xs text-[#5E6673]">
-                    Available: <span className="text-[#EAECEF] tabular-nums">{available.toLocaleString('en-US', { maximumFractionDigits: 4 })}</span> {selectedSymbol}
+                    {t('wallet.available')}: <span className="text-[#EAECEF] tabular-nums">{available.toLocaleString('en-US', { maximumFractionDigits: 4 })}</span> {selectedSymbol}
                   </span>
                 </div>
                 <div className="relative">
@@ -341,17 +343,17 @@ export default function WithdrawView() {
                     onClick={handleMax}
                     className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1 text-[10px] font-semibold text-[#F0B90B] bg-[#F0B90B]/10 rounded hover:bg-[#F0B90B]/20 transition-colors"
                   >
-                    MAX
+                    {t('wallet.max')}
                   </button>
                 </div>
                 {numAmount > 0 && !isAboveMin && (
                   <p className="text-[10px] text-[#F6465D] mt-1">
-                    Minimum withdrawal is {currentNetwork.minWithdraw} {selectedSymbol}
+                    {t('wallet.minWithdrawError').replace('{amount}', String(currentNetwork.minWithdraw)).replace('{asset}', selectedSymbol)}
                   </p>
                 )}
                 {numAmount > available && (
                   <p className="text-[10px] text-[#F6465D] mt-1">
-                    Insufficient balance
+                    {t('wallet.insufficientBalance')}
                   </p>
                 )}
               </div>
@@ -359,12 +361,12 @@ export default function WithdrawView() {
               {/* Fee Details with animated estimation */}
               <div className="space-y-2 bg-[#2B3139] rounded-lg p-3 glow-border fee-animate fee-slide-in">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#848E9C]">Network Fee</span>
+                  <span className="text-[#848E9C]">{t('wallet.networkFee')}</span>
                   <span className="text-[#EAECEF] tabular-nums neon-glow">{fee} {currentNetwork.feeAsset}</span>
                 </div>
                 <Separator className="bg-[#0B0E11]" />
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#848E9C]">You Will Receive</span>
+                  <span className="text-[#848E9C]">{t('wallet.youWillReceive')}</span>
                   <span className="text-[#0ECB81] font-semibold tabular-nums neon-glow-green">
                     {youReceive > 0 ? youReceive.toFixed(6) : '0.00'} {selectedSymbol}
                   </span>
@@ -373,7 +375,7 @@ export default function WithdrawView() {
                   <>
                     <Separator className="bg-[#0B0E11]" />
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-[#848E9C]">≈ USD Value</span>
+                      <span className="text-[#848E9C]">{t('wallet.usdValueLabel')}</span>
                       <span className="text-[#EAECEF] tabular-nums">
                         ${formatPrice(youReceive * (currentBalance.usdValue / currentBalance.total))}
                       </span>
@@ -387,9 +389,9 @@ export default function WithdrawView() {
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="h-4 w-4 text-[#F6465D] shrink-0 mt-0.5 warning-animate" />
                   <ul className="text-[11px] text-[#848E9C] space-y-1">
-                    <li>• Please verify the address is correct on the <span className="text-[#EAECEF] font-medium">{currentNetwork.name}</span> network</li>
-                    <li>• Withdrawals to incorrect addresses may result in permanent loss</li>
-                    <li>• Minimum withdrawal: <span className="text-[#EAECEF] font-medium">{currentNetwork.minWithdraw} {selectedSymbol}</span></li>
+                    <li>• {t('wallet.withdrawWarning1').replace('{network}', currentNetwork.name)}</li>
+                    <li>• {t('wallet.withdrawWarning2')}</li>
+                    <li>• {t('wallet.withdrawWarning3').replace('{amount}', String(currentNetwork.minWithdraw)).replace('{asset}', selectedSymbol)}</li>
                   </ul>
                 </div>
               </div>
@@ -400,7 +402,7 @@ export default function WithdrawView() {
                 disabled={!isValid || !isAboveMin}
                 className="w-full gradient-submit-btn text-[#0B0E11] font-semibold h-11 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
               >
-                Withdraw {selectedSymbol}
+                {t('wallet.withdrawAsset').replace('{asset}', selectedSymbol)}
               </Button>
             </CardContent>
           </Card>
@@ -410,9 +412,9 @@ export default function WithdrawView() {
         <Card className="bg-[#1E2329] border-[#2B3139]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-[#EAECEF]">Recent Withdrawals</h3>
+              <h3 className="text-sm font-semibold text-[#EAECEF]">{t('wallet.recentWithdrawals')}</h3>
               <button className="text-xs text-[#F0B90B] hover:text-[#F0B90B]/80 flex items-center gap-1 transition-colors">
-                View All <ExternalLink className="h-3 w-3" />
+                {t('wallet.viewAll')} <ExternalLink className="h-3 w-3" />
               </button>
             </div>
 
@@ -442,9 +444,9 @@ export default function WithdrawView() {
                     <div className="text-right">
                       <Badge className={`text-[9px] h-4 px-1.5 border-0 ${status.color} ${status.bg}`}>
                         <StatusIcon className={`h-2.5 w-2.5 mr-0.5 ${withdrawal.status === 'processing' ? 'animate-spin' : ''}`} />
-                        {status.label}
+                        {t(status.labelKey)}
                       </Badge>
-                      <p className="text-[10px] text-[#5E6673] mt-0.5">Fee: {withdrawal.fee} {withdrawal.asset}</p>
+                      <p className="text-[10px] text-[#5E6673] mt-0.5">{t('wallet.fee')}: {withdrawal.fee} {withdrawal.asset}</p>
                     </div>
                   </div>
                 );
@@ -461,7 +463,7 @@ export default function WithdrawView() {
       <Dialog open={showVerification} onOpenChange={setShowVerification}>
         <DialogContent className="bg-[#1E2329] border-[#2B3139] text-[#EAECEF] max-w-sm frosted-glass">
           <DialogHeader>
-            <DialogTitle className="text-[#EAECEF]">Security Verification</DialogTitle>
+            <DialogTitle className="text-[#EAECEF]">{t('wallet.securityVerification')}</DialogTitle>
           </DialogHeader>
 
           {/* Step Progress Indicator */}
@@ -481,15 +483,15 @@ export default function WithdrawView() {
 
           <div className="space-y-4">
             <p className="text-xs text-[#848E9C]">
-              To complete this withdrawal, please verify your identity.
+              {t('wallet.verifyDesc')}
             </p>
 
             {/* Verification type tabs */}
             <div className="flex gap-1 bg-[#2B3139] rounded-lg p-1">
               {[
-                { id: 'email' as const, label: 'Email' },
-                { id: 'sms' as const, label: 'SMS' },
-                { id: '2fa' as const, label: '2FA' },
+                { id: 'email' as const, label: t('wallet.email') },
+                { id: 'sms' as const, label: t('wallet.sms') },
+                { id: '2fa' as const, label: t('wallet.google2fa') },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -508,10 +510,10 @@ export default function WithdrawView() {
             {/* Verification code input */}
             <div>
               <label className="text-xs text-[#848E9C] font-medium mb-2 block">
-                {verificationType === 'email' ? 'Email verification code' : verificationType === 'sms' ? 'SMS verification code' : 'Google Authenticator code'}
+                {verificationType === 'email' ? t('wallet.emailCode') : verificationType === 'sms' ? t('wallet.smsCode') : t('wallet.googleAuthCode')}
               </label>
               <Input
-                placeholder="Enter 6-digit code"
+                placeholder={t('wallet.enterCode')}
                 value={verificationCode}
                 onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-11 text-center text-lg tracking-[0.3em] font-mono focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
@@ -519,7 +521,7 @@ export default function WithdrawView() {
               />
               {verificationType !== '2fa' && (
                 <button className="text-xs text-[#F0B90B] hover:text-[#F0B90B]/80 mt-2 transition-colors">
-                  Send Code
+                  {t('wallet.sendCode')}
                 </button>
               )}
             </div>
@@ -527,15 +529,15 @@ export default function WithdrawView() {
             {/* Withdrawal summary */}
             <div className="bg-[#2B3139] rounded-lg p-3 space-y-2 text-xs">
               <div className="flex justify-between">
-                <span className="text-[#848E9C]">Amount</span>
+                <span className="text-[#848E9C]">{t('trade.amount')}</span>
                 <span className="text-[#EAECEF] tabular-nums">{numAmount} {selectedSymbol}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#848E9C]">Network</span>
+                <span className="text-[#848E9C]">{t('wallet.network')}</span>
                 <span className="text-[#EAECEF]">{currentNetwork?.name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#848E9C]">Address</span>
+                <span className="text-[#848E9C]">{t('wallet.address')}</span>
                 <span className="text-[#EAECEF] font-mono text-[10px]">{address.slice(0, 8)}...{address.slice(-6)}</span>
               </div>
             </div>
@@ -551,10 +553,10 @@ export default function WithdrawView() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Processing...
+                    {t('wallet.processing')}
                   </>
                 ) : (
-                  'Confirm Withdrawal'
+                  t('wallet.confirmWithdrawal')
                 )}
               </Button>
               <Button
@@ -562,7 +564,7 @@ export default function WithdrawView() {
                 onClick={() => setShowVerification(false)}
                 className="w-full border-[#2B3139] text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-9"
               >
-                Cancel
+                {t('trade.cancel')}
               </Button>
             </div>
           </DialogFooter>

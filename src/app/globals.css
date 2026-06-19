@@ -3738,3 +3738,250 @@
   mask-composite: exclude;
   pointer-events: none;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DESIGN SYSTEM — Unified tokens, RTL logical properties, mobile-first
+   ══════════════════════════════════════════════════════════════════════════
+   Based on research:
+   - CSS Logical Properties (margin-inline-start, padding-inline-start)
+     adapt automatically to dir=rtl/ltr — no manual flipping needed.
+   - Mobile typography: 14sp base (Material Design), line-height 1.5x
+   - Touch targets: 44px minimum (Apple HIG) / 48dp (Material Design)
+   - Capacitor WebView: viewport-fit=cover, -webkit-text-size-adjust: 100%
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Design Tokens ─────────────────────────────────────────────────────── */
+:root {
+  /* Typography scale (rem-based, 16px root) */
+  --fs-xs:   0.6875rem;  /* 11px — labels, badges */
+  --fs-sm:   0.75rem;    /* 12px — secondary text */
+  --fs-base: 0.875rem;   /* 14px — body text (Material default) */
+  --fs-md:   1rem;       /* 16px — emphasized text */
+  --fs-lg:   1.25rem;    /* 20px — card titles */
+  --fs-xl:   1.5rem;     /* 24px — page titles */
+  --fs-2xl:  2rem;       /* 32px — hero numbers */
+
+  /* Spacing scale (4px base) */
+  --sp-1: 0.25rem;  /* 4px  */
+  --sp-2: 0.5rem;   /* 8px  */
+  --sp-3: 0.75rem;  /* 12px */
+  --sp-4: 1rem;     /* 16px */
+  --sp-5: 1.5rem;   /* 24px */
+  --sp-6: 2rem;     /* 32px */
+
+  /* Touch targets */
+  --touch-min: 44px;   /* Apple HIG minimum */
+  --touch-sm:  36px;   /* dense tables only */
+
+  /* Border radius */
+  --r-sm: 0.375rem;
+  --r-md: 0.5rem;
+  --r-lg: 0.75rem;
+  --r-xl: 1rem;
+
+  /* Z-index scale (reserved ranges) */
+  --z-base:    0;
+  --z-sticky:  10;
+  --z-dropdown: 30;
+  --z-header:  50;
+  --z-modal:   60;
+  --z-toast:   80;
+}
+
+/* ── Base typography for mobile ────────────────────────────────────────── */
+html, body {
+  /* Prevent Chromium text auto-sizing on mobile WebView */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Font stack with Arabic support */
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont,
+               "Segoe UI", Roboto, "Helvetica Neue", Arial,
+               "Tajawal", "Noto Sans Arabic", "Cairo", sans-serif;
+  /* Base font size 14px on mobile, 16px on desktop */
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+@media (min-width: 768px) {
+  html, body { font-size: 15px; }
+}
+@media (min-width: 1024px) {
+  html, body { font-size: 16px; }
+}
+
+/* Arabic typography — better line-height + letter-spacing */
+html[lang="ar"] body {
+  font-family: "Tajawal", "Noto Sans Arabic", "Cairo", "Segoe UI",
+               var(--font-geist-sans), sans-serif;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3,
+html[lang="ar"] h4 {
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+/* Numbers: always tabular + LTR (even in Arabic) */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  direction: ltr;
+  unicode-bidi: embed;
+  font-family: var(--font-geist-mono), "Roboto Mono", monospace;
+}
+
+/* ── RTL: auto-flip directional utilities ──────────────────────────────── */
+/* In RTL mode, Tailwind's left/right don't auto-flip.
+   These rules handle the most common patterns used in the app.
+   For NEW code, prefer CSS logical properties: ms-*, me-*, ps-*, pe-*. */
+
+html[dir="rtl"] .pl-9 { padding-left: 0; padding-right: 2.25rem; }
+html[dir="rtl"] .pl-3 { padding-left: 0; padding-right: 0.75rem; }
+html[dir="rtl"] .pl-2 { padding-left: 0; padding-right: 0.5rem; }
+html[dir="rtl"] .pl-4 { padding-left: 0; padding-right: 1rem; }
+
+html[dir="rtl"] .ml-1 { margin-left: 0; margin-right: 0.25rem; }
+html[dir="rtl"] .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+html[dir="rtl"] .ml-3 { margin-left: 0; margin-right: 0.75rem; }
+html[dir="rtl"] .mr-1 { margin-right: 0; margin-left: 0.25rem; }
+html[dir="rtl"] .mr-2 { margin-right: 0; margin-left: 0.5rem; }
+html[dir="rtl"] .mr-1\.5 { margin-right: 0; margin-left: 0.375rem; }
+
+/* Text alignment: flip in RTL (except tabular-nums which stays LTR) */
+html[dir="rtl"] .text-left:not(.tabular-nums):not(.ltr-text) { text-align: right; }
+html[dir="rtl"] .text-right:not(.tabular-nums):not(.ltr-text) { text-align: left; }
+
+/* Absolute positioning: swap left/right in RTL */
+html[dir="rtl"] .absolute.left-0 { left: auto; right: 0; }
+html[dir="rtl"] .absolute.right-0 { right: auto; left: 0; }
+html[dir="rtl"] .fixed.left-0 { left: auto; right: 0; }
+html[dir="rtl"] .fixed.right-0 { right: auto; left: 0; }
+
+/* ── Mobile touch targets ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Enforce minimum touch target on buttons (except in dense tables) */
+  button:not(table button):not(.order-book-row button):not([class*="grid-cols-7"] button) {
+    min-height: var(--touch-min);
+    min-width: var(--touch-min);
+  }
+  /* Inputs: minimum 40px for comfortable touch */
+  input:not([type="checkbox"]):not([type="radio"]):not([class*="h-5"]):not([class*="h-6"]) {
+    min-height: 40px;
+  }
+}
+
+/* ── Solidify glass effects for text readability ───────────────────────── */
+.glass-card {
+  background: rgba(30, 35, 41, 0.92) !important;
+  border: 1px solid rgba(43, 49, 57, 0.8) !important;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+.glass-header {
+  background: rgba(11, 14, 17, 0.95) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.glass-morphism,
+.glass {
+  background: rgba(30, 35, 41, 0.88) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* ── Z-index stacking (unified) ────────────────────────────────────────── */
+header.sticky, .glass-header { z-index: var(--z-header) !important; }
+nav[class*="fixed bottom-0"] { z-index: var(--z-header) !important; }
+[data-radix-popper-content-wrapper] { z-index: var(--z-dropdown) !important; }
+[class*="fixed inset-0"][class*="z-50"],
+[class*="fixed inset-0"][class*="z-[60]"] { z-index: var(--z-modal) !important; }
+
+/* ── Modal backgrounds: solid, no bleed-through ────────────────────────── */
+[class*="fixed inset-0"][class*="z-50"],
+[class*="fixed inset-0"][class*="z-[60]"] {
+  background: rgba(0, 0, 0, 0.7) !important;
+}
+[class*="fixed inset-0"][class*="z-50"] > [class*="bg-"],
+[class*="fixed inset-0"][class*="z-[60]"] > [class*="bg-"] {
+  background: #1E2329 !important;
+  border: 1px solid #2B3139 !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ── Prevent text clipping on mobile ───────────────────────────────────── */
+@media (max-width: 768px) {
+  .glass-card, [class*="bg-[#1E2329]"] {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .glass-card h1, .glass-card h2, .glass-card h3, .glass-card h4 {
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+}
+
+/* ── Contrast: bump secondary text for AA compliance ───────────────────── */
+.text-\[\#5E6673\] { color: #707785 !important; }
+
+/* ── Light theme overrides ─────────────────────────────────────────────── */
+html[data-theme="light"] body { background: #FFFFFF; color: #1E2329; }
+html[data-theme="light"] .glass-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(229, 231, 235, 0.8) !important;
+  color: #1E2329 !important;
+}
+html[data-theme="light"] .glass-header {
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* ── Touch feedback ────────────────────────────────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+  button:active, a:active, [role="button"]:active {
+    transform: scale(0.97);
+    transition: transform 0.08s ease-out;
+  }
+}
+
+/* ── Safe area insets (notched devices) ────────────────────────────────── */
+.safe-top    { padding-top:    env(safe-area-inset-top, 0px); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* ── Landscape phones: compact header ──────────────────────────────────── */
+@media (max-height: 500px) and (orientation: landscape) {
+  .glass-header > div { height: 48px !important; }
+  nav[class*="fixed bottom-0"] > div { height: 48px !important; }
+  nav[class*="fixed bottom-0"] span { display: none; }
+}
+
+/* ── Focus visible (accessibility) ─────────────────────────────────────── */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid #F0B90B;
+  outline-offset: 2px;
+}
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) { outline: none; }
+
+/* ── Prevent horizontal scroll ─────────────────────────────────────────── */
+main {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* ── Reduced motion ────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

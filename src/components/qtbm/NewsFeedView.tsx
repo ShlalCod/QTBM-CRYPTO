@@ -211,6 +211,7 @@ const categoryColors: Record<NewsCategory, string> = {
 };
 
 function FearGreedGauge({ value }: { value: number }) {
+  const { t } = useTranslation();
   const [animatedValue, setAnimatedValue] = useState(0);
 
   useEffect(() => {
@@ -229,11 +230,11 @@ function FearGreedGauge({ value }: { value: number }) {
   const ny = cy + needleLength * Math.sin(radians);
 
   const getLabel = (v: number) => {
-    if (v <= 20) return 'Extreme Fear';
-    if (v <= 40) return 'Fear';
-    if (v <= 60) return 'Neutral';
-    if (v <= 80) return 'Greed';
-    return 'Extreme Greed';
+    if (v <= 20) return t('newsFeed.extremeFear');
+    if (v <= 40) return t('newsFeed.fear');
+    if (v <= 60) return t('newsFeed.neutral');
+    if (v <= 80) return t('newsFeed.greed');
+    return t('newsFeed.extremeGreed');
   };
 
   const getColor = (v: number) => {
@@ -454,7 +455,7 @@ export default function NewsFeedView() {
                             {article.category}
                           </span>
                           <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-[#F0B90B]/20 text-[#F0B90B] border border-[#F0B90B]/30">
-                            Featured
+                            {t('newsFeed.featuredLabel')}
                           </span>
                         </div>
                       </div>
@@ -610,7 +611,7 @@ export default function NewsFeedView() {
                             </div>
                             <div>
                               <p className="text-sm font-semibold text-[#EAECEF]">{topic.tag}</p>
-                              <p className="text-[10px] text-[#5E6673]">{formatViews(topic.posts)} posts</p>
+                              <p className="text-[10px] text-[#5E6673]">{formatViews(topic.posts)} {t('newsFeed.posts')}</p>
                             </div>
                           </div>
                           {topic.coin && topic.priceChange !== undefined && (

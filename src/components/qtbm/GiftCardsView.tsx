@@ -30,10 +30,10 @@ const assets = ['BTC', 'ETH', 'BNB', 'USDT', 'SOL'];
 const presetAmounts = ['$25', '$50', '$100', '$250', '$500', 'Custom'];
 
 const themes = [
-  { id: 'birthday', name: 'Birthday', icon: PartyPopper, gradient: 'from-[#F0B90B] to-[#F6465D]', pattern: '🎂' },
-  { id: 'thankyou', name: 'Thank You', icon: Heart, gradient: 'from-[#0ECB81] to-[#F0B90B]', pattern: '💝' },
-  { id: 'congrats', name: 'Congratulations', icon: Sparkles, gradient: 'from-[#627EEA] to-[#F0B90B]', pattern: '🎉' },
-  { id: 'holiday', name: 'Holiday', icon: Snowflake, gradient: 'from-[#229ED9] to-[#0ECB81]', pattern: '❄️' },
+  { id: 'birthday', nameKey: 'giftCards.birthday', icon: PartyPopper, gradient: 'from-[#F0B90B] to-[#F6465D]', pattern: '🎂' },
+  { id: 'thankyou', nameKey: 'giftCards.thankYou', icon: Heart, gradient: 'from-[#0ECB81] to-[#F0B90B]', pattern: '💝' },
+  { id: 'congrats', nameKey: 'giftCards.congratulations', icon: Sparkles, gradient: 'from-[#627EEA] to-[#F0B90B]', pattern: '🎉' },
+  { id: 'holiday', nameKey: 'giftCards.holiday', icon: Snowflake, gradient: 'from-[#229ED9] to-[#0ECB81]', pattern: '❄️' },
 ];
 
 const myGiftCards = [
@@ -43,9 +43,9 @@ const myGiftCards = [
 ];
 
 const howItWorks = [
-  { step: 1, title: 'Create', desc: 'Choose an asset, amount, and design', icon: Gift },
-  { step: 2, title: 'Share', desc: 'Send the gift card code to a friend', icon: Send },
-  { step: 3, title: 'Redeem', desc: 'They redeem and receive the crypto', icon: CreditCard },
+  { step: 1, titleKey: 'giftCards.stepCreate', descKey: 'giftCards.stepCreateDesc', icon: Gift },
+  { step: 2, titleKey: 'giftCards.stepShare', descKey: 'giftCards.stepShareDesc', icon: Send },
+  { step: 3, titleKey: 'giftCards.stepRedeem', descKey: 'giftCards.stepRedeemDesc', icon: CreditCard },
 ];
 
 export default function GiftCardsView() {
@@ -187,7 +187,7 @@ export default function GiftCardsView() {
                         : 'bg-[#2B3139] text-[#848E9C] hover:bg-[#3B4451]'
                     }`}
                   >
-                    {preset}
+                    {preset === 'Custom' ? t('giftCards.custom') : preset}
                   </button>
                 ))}
               </div>
@@ -201,7 +201,7 @@ export default function GiftCardsView() {
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#848E9C] text-sm">$</span>
                     <Input
                       type="number"
-                      placeholder="Enter amount"
+                      placeholder={t('giftCards.enterAmount')}
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                       className="pl-7 bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] h-10 text-sm"
@@ -245,7 +245,7 @@ export default function GiftCardsView() {
                       <div className={`w-full h-14 rounded-lg bg-gradient-to-br ${theme.gradient} mb-1.5 flex items-center justify-center`}>
                         <span className="text-lg">{theme.pattern}</span>
                       </div>
-                      <span className="text-[9px] text-[#848E9C] font-medium">{theme.name}</span>
+                      <span className="text-[9px] text-[#848E9C] font-medium">{t(theme.nameKey)}</span>
                     </button>
                   );
                 })}
@@ -259,7 +259,7 @@ export default function GiftCardsView() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Gift className="h-4 w-4 text-[#F0B90B]" />
-                    <span className="text-[9px] text-[#848E9C] uppercase tracking-wider">QTBM Gift Card</span>
+                    <span className="text-[9px] text-[#848E9C] uppercase tracking-wider">{t('giftCards.qtbmGiftCard')}</span>
                   </div>
                   <span className="text-lg">{activeTheme.pattern}</span>
                 </div>
@@ -314,7 +314,7 @@ export default function GiftCardsView() {
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-[#EAECEF]">
-                            {card.asset} ${card.amount} - {theme.name}
+                            {card.asset} ${card.amount} - {t(theme.nameKey)}
                           </p>
                           <p className="text-[9px] text-[#5E6673] truncate max-w-[180px]">
                             {card.message}
@@ -323,7 +323,7 @@ export default function GiftCardsView() {
                       </div>
                       <div className="flex flex-col items-end gap-1">
                         <Badge className={`${getStatusColor(card.status)} text-[8px] px-1.5 py-0 h-4 border-0`}>
-                          {card.status}
+                          {card.status === 'Redeemed' ? t('giftCards.redeemed') : card.status === 'Pending' ? t('giftCards.pending') : card.status === 'Claimed' ? t('giftCards.claimed') : card.status}
                         </Badge>
                         <span className="text-[8px] text-[#5E6673]">{card.date}</span>
                       </div>
@@ -373,8 +373,8 @@ export default function GiftCardsView() {
                       <Icon className="h-4 w-4 text-[#0B0E11]" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-xs font-medium text-[#EAECEF]">{item.title}</p>
-                      <p className="text-[10px] text-[#5E6673]">{item.desc}</p>
+                      <p className="text-xs font-medium text-[#EAECEF]">{t(item.titleKey)}</p>
+                      <p className="text-[10px] text-[#5E6673]">{t(item.descKey)}</p>
                     </div>
                     {idx < howItWorks.length - 1 && (
                       <ArrowRight className="h-3 w-3 text-[#2B3139] shrink-0 mt-2" />

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useTranslation } from '@/lib/i18n';
 
 type SortField = 'symbol' | 'price' | 'change' | 'volume';
 type SortDir = 'asc' | 'desc';
@@ -63,13 +64,14 @@ const TABS = [
   { id: 'btc', label: 'BTC' },
   { id: 'eth', label: 'ETH' },
   { id: 'bnb', label: 'BNB' },
-  { id: 'heatmap', label: '🔥 Heatmap' },
+  { id: 'heatmap', label: '🔥 ' },
   { id: 'new', label: 'New' },
   { id: 'gainers', label: 'Gainers' },
   { id: 'losers', label: 'Losers' },
 ];
 
 export default function MarketsView() {
+  const { t } = useTranslation();
   const { navigateTo, favorites, toggleFavorite, setSelectedMarket, searchQuery, setSearchQuery, livePrices, priceDirection } = useAppStore();
   const [tab, setTab] = useState('usdt');
   const [sortField, setSortField] = useState<SortField>('volume');
@@ -189,7 +191,7 @@ export default function MarketsView() {
       return (
         <div className="flex flex-col items-center justify-center py-12 text-[#5E6673]">
           <BarChart3 className="h-8 w-8 mb-2 text-[#2B3139]" />
-          <p className="text-sm">No data for heatmap</p>
+          <p className="text-sm">{t('markets.noHeatmapData')}</p>
         </div>
       );
     }
@@ -237,7 +239,7 @@ export default function MarketsView() {
                   : 'bg-[#1E2329] text-[#848E9C] border border-[#2B3139] hover:text-[#EAECEF]'
               }`}
             >
-              {f === 'all' ? 'All' : f === 'gainers' ? '▲ Gainers' : '▼ Losers'}
+              {f === 'all' ? t('markets.all') : f === 'gainers' ? `▲ ${t('markets.gainersShort')}` : `▼ ${t('markets.losersShort')}`}
             </button>
           ))}
         </div>
@@ -309,7 +311,7 @@ export default function MarketsView() {
               <Globe className="h-3.5 w-3.5 text-[#F0B90B]" />
             </div>
             <div>
-              <p className="text-[10px] text-[#5E6673] leading-tight">Market Cap</p>
+              <p className="text-[10px] text-[#5E6673] leading-tight">{t('markets.marketCap')}</p>
               <p className="text-xs text-[#EAECEF] font-semibold tabular-nums">{formatNumber(totalMarketCap, 1)}</p>
             </div>
           </div>
@@ -318,7 +320,7 @@ export default function MarketsView() {
               <BarChart3 className="h-3.5 w-3.5 text-[#0ECB81]" />
             </div>
             <div>
-              <p className="text-[10px] text-[#5E6673] leading-tight">24h Volume</p>
+              <p className="text-[10px] text-[#5E6673] leading-tight">{t('markets.volume')}</p>
               <p className="text-xs text-[#EAECEF] font-semibold tabular-nums">{formatNumber(totalVolume, 1)}</p>
             </div>
           </div>
@@ -327,7 +329,7 @@ export default function MarketsView() {
               <Coins className="h-3.5 w-3.5 text-[#F0B90B]" />
             </div>
             <div>
-              <p className="text-[10px] text-[#5E6673] leading-tight">BTC Dominance</p>
+              <p className="text-[10px] text-[#5E6673] leading-tight">{t('markets.btcDominance')}</p>
               <p className="text-xs text-[#EAECEF] font-semibold tabular-nums">{btcDominance.toFixed(1)}%</p>
             </div>
           </div>
@@ -336,7 +338,7 @@ export default function MarketsView() {
               <Activity className="h-3.5 w-3.5 text-[#0ECB81]" />
             </div>
             <div>
-              <p className="text-[10px] text-[#5E6673] leading-tight">Active Markets</p>
+              <p className="text-[10px] text-[#5E6673] leading-tight">{t('markets.activeMarkets')}</p>
               <p className="text-xs text-[#EAECEF] font-semibold tabular-nums">{mockMarketPairs.length}</p>
             </div>
           </div>
@@ -348,7 +350,7 @@ export default function MarketsView() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#848E9C]" />
           <Input
-            placeholder="Search symbol or name..."
+            placeholder={t('markets.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 bg-[#1E2329] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
@@ -359,19 +361,27 @@ export default function MarketsView() {
       {/* Tabs */}
       <div className="px-4 py-2">
         <div className="flex gap-1 overflow-x-auto no-scrollbar">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`shrink-0 px-3 py-1.5 rounded-md text-xs font-medium transition-colors card-depth ${
-                tab === t.id
-                  ? 'bg-[#2B3139] gradient-text-gold'
-                  : 'text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#1E2329]'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
+          {TABS.map((tabItem) => {
+            const labelText =
+              tabItem.id === 'heatmap' ? `${tabItem.label}${t('markets.heatmap')}` :
+              tabItem.id === 'new' ? t('common.new') :
+              tabItem.id === 'gainers' ? t('markets.gainersShort') :
+              tabItem.id === 'losers' ? t('markets.losersShort') :
+              tabItem.label;
+            return (
+              <button
+                key={tabItem.id}
+                onClick={() => setTab(tabItem.id)}
+                className={`shrink-0 px-3 py-1.5 rounded-md text-xs font-medium transition-colors card-depth ${
+                  tab === tabItem.id
+                    ? 'bg-[#2B3139] gradient-text-gold'
+                    : 'text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#1E2329]'
+                }`}
+              >
+                {labelText}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -380,11 +390,11 @@ export default function MarketsView() {
         <div className="w-5 shrink-0 text-center">#</div>
         <div className="w-8 shrink-0" />
         <button onClick={() => handleSort('symbol')} className="flex items-center gap-0.5 flex-1 text-left hover:text-[#848E9C] min-w-0">
-          <span className="truncate">Pair</span>
+          <span className="truncate">{t('markets.pair')}</span>
           <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
         </button>
         <button onClick={() => handleSort('price')} className="flex items-center gap-0.5 w-24 text-right hover:text-[#848E9C] shrink-0">
-          <span>Price</span>
+          <span>{t('markets.price')}</span>
           <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
         </button>
         <div className="w-20 shrink-0 hidden sm:block" /> {/* Sparkline placeholder */}
@@ -393,7 +403,7 @@ export default function MarketsView() {
           <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
         </button>
         <button onClick={() => handleSort('volume')} className="flex items-center gap-0.5 w-20 text-right hover:text-[#848E9C] shrink-0">
-          <span>Volume</span>
+          <span>{t('markets.volume')}</span>
           <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
         </button>
       </div>
@@ -411,11 +421,11 @@ export default function MarketsView() {
               {tab === 'favorites' ? (
                 <>
                   <Star className="h-8 w-8 mb-2 text-[#2B3139]" />
-                  <p className="text-sm">No favorites yet</p>
-                  <p className="text-xs mt-1">Star assets to add them here</p>
+                  <p className="text-sm">{t('markets.noFavorites')}</p>
+                  <p className="text-xs mt-1">{t('markets.starToAdd')}</p>
                 </>
               ) : (
-                <p className="text-sm">No results found</p>
+                <p className="text-sm">{t('markets.noResults')}</p>
               )}
             </div>
           )}
