@@ -136,7 +136,7 @@ function OrderCard({ order, onCancel }: { order: Order; onCancel: (id: string) =
             onClick={() => onCancel(order.id)}
             className="h-7 px-3 text-xs text-[#F6465D] hover:text-[#F6465D] hover:bg-[#F6465D]/10 font-medium"
           >
-            <X className="h-3 w-3 mr-1" />
+            <X className="h-3 w-3 me-1" />
             {t('orders.cancelOrder')}
           </Button>
         </div>
@@ -257,7 +257,7 @@ export default function OrderHistoryView() {
 
         {/* Date Range Selector */}
         <div className="flex items-center gap-1 px-4 pb-3">
-          <Calendar className="h-3.5 w-3.5 text-[#5E6673] mr-1" />
+          <Calendar className="h-3.5 w-3.5 text-[#5E6673] me-1" />
           {dateRanges.map((range) => (
             <button
               key={range.id}

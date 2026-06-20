@@ -210,11 +210,11 @@ export default function DeFiDashboardView() {
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
-                      <div className="text-right hidden sm:block">
+                      <div className="text-end hidden sm:block">
                         <p className="text-[10px] text-[#5E6673]">{t('defiDashboard.tvl')}</p>
                         <p className="text-sm font-semibold text-[#EAECEF]">{protocol.tvl}</p>
                       </div>
-                      <div className="text-right">
+                      <div className="text-end">
                         <p className="text-[10px] text-[#5E6673]">{t(protocol.metricLabel)}</p>
                         <p className="text-sm font-semibold text-[#0ECB81]">{protocol.metric}</p>
                       </div>
@@ -256,7 +256,7 @@ export default function DeFiDashboardView() {
                           <p className="text-xs text-[#848E9C]">{t('defiDashboard.supplied')} {pos.asset}</p>
                         </div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-end">
                         <p className="text-sm font-semibold text-[#EAECEF]">{pos.value}</p>
                         <p className="text-xs text-[#0ECB81]">{t('defiDashboard.earned')} {pos.earned}</p>
                       </div>
@@ -292,7 +292,7 @@ export default function DeFiDashboardView() {
                         transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
                       />
                     </div>
-                    <span className="text-xs font-semibold text-[#EAECEF] w-12 text-right">{item.apy}%</span>
+                    <span className="text-xs font-semibold text-[#EAECEF] w-12 text-end">{item.apy}%</span>
                   </div>
                 ))}
               </div>

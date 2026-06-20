@@ -201,7 +201,7 @@ export default function MarginView() {
                         <span className="text-base">{a.icon}</span>
                         <span className="font-medium">{a.asset}</span>
                       </div>
-                      <div className="text-right">
+                      <div className="text-end">
                         <span className="text-[#848E9C] tabular-nums">{a.available.toFixed(4)}</span>
                       </div>
                     </button>
@@ -221,7 +221,7 @@ export default function MarginView() {
                         : 'bg-[#2B3139] text-[#5E6673] hover:text-[#848E9C]'
                     }`}
                   >
-                    <TrendingUp className="h-4 w-4 inline mr-1" />
+                    <TrendingUp className="h-4 w-4 inline me-1" />
                     {t('trade.buyLong')}
                   </button>
                   <button
@@ -232,7 +232,7 @@ export default function MarginView() {
                         : 'bg-[#2B3139] text-[#5E6673] hover:text-[#848E9C]'
                     }`}
                   >
-                    <TrendingDown className="h-4 w-4 inline mr-1" />
+                    <TrendingDown className="h-4 w-4 inline me-1" />
                     {t('trade.sellShort')}
                   </button>
                 </div>
@@ -306,7 +306,7 @@ export default function MarginView() {
                       <button onClick={() => setTradePrice(formatPrice(priceNum + (currentPrice * 0.001)))} className="text-[#5E6673] hover:text-[#EAECEF] shrink-0">
                         <Plus className="h-3 w-3" />
                       </button>
-                      <span className="text-[10px] text-[#5E6673] shrink-0 ml-1">USDT</span>
+                      <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">USDT</span>
                     </div>
                   </div>
                 )}
@@ -322,7 +322,7 @@ export default function MarginView() {
                       placeholder="0.00"
                       className="border-0 bg-transparent text-[#EAECEF] text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-[#3B4451]"
                     />
-                    <span className="text-[10px] text-[#5E6673] shrink-0 ml-1">{selectedAsset.asset}</span>
+                    <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">{selectedAsset.asset}</span>
                   </div>
                 </div>
 
@@ -399,7 +399,7 @@ export default function MarginView() {
                     placeholder="0.00"
                     className="border-0 bg-transparent text-[#EAECEF] text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-[#3B4451]"
                   />
-                  <span className="text-[10px] text-[#5E6673] shrink-0 ml-1">{selectedAsset.asset}</span>
+                  <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">{selectedAsset.asset}</span>
                 </div>
               </div>
 
@@ -471,11 +471,11 @@ export default function MarginView() {
                     placeholder="0.00"
                     className="border-0 bg-transparent text-[#EAECEF] text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-[#3B4451]"
                   />
-                  <span className="text-[10px] text-[#5E6673] shrink-0 ml-1">{selectedAsset.asset}</span>
+                  <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">{selectedAsset.asset}</span>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-6 px-2 text-[9px] text-[#F0B90B] hover:text-[#F0B90B] hover:bg-[#F0B90B]/10 ml-1"
+                    className="h-6 px-2 text-[9px] text-[#F0B90B] hover:text-[#F0B90B] hover:bg-[#F0B90B]/10 ms-1"
                     onClick={() => setRepayAmount((selectedAsset.borrowed + selectedAsset.interest).toFixed(6))}
                   >
                     {t('trade.max')}
@@ -515,15 +515,15 @@ export default function MarginView() {
               <table className="w-full text-[11px]">
                 <thead>
                   <tr className="text-[#5E6673] border-b border-[#2B3139]/50">
-                    <th className="text-left py-2 px-3 font-medium">{t('trade.asset')}</th>
-                    <th className="text-left py-2 px-3 font-medium">{t('trade.side')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.size')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.entry')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.current')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.position')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.pnl')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.roe')}%</th>
-                    <th className="text-left py-2 px-3 font-medium">{t('trade.positionMode')}</th>
+                    <th className="text-start py-2 px-3 font-medium">{t('trade.asset')}</th>
+                    <th className="text-start py-2 px-3 font-medium">{t('trade.side')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.size')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.entry')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.current')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.position')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.pnl')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.roe')}%</th>
+                    <th className="text-start py-2 px-3 font-medium">{t('trade.positionMode')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -536,21 +536,21 @@ export default function MarginView() {
                       <tr key={pos.id} className="border-b border-[#2B3139]/30 hover:bg-[#2B3139]/30">
                         <td className="py-2.5 px-3">
                           <span className="text-[#EAECEF] font-medium">{pos.asset}</span>
-                          <span className="text-[8px] text-[#F0B90B] ml-1">{pos.leverage}x</span>
+                          <span className="text-[8px] text-[#F0B90B] ms-1">{pos.leverage}x</span>
                         </td>
                         <td className="py-2.5 px-3">
                           <span className={`font-semibold ${pos.side === 'long' ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
                             {pos.side === 'long' ? t('trade.long') : t('trade.short')}
                           </span>
                         </td>
-                        <td className="py-2.5 px-3 text-right text-[#EAECEF] tabular-nums">{pos.size}</td>
-                        <td className="py-2.5 px-3 text-right text-[#848E9C] tabular-nums">{formatPrice(pos.entryPrice)}</td>
-                        <td className="py-2.5 px-3 text-right text-[#EAECEF] tabular-nums">{formatPrice(liveP)}</td>
-                        <td className="py-2.5 px-3 text-right text-[#848E9C] tabular-nums">{formatPrice(pos.margin)}</td>
-                        <td className={`py-2.5 px-3 text-right font-medium tabular-nums ${posPnl >= 0 ? 'text-[#0ECB81] pnl-glow-profit' : 'text-[#F6465D] pnl-glow-loss'}`}>
+                        <td className="py-2.5 px-3 text-end text-[#EAECEF] tabular-nums">{pos.size}</td>
+                        <td className="py-2.5 px-3 text-end text-[#848E9C] tabular-nums">{formatPrice(pos.entryPrice)}</td>
+                        <td className="py-2.5 px-3 text-end text-[#EAECEF] tabular-nums">{formatPrice(liveP)}</td>
+                        <td className="py-2.5 px-3 text-end text-[#848E9C] tabular-nums">{formatPrice(pos.margin)}</td>
+                        <td className={`py-2.5 px-3 text-end font-medium tabular-nums ${posPnl >= 0 ? 'text-[#0ECB81] pnl-glow-profit' : 'text-[#F6465D] pnl-glow-loss'}`}>
                           {posPnl >= 0 ? '+' : ''}{formatPrice(posPnl)}
                         </td>
-                        <td className={`py-2.5 px-3 text-right font-medium tabular-nums ${pos.roe >= 0 ? 'text-[#0ECB81] pnl-glow-profit' : 'text-[#F6465D] pnl-glow-loss'}`}>
+                        <td className={`py-2.5 px-3 text-end font-medium tabular-nums ${pos.roe >= 0 ? 'text-[#0ECB81] pnl-glow-profit' : 'text-[#F6465D] pnl-glow-loss'}`}>
                           {pos.roe >= 0 ? '+' : ''}{pos.roe.toFixed(2)}%
                         </td>
                         <td className="py-2.5 px-3">
@@ -577,11 +577,11 @@ export default function MarginView() {
               <table className="w-full text-[11px]">
                 <thead>
                   <tr className="text-[#5E6673] border-b border-[#2B3139]/50">
-                    <th className="text-left py-2 px-3 font-medium">{t('trade.asset')}</th>
-                    <th className="text-left py-2 px-3 font-medium">{t('trade.action')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.amount')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.interestRate')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.date')}</th>
+                    <th className="text-start py-2 px-3 font-medium">{t('trade.asset')}</th>
+                    <th className="text-start py-2 px-3 font-medium">{t('trade.action')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.amount')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.interestRate')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.date')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -595,9 +595,9 @@ export default function MarginView() {
                           {record.action === 'borrow' ? t('trade.borrow') : t('trade.repay')}
                         </Badge>
                       </td>
-                      <td className="py-2 px-3 text-right text-[#EAECEF] tabular-nums">{record.amount}</td>
-                      <td className="py-2 px-3 text-right text-[#848E9C] tabular-nums">{(record.interestRate * 100).toFixed(4)}%</td>
-                      <td className="py-2 px-3 text-right text-[#5E6673]">{record.date}</td>
+                      <td className="py-2 px-3 text-end text-[#EAECEF] tabular-nums">{record.amount}</td>
+                      <td className="py-2 px-3 text-end text-[#848E9C] tabular-nums">{(record.interestRate * 100).toFixed(4)}%</td>
+                      <td className="py-2 px-3 text-end text-[#5E6673]">{record.date}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useModalA11y } from '@/hooks/use-modal-a11y';
 import {
   ArrowLeft,
   Car,
@@ -186,6 +187,8 @@ export default function SavingsGoalsView() {
   const { goBack } = useAppStore();
   const { t } = useTranslation();
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const createModalRef = useRef<HTMLDivElement>(null);
+  useModalA11y({ open: showCreateModal, onClose: () => setShowCreateModal(false), ref: createModalRef });
   const [goalName, setGoalName] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
   const [targetDate, setTargetDate] = useState('');
@@ -272,7 +275,7 @@ export default function SavingsGoalsView() {
               onClick={() => setShowCreateModal(true)}
               className="h-7 text-[10px] font-semibold px-2.5 gradient-yellow text-[#0B0E11] press-scale"
             >
-              <Plus className="h-3 w-3 mr-1" />
+              <Plus className="h-3 w-3 me-1" />
               {t('savingsGoals.newGoal')}
             </Button>
           </div>
@@ -331,7 +334,7 @@ export default function SavingsGoalsView() {
                             size="sm"
                             className="mt-2 h-7 text-[10px] font-semibold border-[#F0B90B]/20 text-[#F0B90B] hover:bg-[#F0B90B]/10 press-scale"
                           >
-                            <Plus className="h-3 w-3 mr-1" />
+                            <Plus className="h-3 w-3 me-1" />
                             {t('savingsGoals.addFunds')}
                           </Button>
                         </div>
@@ -421,10 +424,14 @@ export default function SavingsGoalsView() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
             onClick={() => setShowCreateModal(false)}
           >
             <motion.div
+              ref={createModalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label={t('savingsGoals.createGoal')}
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
@@ -461,9 +468,9 @@ export default function SavingsGoalsView() {
                       placeholder="10,000.00"
                       value={targetAmount}
                       onChange={(e) => setTargetAmount(e.target.value)}
-                      className="bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] pr-8 focus:border-[#F0B90B]"
+                      className="bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] pe-8 focus:border-[#F0B90B]"
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#5E6673]">$</span>
+                    <span className="absolute end-3 top-1/2 -translate-y-1/2 text-xs text-[#5E6673]">$</span>
                   </div>
                 </div>
 
@@ -510,9 +517,9 @@ export default function SavingsGoalsView() {
                       placeholder="0.00"
                       value={initialDeposit}
                       onChange={(e) => setInitialDeposit(e.target.value)}
-                      className="bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] pr-8 focus:border-[#F0B90B]"
+                      className="bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] pe-8 focus:border-[#F0B90B]"
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#5E6673]">$</span>
+                    <span className="absolute end-3 top-1/2 -translate-y-1/2 text-xs text-[#5E6673]">$</span>
                   </div>
                 </div>
 
@@ -523,7 +530,7 @@ export default function SavingsGoalsView() {
                   className="w-full h-12 text-sm font-semibold rounded-xl bg-gradient-to-r from-[#F0B90B] to-[#0ECB81] text-[#0B0E11] hover:opacity-90 shadow-lg shadow-[#F0B90B]/20 press-scale disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ boxShadow: goalName && targetAmount ? '0 0 20px rgba(240, 185, 11, 0.3)' : undefined }}
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus className="h-4 w-4 me-2" />
                   {t('savingsGoals.createGoal')}
                 </Button>
               </div>

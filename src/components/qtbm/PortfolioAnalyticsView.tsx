@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useModalA11y } from '@/hooks/use-modal-a11y';
 import {
   ArrowLeft,
   PieChart,
@@ -655,13 +656,13 @@ function TopHoldingsTable() {
         <table className="w-full min-w-[600px]">
           <thead>
             <tr className="text-[10px] text-[#5E6673] uppercase tracking-wide">
-              <th className="text-left pb-3 font-medium">{t('portfolio.asset')}</th>
-              <th className="text-right pb-3 font-medium">{t('portfolio.amount')}</th>
-              <th className="text-right pb-3 font-medium">{t('portfolio.avgBuy')}</th>
-              <th className="text-right pb-3 font-medium">{t('portfolio.current')}</th>
-              <th className="text-right pb-3 font-medium">{t('portfolio.pnlUsd')}</th>
-              <th className="text-right pb-3 font-medium">{t('portfolio.pnlPct')}</th>
-              <th className="text-right pb-3 font-medium">{t('portfolio.allocPct')}</th>
+              <th className="text-start pb-3 font-medium">{t('portfolio.asset')}</th>
+              <th className="text-end pb-3 font-medium">{t('portfolio.amount')}</th>
+              <th className="text-end pb-3 font-medium">{t('portfolio.avgBuy')}</th>
+              <th className="text-end pb-3 font-medium">{t('portfolio.current')}</th>
+              <th className="text-end pb-3 font-medium">{t('portfolio.pnlUsd')}</th>
+              <th className="text-end pb-3 font-medium">{t('portfolio.pnlPct')}</th>
+              <th className="text-end pb-3 font-medium">{t('portfolio.allocPct')}</th>
             </tr>
           </thead>
           <tbody>
@@ -681,19 +682,19 @@ function TopHoldingsTable() {
                   <td className="py-2.5">
                     <span className="text-sm font-semibold text-[#EAECEF]">{holding.asset}</span>
                   </td>
-                  <td className="py-2.5 text-right text-xs text-[#848E9C] tabular-nums">
+                  <td className="py-2.5 text-end text-xs text-[#848E9C] tabular-nums">
                     {holding.amount.toLocaleString(undefined, { maximumFractionDigits: 4 })}
                   </td>
-                  <td className="py-2.5 text-right text-xs text-[#848E9C] tabular-nums">
+                  <td className="py-2.5 text-end text-xs text-[#848E9C] tabular-nums">
                     ${holding.avgBuy.toLocaleString()}
                   </td>
-                  <td className="py-2.5 text-right text-xs text-[#EAECEF] tabular-nums font-medium">
+                  <td className="py-2.5 text-end text-xs text-[#EAECEF] tabular-nums font-medium">
                     ${holding.current.toLocaleString()}
                   </td>
-                  <td className={cn('py-2.5 text-right text-xs font-semibold tabular-nums', isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]')}>
+                  <td className={cn('py-2.5 text-end text-xs font-semibold tabular-nums', isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]')}>
                     {isPositive ? '+' : ''}${Math.abs(pnl).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   </td>
-                  <td className={cn('py-2.5 text-right text-xs font-semibold tabular-nums', isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]')}>
+                  <td className={cn('py-2.5 text-end text-xs font-semibold tabular-nums', isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]')}>
                     {isPositive ? '+' : ''}{pnlPct.toFixed(2)}%
                   </td>
                   <td className="py-2.5">
@@ -706,7 +707,7 @@ function TopHoldingsTable() {
                           transition={{ duration: 0.8, delay: 0.3 + i * 0.05, ease: 'easeOut' }}
                         />
                       </div>
-                      <span className="text-[10px] text-[#848E9C] tabular-nums w-6 text-right">{holding.allocation}%</span>
+                      <span className="text-[10px] text-[#848E9C] tabular-nums w-6 text-end">{holding.allocation}%</span>
                     </div>
                   </td>
                 </motion.tr>
@@ -724,6 +725,8 @@ function AIRebalanceModal({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
   const [rebalancing, setRebalancing] = useState(false);
   const [done, setDone] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  useModalA11y({ open: true, onClose, ref: modalRef });
 
   const suggestions = [
     { actionKey: 'portfolio.reduce', asset: 'BTC', change: '-5%', current: '45%', suggested: '40%', color: 'text-[#F6465D]' },
@@ -742,13 +745,17 @@ function AIRebalanceModal({ onClose }: { onClose: () => void }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
     >
       <motion.div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('portfolio.rebalance')}
         className="w-full max-w-sm bg-[#1E2329] border border-[#2B3139] rounded-2xl overflow-hidden"
         initial={{ scale: 0.95, y: 20 }}
         animate={{ scale: 1, y: 0 }}
@@ -783,9 +790,9 @@ function AIRebalanceModal({ onClose }: { onClose: () => void }) {
               <div className="space-y-2">
                 <div className="grid grid-cols-4 gap-2 text-[9px] text-[#5E6673] uppercase tracking-wider font-semibold px-1">
                   <span>{t('portfolio.asset')}</span>
-                  <span className="text-right">{t('portfolio.currentCol')}</span>
-                  <span className="text-right">{t('portfolio.suggestedCol')}</span>
-                  <span className="text-right">{t('portfolio.changeCol')}</span>
+                  <span className="text-end">{t('portfolio.currentCol')}</span>
+                  <span className="text-end">{t('portfolio.suggestedCol')}</span>
+                  <span className="text-end">{t('portfolio.changeCol')}</span>
                 </div>
                 {suggestions.map((s, i) => (
                   <motion.div
@@ -796,9 +803,9 @@ function AIRebalanceModal({ onClose }: { onClose: () => void }) {
                     className="grid grid-cols-4 gap-2 px-3 py-2 bg-[#0B0E11]/40 rounded-lg items-center"
                   >
                     <span className="text-sm font-semibold text-[#EAECEF]">{s.asset === 'Others' ? t('portfolio.others') : s.asset}</span>
-                    <span className="text-xs text-[#848E9C] tabular-nums text-right">{s.current}</span>
-                    <span className="text-xs text-[#EAECEF] tabular-nums font-medium text-right">{s.suggested}</span>
-                    <span className={cn('text-xs font-semibold tabular-nums text-right', s.color)}>{t(s.actionKey)} {s.change}</span>
+                    <span className="text-xs text-[#848E9C] tabular-nums text-end">{s.current}</span>
+                    <span className="text-xs text-[#EAECEF] tabular-nums font-medium text-end">{s.suggested}</span>
+                    <span className={cn('text-xs font-semibold tabular-nums text-end', s.color)}>{t(s.actionKey)} {s.change}</span>
                   </motion.div>
                 ))}
               </div>
@@ -846,7 +853,7 @@ function RebalanceSuggestion({ onOpenModal }: { onOpenModal: () => void }) {
         <div className="flex items-center gap-2 mb-3">
           <Sparkles className="h-5 w-5 text-[#F0B90B]" />
           <h3 className="text-sm font-semibold text-[#EAECEF]">{t('portfolio.rebalance')}</h3>
-          <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-0 text-[9px] font-semibold ml-auto">
+          <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-0 text-[9px] font-semibold ms-auto">
             AI
           </Badge>
         </div>
@@ -859,7 +866,7 @@ function RebalanceSuggestion({ onOpenModal }: { onOpenModal: () => void }) {
               <span className="text-[#0ECB81] font-semibold">{t('portfolio.increaseEthBy')}</span>
             </p>
           </div>
-          <p className="text-xs text-[#848E9C] pl-6">
+          <p className="text-xs text-[#848E9C] ps-6">
             {t('portfolio.rebalanceDesc')}
           </p>
         </div>
@@ -868,9 +875,9 @@ function RebalanceSuggestion({ onOpenModal }: { onOpenModal: () => void }) {
           className="gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-9 px-5 text-sm shadow-md shadow-[#F0B90B]/20 press-scale w-full sm:w-auto glow-pulse-yellow"
           onClick={onOpenModal}
         >
-          <Sparkles className="h-4 w-4 mr-1.5" />
+          <Sparkles className="h-4 w-4 me-1.5" />
           {t('portfolio.rebalanceNow')}
-          <ChevronRight className="h-4 w-4 ml-1" />
+          <ChevronRight className="h-4 w-4 ms-1" />
         </Button>
       </div>
     </div>

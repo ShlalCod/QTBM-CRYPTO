@@ -93,13 +93,13 @@ export default function TradeHistoryView() {
       <ScrollArea className="flex-1">
         <div className="max-w-4xl mx-auto">
           {/* Table Header */}
-          <div className="grid grid-cols-12 gap-2 px-4 py-2 text-[10px] text-[#5E6673] font-medium uppercase tracking-wider border-b border-[#2B3139] sticky top-0 bg-[#0B0E11] z-5">
+          <div className="grid grid-cols-12 gap-2 px-4 py-2 text-[10px] text-[#5E6673] font-medium uppercase tracking-wider border-b border-[#2B3139] sticky top-0 bg-[#0B0E11] z-10">
             <div className="col-span-3">{t('tradeHistory.pair')}</div>
             <div className="col-span-1 text-center">{t('tradeHistory.side')}</div>
-            <div className="col-span-2 text-right">{t('tradeHistory.price')}</div>
-            <div className="col-span-2 text-right">{t('tradeHistory.amount')}</div>
-            <div className="col-span-2 text-right">{t('tradeHistory.total')}</div>
-            <div className="col-span-2 text-right">{t('tradeHistory.fee')}</div>
+            <div className="col-span-2 text-end">{t('tradeHistory.price')}</div>
+            <div className="col-span-2 text-end">{t('tradeHistory.amount')}</div>
+            <div className="col-span-2 text-end">{t('tradeHistory.total')}</div>
+            <div className="col-span-2 text-end">{t('tradeHistory.fee')}</div>
           </div>
 
           {/* Trade Rows */}
@@ -144,28 +144,28 @@ export default function TradeHistoryView() {
                   </div>
 
                   {/* Price */}
-                  <div className="col-span-2 text-right">
+                  <div className="col-span-2 text-end">
                     <span className={`tabular-nums font-medium ${isBuy ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
                       {formatPrice(trade.price)}
                     </span>
                   </div>
 
                   {/* Amount */}
-                  <div className="col-span-2 text-right">
+                  <div className="col-span-2 text-end">
                     <span className="text-[#EAECEF] tabular-nums">
                       {trade.quantity} {baseAsset}
                     </span>
                   </div>
 
                   {/* Total */}
-                  <div className="col-span-2 text-right">
+                  <div className="col-span-2 text-end">
                     <span className="text-[#848E9C] tabular-nums font-medium">
                       {formatPrice(trade.total)}
                     </span>
                   </div>
 
                   {/* Fee */}
-                  <div className="col-span-2 text-right">
+                  <div className="col-span-2 text-end">
                     <span className="text-[#5E6673] tabular-nums">
                       {trade.fee} {trade.feeAsset}
                     </span>

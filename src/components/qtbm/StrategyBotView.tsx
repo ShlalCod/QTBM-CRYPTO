@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useModalA11y } from '@/hooks/use-modal-a11y';
 import {
   ArrowLeft,
   Grid3x3,
@@ -107,6 +108,8 @@ export default function StrategyBotView() {
   const { goBack } = useAppStore();
   const { t } = useTranslation();
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const createModalRef = useRef<HTMLDivElement>(null);
+  useModalA11y({ open: showCreateModal, onClose: () => setShowCreateModal(false), ref: createModalRef });
   const [selectedTemplate, setSelectedTemplate] = useState<BotTemplate | null>(null);
   const [selectedPair, setSelectedPair] = useState('BTC/USDT');
   const [investmentAmount, setInvestmentAmount] = useState('');
@@ -193,7 +196,7 @@ export default function StrategyBotView() {
                             <p className="text-[11px] text-[#5E6673] mt-0.5 capitalize">{bot.type === 'grid' ? t('strategyBot.gridTrading') : t('strategyBot.dca')}</p>
                           </div>
                         </div>
-                        <div className="text-right">
+                        <div className="text-end">
                           <p className={`text-sm font-bold ${bot.profit >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
                             {bot.profit >= 0 ? '+' : ''}{bot.profitPercent}%
                           </p>
@@ -212,7 +215,7 @@ export default function StrategyBotView() {
                           size="sm"
                           className="flex-1 border-[#2B3139] text-[#848E9C] hover:bg-[#2B3139] hover:text-[#EAECEF] h-8 text-xs"
                         >
-                          <Eye className="h-3 w-3 mr-1.5" />
+                          <Eye className="h-3 w-3 me-1.5" />
                           {t('strategyBot.view')}
                         </Button>
                         <Button
@@ -220,7 +223,7 @@ export default function StrategyBotView() {
                           size="sm"
                           className="flex-1 border-[#F6465D]/20 text-[#F6465D] hover:bg-[#F6465D]/10 h-8 text-xs"
                         >
-                          <Square className="h-3 w-3 mr-1.5" />
+                          <Square className="h-3 w-3 me-1.5" />
                           {t('strategyBot.stop')}
                         </Button>
                       </div>
@@ -281,11 +284,11 @@ export default function StrategyBotView() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-[#2B3139]">
-                      <th className="text-[10px] text-[#5E6673] font-medium px-4 py-2.5 text-left">{t('strategyBot.pairCol')}</th>
-                      <th className="text-[10px] text-[#5E6673] font-medium px-4 py-2.5 text-left">{t('strategyBot.typeCol')}</th>
-                      <th className="text-[10px] text-[#5E6673] font-medium px-4 py-2.5 text-right">{t('strategyBot.profitCol')}</th>
-                      <th className="text-[10px] text-[#5E6673] font-medium px-4 py-2.5 text-right">{t('strategyBot.durationCol')}</th>
-                      <th className="text-[10px] text-[#5E6673] font-medium px-4 py-2.5 text-right">{t('strategyBot.statusCol')}</th>
+                      <th className="text-[10px] text-[#5E6673] font-medium px-4 py-2.5 text-start">{t('strategyBot.pairCol')}</th>
+                      <th className="text-[10px] text-[#5E6673] font-medium px-4 py-2.5 text-start">{t('strategyBot.typeCol')}</th>
+                      <th className="text-[10px] text-[#5E6673] font-medium px-4 py-2.5 text-end">{t('strategyBot.profitCol')}</th>
+                      <th className="text-[10px] text-[#5E6673] font-medium px-4 py-2.5 text-end">{t('strategyBot.durationCol')}</th>
+                      <th className="text-[10px] text-[#5E6673] font-medium px-4 py-2.5 text-end">{t('strategyBot.statusCol')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -293,11 +296,11 @@ export default function StrategyBotView() {
                       <tr key={entry.id} className="border-b border-[#2B3139]/50 last:border-0 hover:bg-[#2B3139]/20 transition-colors">
                         <td className="px-4 py-2.5 text-xs font-medium text-[#EAECEF]">{entry.pair}</td>
                         <td className="px-4 py-2.5 text-xs text-[#848E9C]">{entry.type}</td>
-                        <td className={`px-4 py-2.5 text-xs font-medium text-right ${entry.profit >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+                        <td className={`px-4 py-2.5 text-xs font-medium text-end ${entry.profit >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
                           {entry.profit >= 0 ? '+' : ''}{entry.profitPercent}%
                         </td>
-                        <td className="px-4 py-2.5 text-xs text-[#848E9C] text-right">{entry.duration}</td>
-                        <td className="px-4 py-2.5 text-right">
+                        <td className="px-4 py-2.5 text-xs text-[#848E9C] text-end">{entry.duration}</td>
+                        <td className="px-4 py-2.5 text-end">
                           <Badge
                             className={`border-0 text-[9px] px-1.5 py-0 h-4 font-semibold ${
                               entry.status === 'completed'
@@ -327,10 +330,14 @@ export default function StrategyBotView() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
             onClick={() => setShowCreateModal(false)}
           >
             <motion.div
+              ref={createModalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label={t('strategyBot.title')}
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
@@ -363,7 +370,7 @@ export default function StrategyBotView() {
                         <option key={pair} value={pair} className="bg-[#1E2329] text-[#EAECEF]">{pair}</option>
                       ))}
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673] pointer-events-none" />
+                    <ChevronDown className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673] pointer-events-none" />
                   </div>
                 </div>
 
@@ -376,9 +383,9 @@ export default function StrategyBotView() {
                       placeholder="1,000.00"
                       value={investmentAmount}
                       onChange={(e) => setInvestmentAmount(e.target.value)}
-                      className="bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] pr-14 focus:border-[#F0B90B]"
+                      className="bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] pe-14 focus:border-[#F0B90B]"
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#5E6673]">USDT</span>
+                    <span className="absolute end-3 top-1/2 -translate-y-1/2 text-xs text-[#5E6673]">USDT</span>
                   </div>
                 </div>
 
@@ -391,9 +398,9 @@ export default function StrategyBotView() {
                         type="number"
                         value={takeProfit}
                         onChange={(e) => setTakeProfit(e.target.value)}
-                        className="bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] pr-8 focus:border-[#F0B90B]"
+                        className="bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] pe-8 focus:border-[#F0B90B]"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#5E6673]">%</span>
+                      <span className="absolute end-3 top-1/2 -translate-y-1/2 text-xs text-[#5E6673]">%</span>
                     </div>
                   </div>
                   <div>
@@ -403,9 +410,9 @@ export default function StrategyBotView() {
                         type="number"
                         value={stopLoss}
                         onChange={(e) => setStopLoss(e.target.value)}
-                        className="bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] pr-8 focus:border-[#F0B90B]"
+                        className="bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] pe-8 focus:border-[#F0B90B]"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#5E6673]">%</span>
+                      <span className="absolute end-3 top-1/2 -translate-y-1/2 text-xs text-[#5E6673]">%</span>
                     </div>
                   </div>
                 </div>
@@ -453,12 +460,12 @@ export default function StrategyBotView() {
                 >
                   {isStarting ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-[#0B0E11]/30 border-t-[#0B0E11] rounded-full animate-spin mr-2" />
+                      <div className="w-4 h-4 border-2 border-[#0B0E11]/30 border-t-[#0B0E11] rounded-full animate-spin me-2" />
                       {t('strategyBot.starting')}
                     </>
                   ) : (
                     <>
-                      <Play className="h-4 w-4 mr-2" />
+                      <Play className="h-4 w-4 me-2" />
                       {t('strategyBot.startBot')}
                     </>
                   )}

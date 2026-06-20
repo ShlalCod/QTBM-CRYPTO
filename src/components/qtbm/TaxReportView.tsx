@@ -226,19 +226,19 @@ export default function TaxReportView() {
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-[#2B3139]">
-                    <th className="text-left py-2 pr-2 text-[#5E6673] font-medium">{t('taxReport.type')}</th>
-                    <th className="text-right py-2 px-2 text-[#5E6673] font-medium">{t('taxReport.count')}</th>
-                    <th className="text-right py-2 px-2 text-[#5E6673] font-medium">{t('taxReport.totalAmount')}</th>
-                    <th className="text-right py-2 pl-2 text-[#5E6673] font-medium">{t('taxReport.gainLoss')}</th>
+                    <th className="text-start py-2 pe-2 text-[#5E6673] font-medium">{t('taxReport.type')}</th>
+                    <th className="text-end py-2 px-2 text-[#5E6673] font-medium">{t('taxReport.count')}</th>
+                    <th className="text-end py-2 px-2 text-[#5E6673] font-medium">{t('taxReport.totalAmount')}</th>
+                    <th className="text-end py-2 ps-2 text-[#5E6673] font-medium">{t('taxReport.gainLoss')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {transactionSummary.map((row, idx) => (
                     <tr key={idx} className={idx < transactionSummary.length - 1 ? 'border-b border-[#2B3139]/50' : ''}>
-                      <td className="py-2.5 pr-2 text-[#EAECEF] font-medium">{row.type}</td>
-                      <td className="py-2.5 px-2 text-right text-[#848E9C]">{row.count}</td>
-                      <td className="py-2.5 px-2 text-right text-[#848E9C]">{row.totalAmount}</td>
-                      <td className={`py-2.5 pl-2 text-right font-semibold ${row.positive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+                      <td className="py-2.5 pe-2 text-[#EAECEF] font-medium">{row.type}</td>
+                      <td className="py-2.5 px-2 text-end text-[#848E9C]">{row.count}</td>
+                      <td className="py-2.5 px-2 text-end text-[#848E9C]">{row.totalAmount}</td>
+                      <td className={`py-2.5 ps-2 text-end font-semibold ${row.positive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
                         {row.gainLoss}
                       </td>
                     </tr>
@@ -315,7 +315,7 @@ export default function TaxReportView() {
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-                  className="w-4 h-4 border-2 border-[#0B0E11] border-t-transparent rounded-full mr-2"
+                  className="w-4 h-4 border-2 border-[#0B0E11] border-t-transparent rounded-full me-2"
                 />
               ) : null}
               {generating ? t('taxReport.generating') : t('taxReport.generateReport')}
@@ -330,7 +330,7 @@ export default function TaxReportView() {
             className="border-[#2B3139] text-[#EAECEF] hover:bg-[#2B3139] hover:border-[#F0B90B]/30 h-10 text-xs"
             onClick={() => {}}
           >
-            <FileDown className="h-4 w-4 mr-2" />
+            <FileDown className="h-4 w-4 me-2" />
             {t('taxReport.exportCSV')}
           </Button>
           <Button
@@ -338,7 +338,7 @@ export default function TaxReportView() {
             className="border-[#2B3139] text-[#EAECEF] hover:bg-[#2B3139] hover:border-[#F0B90B]/30 h-10 text-xs"
             onClick={() => {}}
           >
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="h-4 w-4 me-2" />
             {t('taxReport.exportPDF')}
           </Button>
         </div>

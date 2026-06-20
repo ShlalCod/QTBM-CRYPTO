@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useModalA11y } from '@/hooks/use-modal-a11y';
 import {
   ArrowLeft,
   Copy,
@@ -455,7 +456,7 @@ function TraderCard({ trader, index, onCopy, t }: { trader: Trader; index: numbe
             ? 'bg-gradient-to-b from-[#FFD700] via-[#F0B90B] to-[#FFD700] animate-gradient-shift bg-[length:100%_200%]'
             : 'bg-gradient-to-b from-[#C0C0C0] via-[#A0A0A0] to-[#C0C0C0]'
         )} />
-        <CardContent className="p-4 pl-5">
+        <CardContent className="p-4 ps-5">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-3">
               {/* Avatar */}
@@ -468,7 +469,7 @@ function TraderCard({ trader, index, onCopy, t }: { trader: Trader; index: numbe
                 </span>
                 {/* Risk Dot */}
                 <div
-                  className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#1E2329]"
+                  className="absolute -bottom-0.5 -end-0.5 w-3 h-3 rounded-full border-2 border-[#1E2329]"
                   style={{ backgroundColor: riskDotColor }}
                   title={`Risk: ${trader.risk}`}
                 />
@@ -536,7 +537,7 @@ function TraderCard({ trader, index, onCopy, t }: { trader: Trader; index: numbe
             <MiniSparkline up={trader.sparklineUp} color={trader.roi > 0 ? '#0ECB81' : '#F6465D'} width={60} height={22} />
             <Badge className={cn('text-[9px] font-semibold px-2 py-0.5 border', riskStyle.bg, riskStyle.text, riskStyle.border)}>
               {trader.risk === 'Very High' && (
-                <span className="inline-block animate-pulse mr-0.5">&#9679;</span>
+                <span className="inline-block animate-pulse me-0.5">&#9679;</span>
               )}
               {t('copyTrading.riskLevel')}: {trader.risk === 'Low' ? t('copyTrading.riskLow') : trader.risk === 'Medium' ? t('copyTrading.riskMedium') : trader.risk === 'High' ? t('copyTrading.riskHigh') : t('copyTrading.riskVeryHigh')}
             </Badge>
@@ -559,7 +560,7 @@ function TraderCard({ trader, index, onCopy, t }: { trader: Trader; index: numbe
             className="w-full gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-9 text-sm press-scale shadow-md shadow-[#F0B90B]/20 hover:shadow-lg hover:shadow-[#F0B90B]/30"
             onClick={onCopy}
           >
-            <Copy className="h-4 w-4 mr-1.5" />
+            <Copy className="h-4 w-4 me-1.5" />
             {t('copyTrading.copyTrader')}
           </Button>
         </CardContent>
@@ -595,7 +596,7 @@ function ActiveCopyCard({ copy, index, t }: { copy: ActiveCopy; index: number; t
                 <p className="text-[10px] text-[#5E6673]">{copy.daysActive} {t('copyTrading.daysActive')} &bull; {copy.openPositions} {t('copyTrading.openPositions')}</p>
               </div>
             </div>
-            <div className="text-right">
+            <div className="text-end">
               <p className={cn('text-sm font-bold', isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]')}>
                 {isPositive ? '+' : ''}${copy.pnl.toLocaleString()}
               </p>
@@ -623,7 +624,7 @@ function ActiveCopyCard({ copy, index, t }: { copy: ActiveCopy; index: number; t
                 size="sm"
                 className="h-7 text-[10px] border-[#2B3139] text-[#848E9C] hover:bg-[#2B3139] hover:text-[#EAECEF] px-3"
               >
-                <Settings2 className="h-3 w-3 mr-1" />
+                <Settings2 className="h-3 w-3 me-1" />
                 {t('copyTrading.details')}
               </Button>
               <Button
@@ -631,7 +632,7 @@ function ActiveCopyCard({ copy, index, t }: { copy: ActiveCopy; index: number; t
                 size="sm"
                 className="h-7 text-[10px] border-[#F6465D]/30 text-[#F6465D] hover:bg-[#F6465D]/10 hover:border-[#F6465D]/50 px-3"
               >
-                <StopCircle className="h-3 w-3 mr-1" />
+                <StopCircle className="h-3 w-3 me-1" />
                 {t('copyTrading.stopCopy')}
               </Button>
             </div>
@@ -669,7 +670,7 @@ function ClosedCopyCard({ copy, index, t }: { copy: ClosedCopy; index: number; t
                 <p className="text-[9px] text-[#5E6673]">{copy.duration} &bull; {copy.reason === 'manual' ? t('copyTrading.manualClose') : t('copyTrading.stopLossClose')}</p>
               </div>
             </div>
-            <div className="text-right">
+            <div className="text-end">
               <p className={cn('text-xs font-semibold', isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]')}>
                 {isPositive ? '+' : ''}${copy.finalPnl} {t('copyTrading.pnl')}
               </p>
@@ -690,10 +691,10 @@ function LeaderboardTab({ t, onCopy }: { t: (key: string) => string; onCopy: (na
         <div className="grid grid-cols-12 gap-1 px-4 py-2.5 border-b border-[#2B3139] bg-[#0B0E11]/30">
           <span className="col-span-1 text-[9px] text-[#5E6673] font-semibold uppercase">#</span>
           <span className="col-span-3 text-[9px] text-[#5E6673] font-semibold uppercase">{t('copyTrading.trader')}</span>
-          <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-right">{t('copyTrading.roi')}</span>
-          <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-right">{t('copyTrading.winRate')}</span>
-          <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-right">{t('copyTrading.copiers')}</span>
-          <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-right">{t('copyTrading.chart')}</span>
+          <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-end">{t('copyTrading.roi')}</span>
+          <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-end">{t('copyTrading.winRate')}</span>
+          <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-end">{t('copyTrading.copiers')}</span>
+          <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-end">{t('copyTrading.chart')}</span>
         </div>
 
         {/* Table Body */}
@@ -716,11 +717,11 @@ function LeaderboardTab({ t, onCopy }: { t: (key: string) => string; onCopy: (na
                 )}
               </span>
               <span className="col-span-3 text-[11px] font-medium text-[#EAECEF] truncate">{entry.name}</span>
-              <span className={cn('col-span-2 text-[11px] font-semibold text-right', entry.roi > 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]')}>
+              <span className={cn('col-span-2 text-[11px] font-semibold text-end', entry.roi > 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]')}>
                 +{entry.roi}%
               </span>
-              <span className="col-span-2 text-[10px] text-[#848E9C] text-right">{entry.winRate}%</span>
-              <span className="col-span-2 text-[10px] text-[#848E9C] text-right">{entry.copiers >= 1000 ? (entry.copiers / 1000).toFixed(1) + 'K' : entry.copiers}</span>
+              <span className="col-span-2 text-[10px] text-[#848E9C] text-end">{entry.winRate}%</span>
+              <span className="col-span-2 text-[10px] text-[#848E9C] text-end">{entry.copiers >= 1000 ? (entry.copiers / 1000).toFixed(1) + 'K' : entry.copiers}</span>
               <span className="col-span-2 flex justify-end">
                 <MiniSparkline up={entry.sparklineUp} color={entry.roi > 0 ? '#0ECB81' : '#F6465D'} width={40} height={16} />
               </span>
@@ -733,9 +734,9 @@ function LeaderboardTab({ t, onCopy }: { t: (key: string) => string; onCopy: (na
           <div className="grid grid-cols-12 gap-1 items-center">
             <span className="col-span-1 text-[10px] text-[#F0B90B] font-bold">#156</span>
             <span className="col-span-3 text-[11px] font-medium text-[#F0B90B]">{t('copyTrading.you')}</span>
-            <span className="col-span-2 text-[11px] font-semibold text-[#0ECB81] text-right">+12.3%</span>
-            <span className="col-span-2 text-[10px] text-[#848E9C] text-right">—</span>
-            <span className="col-span-2 text-[10px] text-[#848E9C] text-right">—</span>
+            <span className="col-span-2 text-[11px] font-semibold text-[#0ECB81] text-end">+12.3%</span>
+            <span className="col-span-2 text-[10px] text-[#848E9C] text-end">—</span>
+            <span className="col-span-2 text-[10px] text-[#848E9C] text-end">—</span>
             <span className="col-span-2 flex justify-end">
               <ChevronRight className="h-3.5 w-3.5 text-[#F0B90B]" />
             </span>
@@ -780,6 +781,8 @@ function CopyTraderDialog({
   const riskStyle = getRiskBadge(trader.risk);
   const amount = parseFloat(investmentAmount) || 0;
   const isValidAmount = amount >= 100 && amount <= 10000;
+  const modalRef = useRef<HTMLDivElement>(null);
+  useModalA11y({ open: true, onClose, ref: modalRef });
 
   return (
     <motion.div
@@ -790,6 +793,10 @@ function CopyTraderDialog({
       onClick={onClose}
     >
       <motion.div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('copyTrading.startCopy')}
         initial={{ y: 60, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 60, opacity: 0 }}
@@ -837,13 +844,13 @@ function CopyTraderDialog({
               {t('copyTrading.investmentAmount')}
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5E6673] text-sm">$</span>
+              <span className="absolute start-3 top-1/2 -translate-y-1/2 text-[#5E6673] text-sm">$</span>
               <Input
                 type="number"
                 value={investmentAmount}
                 onChange={(e) => setInvestmentAmount(e.target.value)}
                 className={cn(
-                  'pl-7 bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] h-10 text-sm',
+                  'ps-7 bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] h-10 text-sm',
                   !isValidAmount && investmentAmount ? 'border-[#F6465D]/50 focus:border-[#F6465D]' : 'focus:border-[#F0B90B]'
                 )}
                 placeholder={t('copyTrading.enterAmount')}
@@ -951,7 +958,7 @@ function CopyTraderDialog({
             onClick={onStart}
             disabled={!isValidAmount}
           >
-            <Copy className="h-4 w-4 mr-2" />
+            <Copy className="h-4 w-4 me-2" />
             {t('copyTrading.startCopy')}
           </Button>
         </div>

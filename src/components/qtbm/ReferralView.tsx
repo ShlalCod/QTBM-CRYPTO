@@ -125,7 +125,7 @@ export default function ReferralView() {
                   }`}
                   onClick={handleCopyCode}
                 >
-                  {copied ? <Check className="h-3 w-3 mr-1" /> : <Copy className="h-3 w-3 mr-1" />}
+                  {copied ? <Check className="h-3 w-3 me-1" /> : <Copy className="h-3 w-3 me-1" />}
                   {copied ? t('actions.copy') + '!' : t('actions.copy')}
                 </Button>
               </div>
@@ -263,12 +263,12 @@ export default function ReferralView() {
                         <p className={`text-xs font-medium ${isCurrentTier ? 'text-[#F0B90B]' : 'text-[#848E9C]'}`}>
                           {t(tier.nameKey)}
                           {isCurrentTier && (
-                            <Badge className="ml-2 bg-[#F0B90B]/20 text-[#F0B90B] border-0 text-[8px] px-1.5 py-0 h-3.5">
+                            <Badge className="ms-2 bg-[#F0B90B]/20 text-[#F0B90B] border-0 text-[8px] px-1.5 py-0 h-3.5">
                               {t('status.active')}
                             </Badge>
                           )}
                           {isPastTier && (
-                            <Check className="inline h-3 w-3 text-[#0ECB81] ml-1" />
+                            <Check className="inline h-3 w-3 text-[#0ECB81] ms-1" />
                           )}
                         </p>
                         <p className="text-[9px] text-[#5E6673]">{tier.minRefs}-{tier.maxRefs >= 999 ? '∞' : tier.maxRefs} {t('referral.referrals')}</p>

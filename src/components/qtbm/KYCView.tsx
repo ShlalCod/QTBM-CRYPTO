@@ -265,7 +265,7 @@ export default function KYCView() {
                       )}
                     </div>
                     {index < verificationSteps.length - 1 && (
-                      <div className="ml-8 w-px h-4 bg-[#2B3139] relative overflow-hidden">
+                      <div className="ms-8 w-px h-4 bg-[#2B3139] relative overflow-hidden">
                         <div
                           className="kyc-progress-line absolute inset-0"
                           style={{ width: step.status === 'completed' ? '100%' : step.status === 'current' ? '50%' : '0%' }}
@@ -327,7 +327,7 @@ export default function KYCView() {
                       className="border-[#2B3139] text-[#F0B90B] hover:bg-[#F0B90B]/10 h-7 text-xs"
                       onClick={() => handleFileUpload(doc.id)}
                     >
-                      <Upload className="h-3 w-3 mr-1" />
+                      <Upload className="h-3 w-3 me-1" />
                       {t('kyc.upload')}
                     </Button>
                   )}

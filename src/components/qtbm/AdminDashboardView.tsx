@@ -120,9 +120,9 @@ export default function AdminDashboardView() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-8 text-xs">
-            <Bell className="h-4 w-4 mr-1" />
+            <Bell className="h-4 w-4 me-1" />
             <span className="hidden sm:inline">{t('admin.alerts')}</span>
-            <Badge className="ml-1 bg-[#F6465D] text-white text-[8px] px-1 py-0 h-3 min-w-3 border-0">3</Badge>
+            <Badge className="ms-1 bg-[#F6465D] text-white text-[8px] px-1 py-0 h-3 min-w-3 border-0">3</Badge>
           </Button>
         </div>
       </div>
@@ -167,7 +167,7 @@ export default function AdminDashboardView() {
                   placeholder={t('admin.searchUsers')}
                   value={userSearch}
                   onChange={(e) => setUserSearch(e.target.value)}
-                  className="h-7 text-[11px] pl-8 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#3B4451] focus:border-[#F0B90B]"
+                  className="h-7 text-[11px] ps-8 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#3B4451] focus:border-[#F0B90B]"
                 />
               </div>
             </div>
@@ -175,12 +175,12 @@ export default function AdminDashboardView() {
               <table className="w-full text-[11px]">
                 <thead>
                   <tr className="text-[#5E6673] border-b border-[#2B3139]/50">
-                    <th className="text-left py-2 px-3 font-medium">{t('admin.user')}</th>
-                    <th className="text-left py-2 px-3 font-medium">{t('admin.email')}</th>
+                    <th className="text-start py-2 px-3 font-medium">{t('admin.user')}</th>
+                    <th className="text-start py-2 px-3 font-medium">{t('admin.email')}</th>
                     <th className="text-center py-2 px-3 font-medium">{t('admin.kyc')}</th>
                     <th className="text-center py-2 px-3 font-medium">{t('admin.role')}</th>
                     <th className="text-center py-2 px-3 font-medium">{t('admin.status')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('admin.lastActive')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('admin.lastActive')}</th>
                     <th className="text-center py-2 px-3 font-medium">{t('admin.actions')}</th>
                   </tr>
                 </thead>
@@ -202,9 +202,9 @@ export default function AdminDashboardView() {
                           user.kycStatus === 'pending' ? 'bg-[#F0B90B]/10 text-[#F0B90B]' :
                           'bg-[#F6465D]/10 text-[#F6465D]'
                         }`}>
-                          {user.kycStatus === 'verified' ? <CheckCircle2 className="h-2.5 w-2.5 mr-0.5" /> :
-                           user.kycStatus === 'pending' ? <Clock className="h-2.5 w-2.5 mr-0.5" /> :
-                           <XCircle className="h-2.5 w-2.5 mr-0.5" />}
+                          {user.kycStatus === 'verified' ? <CheckCircle2 className="h-2.5 w-2.5 me-0.5" /> :
+                           user.kycStatus === 'pending' ? <Clock className="h-2.5 w-2.5 me-0.5" /> :
+                           <XCircle className="h-2.5 w-2.5 me-0.5" />}
                           {user.kycStatus.charAt(0).toUpperCase() + user.kycStatus.slice(1)}
                         </Badge>
                       </td>
@@ -222,23 +222,23 @@ export default function AdminDashboardView() {
                           {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
                         </Badge>
                       </td>
-                      <td className="py-2.5 px-3 text-right text-[#5E6673]">{user.lastActive}</td>
+                      <td className="py-2.5 px-3 text-end text-[#5E6673]">{user.lastActive}</td>
                       <td className="py-2.5 px-3">
                         <div className="flex items-center justify-center gap-1">
                           {user.status === 'active' ? (
                             <Button variant="ghost" size="sm" className="h-6 px-2 text-[9px] text-[#F6465D] hover:text-[#F6465D] hover:bg-[#F6465D]/10">
-                              <Ban className="h-3 w-3 mr-0.5" />
+                              <Ban className="h-3 w-3 me-0.5" />
                               {t('admin.suspend')}
                             </Button>
                           ) : (
                             <Button variant="ghost" size="sm" className="h-6 px-2 text-[9px] text-[#0ECB81] hover:text-[#0ECB81] hover:bg-[#0ECB81]/10">
-                              <UserCheck className="h-3 w-3 mr-0.5" />
+                              <UserCheck className="h-3 w-3 me-0.5" />
                               {t('admin.reactivate')}
                             </Button>
                           )}
                           {user.kycStatus === 'pending' && (
                             <Button variant="ghost" size="sm" className="h-6 px-2 text-[9px] text-[#F0B90B] hover:text-[#F0B90B] hover:bg-[#F0B90B]/10">
-                              <Eye className="h-3 w-3 mr-0.5" />
+                              <Eye className="h-3 w-3 me-0.5" />
                               {t('admin.verify')}
                             </Button>
                           )}
@@ -346,11 +346,11 @@ export default function AdminDashboardView() {
                       </div>
                       <div className="flex gap-1">
                         <Button variant="ghost" size="sm" className="h-6 px-2 text-[9px] text-[#0ECB81] hover:text-[#0ECB81] hover:bg-[#0ECB81]/10">
-                          <CheckCircle2 className="h-3 w-3 mr-0.5" />
+                          <CheckCircle2 className="h-3 w-3 me-0.5" />
                           {t('admin.approve')}
                         </Button>
                         <Button variant="ghost" size="sm" className="h-6 px-2 text-[9px] text-[#F6465D] hover:text-[#F6465D] hover:bg-[#F6465D]/10">
-                          <XCircle className="h-3 w-3 mr-0.5" />
+                          <XCircle className="h-3 w-3 me-0.5" />
                           {t('admin.reject')}
                         </Button>
                       </div>
@@ -458,7 +458,7 @@ export default function AdminDashboardView() {
                 <Badge className="bg-[#2B3139] text-[#848E9C] border-0 text-[9px] px-1.5 py-0 h-4">{mockAnnouncements.length}</Badge>
               </div>
               <Button size="sm" className="h-7 bg-[#F0B90B] hover:bg-[#F0B90B]/90 text-[#0B0E11] text-[10px] font-semibold px-3">
-                <Plus className="h-3 w-3 mr-1" />
+                <Plus className="h-3 w-3 me-1" />
                 {t('admin.newAnnouncement')}
               </Button>
             </div>
@@ -466,10 +466,10 @@ export default function AdminDashboardView() {
               <table className="w-full text-[11px]">
                 <thead>
                   <tr className="text-[#5E6673] border-b border-[#2B3139]/50">
-                    <th className="text-left py-2 px-3 font-medium">{t('admin.id')}</th>
-                    <th className="text-left py-2 px-3 font-medium">{t('admin.annTitle')}</th>
+                    <th className="text-start py-2 px-3 font-medium">{t('admin.id')}</th>
+                    <th className="text-start py-2 px-3 font-medium">{t('admin.annTitle')}</th>
                     <th className="text-center py-2 px-3 font-medium">{t('admin.type')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('admin.date')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('admin.date')}</th>
                     <th className="text-center py-2 px-3 font-medium">{t('admin.status')}</th>
                     <th className="text-center py-2 px-3 font-medium">{t('admin.actions')}</th>
                   </tr>
@@ -488,7 +488,7 @@ export default function AdminDashboardView() {
                           {ann.type.charAt(0).toUpperCase() + ann.type.slice(1)}
                         </Badge>
                       </td>
-                      <td className="py-2.5 px-3 text-right text-[#5E6673]">{ann.date}</td>
+                      <td className="py-2.5 px-3 text-end text-[#5E6673]">{ann.date}</td>
                       <td className="py-2.5 px-3 text-center">
                         <Badge className={`text-[9px] px-1.5 py-0 h-4 border-0 font-medium ${
                           ann.status === 'active' ? 'bg-[#0ECB81]/10 text-[#0ECB81]' : 'bg-[#5E6673]/10 text-[#5E6673]'

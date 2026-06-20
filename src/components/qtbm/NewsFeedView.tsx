@@ -654,7 +654,7 @@ export default function NewsFeedView() {
                                 <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded ${categoryColors[article.category]}`}>
                                   {article.category}
                                 </span>
-                                <div className="flex items-center gap-1 ml-auto">
+                                <div className="flex items-center gap-1 ms-auto">
                                   <Eye className="h-3 w-3 text-[#5E6673]" />
                                   <span className="text-[10px] text-[#5E6673]">{formatViews(article.views)}</span>
                                 </div>

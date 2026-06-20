@@ -348,12 +348,12 @@ export default function MarketsView() {
       {/* Search */}
       <div className="px-4 pt-3 pb-1">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#848E9C]" />
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#848E9C]" />
           <Input
             placeholder={t('markets.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-[#1E2329] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
+            className="ps-9 bg-[#1E2329] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
           />
         </div>
       </div>
@@ -389,20 +389,20 @@ export default function MarketsView() {
       <div className="flex items-center px-4 py-1.5 text-[11px] text-[#5E6673] border-b border-[#2B3139]">
         <div className="w-5 shrink-0 text-center">#</div>
         <div className="w-8 shrink-0" />
-        <button onClick={() => handleSort('symbol')} className="flex items-center gap-0.5 flex-1 text-left hover:text-[#848E9C] min-w-0">
+        <button onClick={() => handleSort('symbol')} className="flex items-center gap-0.5 flex-1 text-start hover:text-[#848E9C] min-w-0">
           <span className="truncate">{t('markets.pair')}</span>
           <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
         </button>
-        <button onClick={() => handleSort('price')} className="flex items-center gap-0.5 w-24 text-right hover:text-[#848E9C] shrink-0">
+        <button onClick={() => handleSort('price')} className="flex items-center gap-0.5 w-24 text-end hover:text-[#848E9C] shrink-0">
           <span>{t('markets.price')}</span>
           <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
         </button>
         <div className="w-20 shrink-0 hidden sm:block" /> {/* Sparkline placeholder */}
-        <button onClick={() => handleSort('change')} className="flex items-center gap-0.5 w-16 text-right hover:text-[#848E9C] shrink-0">
+        <button onClick={() => handleSort('change')} className="flex items-center gap-0.5 w-16 text-end hover:text-[#848E9C] shrink-0">
           <span>24h</span>
           <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
         </button>
-        <button onClick={() => handleSort('volume')} className="flex items-center gap-0.5 w-20 text-right hover:text-[#848E9C] shrink-0">
+        <button onClick={() => handleSort('volume')} className="flex items-center gap-0.5 w-20 text-end hover:text-[#848E9C] shrink-0">
           <span>{t('markets.volume')}</span>
           <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
         </button>
@@ -458,7 +458,7 @@ export default function MarketsView() {
                 </button>
 
                 {/* Pair name */}
-                <div className="flex-1 text-left min-w-0">
+                <div className="flex-1 text-start min-w-0">
                   <div className="flex items-center gap-1">
                     <span className="text-sm font-semibold text-[#EAECEF]">{pair.baseAsset}</span>
                     <span className="text-[11px] text-[#5E6673]">/{pair.quoteAsset}</span>
@@ -472,7 +472,7 @@ export default function MarketsView() {
                 </div>
 
                 {/* Price - with live flash */}
-                <div className="w-24 text-right shrink-0">
+                <div className="w-24 text-end shrink-0">
                   <LivePriceCell symbol={pair.symbol} fallbackPrice={pair.price} />
                 </div>
 
@@ -482,14 +482,14 @@ export default function MarketsView() {
                 </div>
 
                 {/* 24h Change */}
-                <div className="w-16 text-right shrink-0">
+                <div className="w-16 text-end shrink-0">
                   <span className={`text-xs font-semibold tabular-nums ${isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
                     {isPositive ? '+' : ''}{pair.changePercent.toFixed(2)}%
                   </span>
                 </div>
 
                 {/* Volume Bar */}
-                <div className="w-20 text-right shrink-0">
+                <div className="w-20 text-end shrink-0">
                   <span className="text-[11px] text-[#848E9C] tabular-nums">{formatNumber(pair.quoteVolume)}</span>
                   <div className="volume-bar-bg mt-0.5">
                     <div

@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useModalA11y } from '@/hooks/use-modal-a11y';
 import {
   ArrowLeft,
   Bell,
@@ -90,6 +91,8 @@ export default function PriceAlertsView() {
   const [activeTab, setActiveTab] = useState<'active' | 'triggered' | 'expired'>('active');
   const [alerts, setAlerts] = useState<PriceAlert[]>(mockActiveAlerts);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const createModalRef = useRef<HTMLDivElement>(null);
+  useModalA11y({ open: showCreateModal, onClose: () => { setShowCreateModal(false); resetForm(); }, ref: createModalRef });
   const [editingAlert, setEditingAlert] = useState<PriceAlert | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
@@ -225,7 +228,7 @@ export default function PriceAlertsView() {
             className="gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-9 px-4 text-sm shadow-md shadow-[#F0B90B]/20"
             onClick={() => { resetForm(); setShowCreateModal(true); }}
           >
-            <Plus className="h-4 w-4 mr-1.5" />
+            <Plus className="h-4 w-4 me-1.5" />
             {t('priceAlerts.createAlert')}
           </Button>
         </div>
@@ -439,7 +442,7 @@ export default function PriceAlertsView() {
                               </div>
                             </div>
                           </div>
-                          <div className="text-right">
+                          <div className="text-end">
                             <p className="text-[10px] text-[#5E6673]">{t('priceAlerts.triggeredAt')}</p>
                             <p className="text-sm font-semibold text-[#F0B90B]">${alert.triggeredPrice.toLocaleString()}</p>
                             <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#2B3139] text-[#848E9C]">
@@ -463,10 +466,14 @@ export default function PriceAlertsView() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
               onClick={() => { setShowCreateModal(false); resetForm(); }}
             >
               <motion.div
+                ref={createModalRef}
+                role="dialog"
+                aria-modal="true"
+                aria-label={editingAlert ? t('priceAlerts.editAlert') : t('priceAlerts.createAlert')}
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 100, opacity: 0 }}

@@ -270,12 +270,12 @@ export default function LaunchpadView() {
                       >
                         {notifyProject === project.id ? (
                           <>
-                            <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
+                            <CheckCircle2 className="h-3.5 w-3.5 me-1" />
                             {t('launchpad.notified')}
                           </>
                         ) : (
                           <>
-                            <Bell className="h-3.5 w-3.5 mr-1" />
+                            <Bell className="h-3.5 w-3.5 me-1" />
                             {t('launchpad.notifyMe')}
                           </>
                         )}

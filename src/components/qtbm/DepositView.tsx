@@ -188,7 +188,7 @@ export default function DepositView() {
                   <div className="w-8 h-8 rounded-full bg-[#0B0E11] flex items-center justify-center text-sm font-bold">
                     {mockAssets.find(a => a.symbol === selectedSymbol)?.icon || '?'}
                   </div>
-                  <div className="text-left">
+                  <div className="text-start">
                     <p className="text-sm font-semibold text-[#EAECEF]">{selectedSymbol}</p>
                     <p className="text-[10px] text-[#5E6673]">{mockAssets.find(a => a.symbol === selectedSymbol)?.name}</p>
                   </div>
@@ -235,7 +235,7 @@ export default function DepositView() {
                               <div className="w-7 h-7 rounded-full bg-[#0B0E11] flex items-center justify-center text-xs font-bold">
                                 {asset.icon}
                               </div>
-                              <div className="text-left">
+                              <div className="text-start">
                                 <p className="text-sm font-medium text-[#EAECEF]">{symbol}</p>
                                 <p className="text-[10px] text-[#5E6673]">{asset.name}</p>
                               </div>
@@ -271,7 +271,7 @@ export default function DepositView() {
                       selectedNetwork === network.id ? 'selected' : 'bg-[#2B3139]/50'
                     }`}
                   >
-                    <div className="text-left">
+                    <div className="text-start">
                       <p className="text-sm font-medium text-[#EAECEF]">{network.name}</p>
                       <p className="text-[10px] text-[#5E6673]">{t('wallet.deposit')}: {network.minDeposit} • {t('wallet.fee')}: {network.fee}</p>
                     </div>
@@ -364,12 +364,12 @@ export default function DepositView() {
               >
                 {copied ? (
                   <>
-                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                    <CheckCircle2 className="h-4 w-4 me-2" />
                     {t('wallet.copied')}
                   </>
                 ) : (
                   <>
-                    <Copy className="h-4 w-4 mr-2" />
+                    <Copy className="h-4 w-4 me-2" />
                     {t('wallet.copyAddress')}
                   </>
                 )}
@@ -430,7 +430,7 @@ export default function DepositView() {
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-end">
                       <p className="text-sm font-semibold text-[#0ECB81] tabular-nums">
                         +{deposit.amount} {deposit.asset}
                       </p>

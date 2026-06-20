@@ -95,7 +95,7 @@ export default function SupportView() {
             className="bg-[#F0B90B] hover:bg-[#F0B90B]/90 text-[#0B0E11] text-xs h-9 font-semibold"
             onClick={() => setCreateTicketOpen(true)}
           >
-            <Plus className="h-3.5 w-3.5 mr-1" />
+            <Plus className="h-3.5 w-3.5 me-1" />
             {t('support.newTicket')}
           </Button>
         </div>
@@ -135,12 +135,12 @@ export default function SupportView() {
 
           {/* Search */}
           <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673]" />
+            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673]" />
             <Input
               placeholder={t('support.searchFaqs')}
               value={searchFAQ}
               onChange={(e) => setSearchFAQ(e.target.value)}
-              className="pl-9 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B]"
+              className="ps-9 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B]"
             />
           </div>
 
@@ -154,7 +154,7 @@ export default function SupportView() {
                 >
                   <button
                     onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)}
-                    className="w-full px-4 py-3 hover:bg-[#2B3139]/50 text-sm text-[#EAECEF] text-left flex items-center justify-between"
+                    className="w-full px-4 py-3 hover:bg-[#2B3139]/50 text-sm text-[#EAECEF] text-start flex items-center justify-between"
                   >
                     <div className="flex items-center gap-2">
                       <HelpCircle className="h-4 w-4 text-[#F0B90B] shrink-0" />
@@ -240,7 +240,7 @@ export default function SupportView() {
                                   : 'bg-[#848E9C]/10 text-[#848E9C]'
                               }`}
                             >
-                              <StatusIcon className={`h-2.5 w-2.5 mr-0.5 ${config.color}`} />
+                              <StatusIcon className={`h-2.5 w-2.5 me-0.5 ${config.color}`} />
                               {t(config.labelKey)}
                             </Badge>
                             <span className="text-[9px] text-[#3E444D]">

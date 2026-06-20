@@ -370,7 +370,7 @@ export default function TransactionDetailView() {
                   <Clock className="h-4 w-4 text-[#848E9C]" />
                   <span className="text-xs text-[#848E9C]">{t('transactionDetail.timestamp')}</span>
                 </div>
-                <div className="text-right">
+                <div className="text-end">
                   <p className="text-xs text-[#EAECEF]">{formatTimestamp(tx.timestamp)}</p>
                   <p className="text-[10px] text-[#5E6673]">{timeAgo(tx.timestamp, t)}</p>
                 </div>
@@ -414,7 +414,7 @@ export default function TransactionDetailView() {
             variant="outline"
             className="w-full border-[#2B3139] text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/30 h-11 press-scale"
           >
-            <ExternalLink className="h-4 w-4 mr-2" />
+            <ExternalLink className="h-4 w-4 me-2" />
             {t('transactionDetail.viewOnExplorer')}
           </Button>
         </motion.div>

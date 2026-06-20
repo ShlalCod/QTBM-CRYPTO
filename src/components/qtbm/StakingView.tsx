@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useModalA11y } from '@/hooks/use-modal-a11y';
 import {
   ArrowLeft,
   Coins,
@@ -130,6 +131,8 @@ function UnstakeModal({
 }) {
   const [cooldown, setCooldown] = useState(5);
   const [confirmed, setConfirmed] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  useModalA11y({ open: true, onClose, ref: modalRef });
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -146,13 +149,17 @@ function UnstakeModal({
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
     >
       <motion.div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('staking.unstake')}
         className="w-full max-w-sm bg-[#1E2329] border border-[#2B3139] rounded-2xl overflow-hidden"
         initial={{ scale: 0.95, y: 20 }}
         animate={{ scale: 1, y: 0 }}
@@ -249,6 +256,8 @@ function StakeDialog({
   const [amount, setAmount] = useState('');
   const [lockDays, setLockDays] = useState(30);
   const [confirmed, setConfirmed] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  useModalA11y({ open: true, onClose, ref: modalRef });
   const effectiveApy = getApyForLockPeriod(apy, lockDays);
   const numAmount = parseFloat(amount) || 0;
   const dailyReward = numAmount * (effectiveApy / 100) / 365;
@@ -265,13 +274,17 @@ function StakeDialog({
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
     >
       <motion.div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('staking.stakeNow')}
         className="w-full max-w-sm bg-[#1E2329] border border-[#2B3139] rounded-2xl overflow-hidden"
         initial={{ scale: 0.95, y: 20 }}
         animate={{ scale: 1, y: 0 }}
@@ -318,10 +331,10 @@ function StakeDialog({
                     type="number"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] h-11 text-base focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 pr-16"
+                    className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] h-11 text-base focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 pe-16"
                     placeholder={`${t('staking.min')} ${minAmount}`}
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#848E9C] font-medium">{asset}</span>
+                  <span className="absolute end-3 top-1/2 -translate-y-1/2 text-xs text-[#848E9C] font-medium">{asset}</span>
                 </div>
               </div>
 
@@ -369,7 +382,7 @@ function StakeDialog({
                 onClick={handleConfirm}
                 disabled={numAmount < minAmount}
               >
-                <Lock className="h-4 w-4 mr-1.5" />
+                <Lock className="h-4 w-4 me-1.5" />
                 {t('staking.confirmStake')}
               </Button>
             </>
@@ -521,7 +534,7 @@ function ActiveStakingTab({
                       +{pos.rewardsEarned} {pos.asset}
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-end">
                     <p className="text-[10px] text-[#5E6673]">{t('staking.usdEquivalent')}</p>
                     <p className="text-sm font-medium text-[#EAECEF] tabular-nums">${pos.rewardsUsd}</p>
                   </div>
@@ -550,7 +563,7 @@ function ActiveStakingTab({
         className="w-full gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-11 shadow-md shadow-[#F0B90B]/20"
         onClick={() => onStakeNow(availableAssets[1])}
       >
-        <Lock className="h-4 w-4 mr-1.5" />
+        <Lock className="h-4 w-4 me-1.5" />
         {t('staking.stakeNow')}
       </Button>
     </div>
@@ -659,9 +672,9 @@ function RewardsHistoryTab({ t }: { t: (key: string) => string }) {
       <div className="grid grid-cols-5 gap-2 px-3 py-2 text-[9px] text-[#5E6673] uppercase tracking-wider font-semibold">
         <span>{t('staking.date')}</span>
         <span>{t('staking.asset')}</span>
-        <span className="text-right">{t('staking.amount')}</span>
-        <span className="text-right">{t('staking.usd')}</span>
-        <span className="text-right">{t('staking.type')}</span>
+        <span className="text-end">{t('staking.amount')}</span>
+        <span className="text-end">{t('staking.usd')}</span>
+        <span className="text-end">{t('staking.type')}</span>
       </div>
       <Separator className="bg-[#2B3139]" />
 
@@ -677,9 +690,9 @@ function RewardsHistoryTab({ t }: { t: (key: string) => string }) {
               {new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
             </span>
             <span className="text-[#EAECEF] font-medium">{entry.asset}</span>
-            <span className="text-right text-[#0ECB81] tabular-nums text-[11px]">+{entry.amount}</span>
-            <span className="text-right text-[#EAECEF] tabular-nums text-[11px]">{entry.usdValue}</span>
-            <span className="text-right">
+            <span className="text-end text-[#0ECB81] tabular-nums text-[11px]">+{entry.amount}</span>
+            <span className="text-end text-[#EAECEF] tabular-nums text-[11px]">{entry.usdValue}</span>
+            <span className="text-end">
               <Badge
                 className={cn(
                   'text-[8px] border-0 h-4 px-1.5 font-medium',
@@ -880,7 +893,7 @@ export default function StakingView() {
             </div>
           </div>
           <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-0 text-[10px] px-2.5 py-1 font-semibold">
-            <Lock className="h-3 w-3 mr-1" />
+            <Lock className="h-3 w-3 me-1" />
             $12,450 {t('staking.totalStaked')}
           </Badge>
         </div>

@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useModalA11y } from '@/hooks/use-modal-a11y';
 import {
   ArrowLeft,
   Trophy,
@@ -77,6 +78,8 @@ export default function LeaderboardView() {
   const [activeTab, setActiveTab] = useState<'top' | 'myRank' | 'rewards'>('top');
   const [isJoined, setIsJoined] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
+  const joinModalRef = useRef<HTMLDivElement>(null);
+  useModalA11y({ open: showJoinModal, onClose: () => setShowJoinModal(false), ref: joinModalRef });
   const [countdown, setCountdown] = useState({ days: 12, hours: 8, minutes: 34, seconds: 56 });
 
   // Countdown timer
@@ -199,7 +202,7 @@ export default function LeaderboardView() {
                 className="w-full gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-10 text-sm shadow-md shadow-[#F0B90B]/20"
                 onClick={() => setShowJoinModal(true)}
               >
-                <Zap className="h-4 w-4 mr-1.5" />
+                <Zap className="h-4 w-4 me-1.5" />
                 {t('leaderboard.joinNow')}
               </Button>
             ) : (
@@ -322,7 +325,7 @@ export default function LeaderboardView() {
                               </div>
                             </div>
                             {/* PnL */}
-                            <div className="text-right">
+                            <div className="text-end">
                               <p className="text-sm font-bold text-[#0ECB81]">+{trader.pnlPercent}%</p>
                               <p className="text-[10px] text-[#5E6673]">ROI: {trader.roi}%</p>
                             </div>
@@ -498,13 +501,17 @@ export default function LeaderboardView() {
       <AnimatePresence>
         {showJoinModal && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowJoinModal(false)}
           >
             <motion.div
+              ref={joinModalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label={t('leaderboard.joinCompetition')}
               className="w-full max-w-sm bg-[#1E2329] border border-[#2B3139] rounded-2xl overflow-hidden gradient-border-modal"
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
@@ -546,7 +553,7 @@ export default function LeaderboardView() {
                       setShowJoinModal(false);
                     }}
                   >
-                    <Zap className="h-4 w-4 mr-1" />
+                    <Zap className="h-4 w-4 me-1" />
                     {t('leaderboard.confirmJoin')}
                   </Button>
                 </div>

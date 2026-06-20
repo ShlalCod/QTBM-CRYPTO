@@ -262,12 +262,12 @@ export default function QTBMApp() {
           {/* Search Bar - Desktop */}
           <div className="hidden md:flex flex-1 max-w-md mx-6">
             <div className="relative w-full group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#848E9C] group-focus-within:text-[#F0B90B] transition-colors" />
+              <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#848E9C] group-focus-within:text-[#F0B90B] transition-colors" />
               <Input
                 placeholder={t('common.searchMarkets')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 bg-[#2B3139]/60 border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 backdrop-blur-sm transition-all duration-200"
+                className="ps-9 bg-[#2B3139]/60 border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 backdrop-blur-sm transition-all duration-200"
               />
             </div>
           </div>
@@ -293,7 +293,7 @@ export default function QTBMApp() {
             >
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
-                <Badge className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 bg-[#F6465D] text-white text-[10px] flex items-center justify-center border-0 animate-fade-scale notif-dot-pulse">
+                <Badge className="absolute -top-0.5 -end-0.5 h-4 min-w-4 px-1 bg-[#F6465D] text-white text-[10px] flex items-center justify-center border-0 animate-fade-scale notif-dot-pulse">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </Badge>
               )}
@@ -317,7 +317,7 @@ export default function QTBMApp() {
                 className="text-[#EAECEF] hover:bg-[#2B3139] h-9 px-3 text-sm"
                 onClick={() => navigateTo('more')}
               >
-                <div className="w-6 h-6 gradient-gold rounded-full flex items-center justify-center mr-2 shadow-sm shadow-[#F0B90B]/30">
+                <div className="w-6 h-6 gradient-gold rounded-full flex items-center justify-center me-2 shadow-sm shadow-[#F0B90B]/30">
                   <span className="text-[#0B0E11] text-xs font-bold">
                     {user.name?.[0]?.toUpperCase() || 'U'}
                   </span>
@@ -337,7 +337,7 @@ export default function QTBMApp() {
                   className="gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-9 px-4 text-sm shadow-md shadow-[#F0B90B]/20 transition-all duration-200 hover-lift"
                   onClick={() => navigateTo('login')}
                 >
-                  <LogIn className="h-4 w-4 mr-1.5" />
+                  <LogIn className="h-4 w-4 me-1.5" />
                   <span className="hidden sm:inline">{t('auth.login')}</span>
                   <span className="sm:hidden">{t('auth.login')}</span>
                 </Button>
@@ -361,13 +361,13 @@ export default function QTBMApp() {
             >
               <div className="p-3">
                 <div className="relative group">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#848E9C] group-focus-within:text-[#F0B90B] transition-colors" />
+                  <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#848E9C] group-focus-within:text-[#F0B90B] transition-colors" />
                   <Input
                     placeholder={t('common.searchMarkets')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     autoFocus
-                    className="pl-9 bg-[#2B3139]/60 border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 backdrop-blur-sm"
+                    className="ps-9 bg-[#2B3139]/60 border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 backdrop-blur-sm"
                   />
                 </div>
               </div>
@@ -398,7 +398,7 @@ export default function QTBMApp() {
                   >
                     <Icon className={`h-5 w-5 shrink-0 transition-colors duration-200 ${isActive ? 'text-[#F0B90B]' : ''}`} />
                     <span>{t(item.labelKey)}</span>
-                    {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F0B90B]" />}
+                    {isActive && <div className="ms-auto w-1.5 h-1.5 rounded-full bg-[#F0B90B]" />}
                   </button>
                 );
               })}
@@ -425,7 +425,7 @@ export default function QTBMApp() {
                   >
                     <Icon className={`h-5 w-5 shrink-0 transition-colors duration-200 ${isActive ? 'text-[#F0B90B]' : ''}`} />
                     <span>{t(item.labelKey)}</span>
-                    {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F0B90B]" />}
+                    {isActive && <div className="ms-auto w-1.5 h-1.5 rounded-full bg-[#F0B90B]" />}
                   </button>
                 );
               })}
@@ -442,7 +442,7 @@ export default function QTBMApp() {
               >
                 <Menu className={`h-5 w-5 shrink-0 transition-colors duration-200 ${currentView === 'more' ? 'text-[#F0B90B]' : ''}`} />
                 <span>{t('nav.more')}</span>
-                {currentView === 'more' && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F0B90B]" />}
+                {currentView === 'more' && <div className="ms-auto w-1.5 h-1.5 rounded-full bg-[#F0B90B]" />}
               </button>
             </div>
           </ScrollArea>

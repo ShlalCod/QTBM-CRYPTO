@@ -381,7 +381,7 @@ export default function WalletView() {
               ) : (
                 <span className="text-xs text-[#5E6673]">{t('wallet.pnl24h')}: ****</span>
               )}
-              <span className="text-[10px] text-[#5E6673] ml-1">{t('wallet.pnl24h')}</span>
+              <span className="text-[10px] text-[#5E6673] ms-1">{t('wallet.pnl24h')}</span>
             </div>
             {/* Allocation ring chart */}
             <div className="flex items-center gap-4 mt-3">
@@ -509,9 +509,9 @@ export default function WalletView() {
           {/* Asset Header */}
           <div className="grid grid-cols-12 gap-2 px-3 py-1.5 text-[10px] text-[#5E6673] font-medium uppercase tracking-wider">
             <div className="col-span-4">{t('wallet.asset')}</div>
-            <div className="col-span-2 text-right">{t('wallet.available')}</div>
-            <div className="col-span-2 text-right">{t('wallet.value')}</div>
-            <div className="col-span-4 text-right">{t('wallet.trend7d')}</div>
+            <div className="col-span-2 text-end">{t('wallet.available')}</div>
+            <div className="col-span-2 text-end">{t('wallet.value')}</div>
+            <div className="col-span-4 text-end">{t('wallet.trend7d')}</div>
           </div>
 
           <div className="space-y-0.5">
@@ -528,12 +528,12 @@ export default function WalletView() {
                       <div className="w-8 h-8 rounded-full bg-[#2B3139] flex items-center justify-center text-sm font-medium">
                         {balance.icon}
                       </div>
-                      <div className="text-left">
+                      <div className="text-start">
                         <p className="text-sm font-semibold text-[#EAECEF]">{balance.asset}</p>
                         <p className="text-[10px] text-[#5E6673]">{balance.name}</p>
                       </div>
                     </div>
-                    <div className="col-span-2 text-right">
+                    <div className="col-span-2 text-end">
                       <p className="text-xs text-[#EAECEF] tabular-nums">
                         {showBalance ? balance.available.toLocaleString('en-US', { maximumFractionDigits: 4 }) : '****'}
                       </p>
@@ -541,7 +541,7 @@ export default function WalletView() {
                         / {showBalance ? balance.total.toLocaleString('en-US', { maximumFractionDigits: 4 }) : '****'}
                       </p>
                     </div>
-                    <div className="col-span-2 text-right">
+                    <div className="col-span-2 text-end">
                       <p className="text-xs text-[#EAECEF] tabular-nums">
                         {showBalance ? `$${formatPrice(balance.usdValue)}` : '****'}
                       </p>
@@ -686,13 +686,13 @@ export default function WalletView() {
                                     variant="outline"
                                     className={`h-4 px-1.5 text-[9px] border-0 ${statusColor} bg-current/10`}
                                   >
-                                    <StatusIcon className={`h-2.5 w-2.5 mr-0.5 ${statusColor}`} />
+                                    <StatusIcon className={`h-2.5 w-2.5 me-0.5 ${statusColor}`} />
                                     {statusLabel}
                                   </Badge>
                                 </div>
                               </div>
                             </div>
-                            <div className="text-right">
+                            <div className="text-end">
                               <p
                                 className={`text-sm font-semibold tabular-nums ${
                                   isIncoming ? 'text-[#0ECB81]' : 'text-[#F6465D]'

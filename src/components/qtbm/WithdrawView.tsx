@@ -189,7 +189,7 @@ export default function WithdrawView() {
                   <div className="w-8 h-8 rounded-full bg-[#0B0E11] flex items-center justify-center text-sm font-bold">
                     {mockAssets.find(a => a.symbol === selectedSymbol)?.icon || '?'}
                   </div>
-                  <div className="text-left">
+                  <div className="text-start">
                     <p className="text-sm font-semibold text-[#EAECEF]">{selectedSymbol}</p>
                     <p className="text-[10px] text-[#5E6673]">{mockAssets.find(a => a.symbol === selectedSymbol)?.name}</p>
                   </div>
@@ -242,7 +242,7 @@ export default function WithdrawView() {
                               <div className="w-7 h-7 rounded-full bg-[#0B0E11] flex items-center justify-center text-xs font-bold">
                                 {asset.icon}
                               </div>
-                              <div className="text-left">
+                              <div className="text-start">
                                 <p className="text-sm font-medium text-[#EAECEF]">{symbol}</p>
                                 <p className="text-[10px] text-[#5E6673]">{asset.name}</p>
                               </div>
@@ -277,7 +277,7 @@ export default function WithdrawView() {
                       selectedNetwork === network.id ? 'selected' : 'bg-[#2B3139]/50'
                     }`}
                   >
-                    <div className="text-left">
+                    <div className="text-start">
                       <p className="text-sm font-medium text-[#EAECEF]">{network.name}</p>
                       <p className="text-[10px] text-[#5E6673]">
                         {t('wallet.fee')}: {network.fee} {network.feeAsset} • {t('wallet.minWithdraw')}: {network.minWithdraw} {selectedSymbol}
@@ -311,7 +311,7 @@ export default function WithdrawView() {
                     placeholder={`${selectedSymbol} ${currentNetwork.name}`}
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-11 pr-20 text-sm font-mono focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
+                    className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-11 pe-20 text-sm font-mono focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
                   />
                   <button
                     onClick={handlePaste}
@@ -337,7 +337,7 @@ export default function WithdrawView() {
                     placeholder="0.00"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-11 pr-16 text-sm tabular-nums focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
+                    className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-11 pe-16 text-sm tabular-nums focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
                   />
                   <button
                     onClick={handleMax}
@@ -441,9 +441,9 @@ export default function WithdrawView() {
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-end">
                       <Badge className={`text-[9px] h-4 px-1.5 border-0 ${status.color} ${status.bg}`}>
-                        <StatusIcon className={`h-2.5 w-2.5 mr-0.5 ${withdrawal.status === 'processing' ? 'animate-spin' : ''}`} />
+                        <StatusIcon className={`h-2.5 w-2.5 me-0.5 ${withdrawal.status === 'processing' ? 'animate-spin' : ''}`} />
                         {t(status.labelKey)}
                       </Badge>
                       <p className="text-[10px] text-[#5E6673] mt-0.5">{t('wallet.fee')}: {withdrawal.fee} {withdrawal.asset}</p>
@@ -552,7 +552,7 @@ export default function WithdrawView() {
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="h-4 w-4 me-2 animate-spin" />
                     {t('wallet.processing')}
                   </>
                 ) : (

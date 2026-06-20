@@ -274,7 +274,7 @@ export default function VotingView() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-lg font-semibold text-[#EAECEF]">{t('voting.title')}</h1>
-          <Badge className="bg-gradient-to-r from-[#F0B90B] to-[#F0B90B]/70 text-[#0B0E11] border-0 text-[10px] font-bold px-2 py-0.5 ml-auto">
+          <Badge className="bg-gradient-to-r from-[#F0B90B] to-[#F0B90B]/70 text-[#0B0E11] border-0 text-[10px] font-bold px-2 py-0.5 ms-auto">
             {t('voting.season')}
           </Badge>
         </div>
@@ -398,9 +398,9 @@ export default function VotingView() {
                             proposal.yourVote === 'undecided' && 'bg-[#F0B90B]/15 text-[#F0B90B]'
                           )}
                         >
-                          {proposal.yourVote === 'for' && <ThumbsUp className="h-2.5 w-2.5 mr-1" />}
-                          {proposal.yourVote === 'against' && <ThumbsDown className="h-2.5 w-2.5 mr-1" />}
-                          {proposal.yourVote === 'undecided' && <Minus className="h-2.5 w-2.5 mr-1" />}
+                          {proposal.yourVote === 'for' && <ThumbsUp className="h-2.5 w-2.5 me-1" />}
+                          {proposal.yourVote === 'against' && <ThumbsDown className="h-2.5 w-2.5 me-1" />}
+                          {proposal.yourVote === 'undecided' && <Minus className="h-2.5 w-2.5 me-1" />}
                           {proposal.yourVote === 'for' ? t('voting.for') : proposal.yourVote === 'against' ? t('voting.against') : t('voting.undecided')}
                         </Badge>
                       </div>
@@ -452,7 +452,7 @@ export default function VotingView() {
                           className="h-7 px-3 text-[10px] font-semibold gradient-yellow hover:opacity-90 text-[#0B0E11] shadow-md shadow-[#F0B90B]/15 press-scale vote-btn-glow"
                           onClick={() => openVoteModal(proposal)}
                         >
-                          <Vote className="h-3 w-3 mr-1" />
+                          <Vote className="h-3 w-3 me-1" />
                           {t('voting.castVote')}
                         </Button>
                       </div>
@@ -582,7 +582,7 @@ export default function VotingView() {
                 className="w-full border-[#2B3139] text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] hover:border-[#F0B90B]/20 h-9 text-xs"
               >
                 {t('voting.viewFullLeaderboard')}
-                <ChevronRight className="h-3.5 w-3.5 ml-1" />
+                <ChevronRight className="h-3.5 w-3.5 ms-1" />
               </Button>
             </CardContent>
           </Card>
@@ -603,7 +603,7 @@ export default function VotingView() {
                     key={entry.id}
                     className="flex items-center justify-between py-2.5 px-3 rounded-lg bg-[#0B0E11]/30"
                   >
-                    <div className="flex-1 min-w-0 mr-2">
+                    <div className="flex-1 min-w-0 me-2">
                       <p className="text-xs font-medium text-[#EAECEF] truncate">{entry.proposalName}</p>
                       <div className="flex items-center gap-2 mt-0.5">
                         <span
@@ -613,9 +613,9 @@ export default function VotingView() {
                           )}
                         >
                           {entry.direction === 'for' ? (
-                            <ThumbsUp className="h-2.5 w-2.5 inline mr-0.5" />
+                            <ThumbsUp className="h-2.5 w-2.5 inline me-0.5" />
                           ) : (
-                            <ThumbsDown className="h-2.5 w-2.5 inline mr-0.5" />
+                            <ThumbsDown className="h-2.5 w-2.5 inline me-0.5" />
                           )}
                           {entry.direction === 'for' ? t('voting.for') : t('voting.against')}
                         </span>
@@ -632,8 +632,8 @@ export default function VotingView() {
                           entry.result === 'pending' && 'bg-[#F0B90B]/15 text-[#F0B90B]'
                         )}
                       >
-                        {entry.result === 'passed' && <CheckCircle className="h-2.5 w-2.5 mr-0.5" />}
-                        {entry.result === 'failed' && <XCircle className="h-2.5 w-2.5 mr-0.5" />}
+                        {entry.result === 'passed' && <CheckCircle className="h-2.5 w-2.5 me-0.5" />}
+                        {entry.result === 'failed' && <XCircle className="h-2.5 w-2.5 me-0.5" />}
                         {entry.result === 'passed' ? t('voting.passed') : entry.result === 'failed' ? t('voting.failed') : t('voting.pending')}
                       </Badge>
                     )}
@@ -687,7 +687,7 @@ export default function VotingView() {
                   <div className="bg-[#0B0E11]/50 rounded-xl p-3 mb-4 space-y-2">
                     <div className="flex justify-between text-xs">
                       <span className="text-[#848E9C]">{t('voting.proposal')}</span>
-                      <span className="text-[#EAECEF] font-medium text-right max-w-[200px] truncate">{selectedProposal.title}</span>
+                      <span className="text-[#EAECEF] font-medium text-end max-w-[200px] truncate">{selectedProposal.title}</span>
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-[#848E9C]">{t('voting.direction')}</span>
@@ -773,14 +773,14 @@ export default function VotingView() {
                       className="flex-1 h-10 font-semibold bg-gradient-to-r from-[#0ECB81] to-[#0ECB81]/80 hover:opacity-90 text-white press-scale"
                       onClick={() => { setPendingDirection('for'); setConfirmStep('confirm'); }}
                     >
-                      <ThumbsUp className="h-4 w-4 mr-1.5" />
+                      <ThumbsUp className="h-4 w-4 me-1.5" />
                       {t('voting.for')}
                     </Button>
                     <Button
                       className="flex-1 h-10 font-semibold bg-gradient-to-r from-[#F6465D] to-[#F6465D]/80 hover:opacity-90 text-white press-scale"
                       onClick={() => { setPendingDirection('against'); setConfirmStep('confirm'); }}
                     >
-                      <ThumbsDown className="h-4 w-4 mr-1.5" />
+                      <ThumbsDown className="h-4 w-4 me-1.5" />
                       {t('voting.against')}
                     </Button>
                   </div>

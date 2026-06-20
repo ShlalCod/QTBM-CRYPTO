@@ -296,7 +296,7 @@ export default function MoreView() {
             className="w-full border-[#F6465D]/20 text-[#F6465D] hover:bg-[#F6465D]/10 hover:border-[#F6465D]/30 h-10 mt-4"
             onClick={() => useAppStore.getState().logout()}
           >
-            <LogOut className="h-4 w-4 mr-2" />
+            <LogOut className="h-4 w-4 me-2" />
             {t('more.logOut')}
           </Button>
         )}

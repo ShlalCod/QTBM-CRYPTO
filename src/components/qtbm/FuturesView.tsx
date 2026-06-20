@@ -128,7 +128,7 @@ export default function FuturesView() {
                 >
                   <span className="text-lg font-bold text-[#EAECEF]">{selectedContract.base}</span>
                   <span className="text-sm text-[#5E6673]">/{selectedContract.quote}</span>
-                  <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-0 text-[8px] px-1 py-0 h-3.5 font-semibold ml-1">PERP</Badge>
+                  <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-0 text-[8px] px-1 py-0 h-3.5 font-semibold ms-1">PERP</Badge>
                   <ChevronDown className={`h-4 w-4 text-[#5E6673] transition-transform ${pairDropdown ? 'rotate-180' : ''}`} />
                 </button>
                 {pairDropdown && (
@@ -144,9 +144,9 @@ export default function FuturesView() {
                         <span>
                           <span className="text-[#EAECEF] font-medium">{c.base}</span>
                           <span className="text-[#5E6673]">/{c.quote}</span>
-                          <span className="text-[8px] text-[#F0B90B] ml-1">PERP</span>
+                          <span className="text-[8px] text-[#F0B90B] ms-1">PERP</span>
                         </span>
-                        <div className="text-right">
+                        <div className="text-end">
                           <div className="text-[#EAECEF] tabular-nums">{formatPrice(livePrices[c.symbol] || c.markPrice)}</div>
                           <div className={`text-[9px] tabular-nums ${c.fundingRate >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
                             {c.fundingRate >= 0 ? '+' : ''}{c.fundingRate.toFixed(4)}%
@@ -250,7 +250,7 @@ export default function FuturesView() {
 
             {/* Position Mode Toggle */}
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-[#5E6673] mr-1">{t('trade.positionMode')}:</span>
+              <span className="text-[10px] text-[#5E6673] me-1">{t('trade.positionMode')}:</span>
               {(['cross', 'isolated'] as PositionMode[]).map((mode) => (
                 <button
                   key={mode}
@@ -311,7 +311,7 @@ export default function FuturesView() {
                       : 'bg-[#2B3139] text-[#5E6673] hover:text-[#848E9C]'
                   }`}
                 >
-                  <TrendingUp className="h-4 w-4 inline mr-1" />
+                  <TrendingUp className="h-4 w-4 inline me-1" />
                   {t('trade.long')}
                 </button>
                 <button
@@ -322,7 +322,7 @@ export default function FuturesView() {
                       : 'bg-[#2B3139] text-[#5E6673] hover:text-[#848E9C]'
                   }`}
                 >
-                  <TrendingDown className="h-4 w-4 inline mr-1" />
+                  <TrendingDown className="h-4 w-4 inline me-1" />
                   {t('trade.short')}
                 </button>
               </div>
@@ -364,7 +364,7 @@ export default function FuturesView() {
                     <button onClick={() => setPrice(formatPrice(priceNum + (livePrice * 0.001)))} className="text-[#5E6673] hover:text-[#EAECEF] shrink-0">
                       <Plus className="h-3.5 w-3.5" />
                     </button>
-                    <span className="text-[10px] text-[#5E6673] shrink-0 ml-1">USDT</span>
+                    <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">USDT</span>
                   </div>
                 </div>
               )}
@@ -380,7 +380,7 @@ export default function FuturesView() {
                     placeholder="0.00"
                     className="border-0 bg-transparent text-[#EAECEF] text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-[#3B4451]"
                   />
-                  <span className="text-[10px] text-[#5E6673] shrink-0 ml-1">{selectedContract.base}</span>
+                  <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">{selectedContract.base}</span>
                 </div>
               </div>
 
@@ -421,9 +421,9 @@ export default function FuturesView() {
                 }`}
               >
                 {side === 'long' ? (
-                  <><TrendingUp className="h-4 w-4 mr-1.5" />{t('trade.long')} {selectedContract.base}</>
+                  <><TrendingUp className="h-4 w-4 me-1.5" />{t('trade.long')} {selectedContract.base}</>
                 ) : (
-                  <><TrendingDown className="h-4 w-4 mr-1.5" />{t('trade.short')} {selectedContract.base}</>
+                  <><TrendingDown className="h-4 w-4 me-1.5" />{t('trade.short')} {selectedContract.base}</>
                 )}
               </Button>
             </div>
@@ -444,15 +444,15 @@ export default function FuturesView() {
               <table className="w-full text-[11px]">
                 <thead>
                   <tr className="text-[#5E6673] border-b border-[#2B3139]/50">
-                    <th className="text-left py-2 px-3 font-medium">{t('trade.symbol')}</th>
-                    <th className="text-left py-2 px-3 font-medium">{t('trade.side')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.size')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.entry')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.mark')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.liqPrice')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.position')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.pnl')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.roe')}%</th>
+                    <th className="text-start py-2 px-3 font-medium">{t('trade.symbol')}</th>
+                    <th className="text-start py-2 px-3 font-medium">{t('trade.side')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.size')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.entry')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.mark')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.liqPrice')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.position')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.pnl')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.roe')}%</th>
                     <th className="text-center py-2 px-3 font-medium">{t('trade.action')}</th>
                   </tr>
                 </thead>
@@ -465,22 +465,22 @@ export default function FuturesView() {
                       <tr key={pos.id} className="border-b border-[#2B3139]/30 hover:bg-[#2B3139]/30">
                         <td className="py-2.5 px-3">
                           <span className="text-[#EAECEF] font-medium">{pos.symbol}</span>
-                          <span className="text-[8px] text-[#F0B90B] ml-1">{pos.leverage}x</span>
+                          <span className="text-[8px] text-[#F0B90B] ms-1">{pos.leverage}x</span>
                         </td>
                         <td className="py-2.5 px-3">
                           <span className={`font-semibold ${pos.side === 'long' ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
                             {pos.side === 'long' ? t('trade.long') : t('trade.short')}
                           </span>
                         </td>
-                        <td className="py-2.5 px-3 text-right text-[#EAECEF] tabular-nums">{pos.size}</td>
-                        <td className="py-2.5 px-3 text-right text-[#848E9C] tabular-nums">{formatPrice(pos.entryPrice)}</td>
-                        <td className="py-2.5 px-3 text-right text-[#EAECEF] tabular-nums">{formatPrice(livePrices[pos.symbol] || pos.markPrice)}</td>
-                        <td className="py-2.5 px-3 text-right text-[#F6465D]/80 tabular-nums">{formatPrice(pos.liqPrice)}</td>
-                        <td className="py-2.5 px-3 text-right text-[#848E9C] tabular-nums">{formatPrice(pos.margin)}</td>
-                        <td className={`py-2.5 px-3 text-right font-medium tabular-nums ${currentPnl >= 0 ? 'text-[#0ECB81] pnl-glow-profit' : 'text-[#F6465D] pnl-glow-loss'}`}>
+                        <td className="py-2.5 px-3 text-end text-[#EAECEF] tabular-nums">{pos.size}</td>
+                        <td className="py-2.5 px-3 text-end text-[#848E9C] tabular-nums">{formatPrice(pos.entryPrice)}</td>
+                        <td className="py-2.5 px-3 text-end text-[#EAECEF] tabular-nums">{formatPrice(livePrices[pos.symbol] || pos.markPrice)}</td>
+                        <td className="py-2.5 px-3 text-end text-[#F6465D]/80 tabular-nums">{formatPrice(pos.liqPrice)}</td>
+                        <td className="py-2.5 px-3 text-end text-[#848E9C] tabular-nums">{formatPrice(pos.margin)}</td>
+                        <td className={`py-2.5 px-3 text-end font-medium tabular-nums ${currentPnl >= 0 ? 'text-[#0ECB81] pnl-glow-profit' : 'text-[#F6465D] pnl-glow-loss'}`}>
                           {currentPnl >= 0 ? '+' : ''}{formatPrice(currentPnl)}
                         </td>
-                        <td className={`py-2.5 px-3 text-right font-medium tabular-nums ${currentPnl >= 0 ? 'text-[#0ECB81] pnl-glow-profit' : 'text-[#F6465D] pnl-glow-loss'}`}>
+                        <td className={`py-2.5 px-3 text-end font-medium tabular-nums ${currentPnl >= 0 ? 'text-[#0ECB81] pnl-glow-profit' : 'text-[#F6465D] pnl-glow-loss'}`}>
                           {currentPnl >= 0 ? '+' : ''}{((currentPnl / pos.margin) * 100).toFixed(2)}%
                         </td>
                         <td className="py-2.5 px-3 text-center">
@@ -556,13 +556,13 @@ export default function FuturesView() {
               <table className="w-full text-[11px]">
                 <thead>
                   <tr className="text-[#5E6673] border-b border-[#2B3139]/50">
-                    <th className="text-left py-2 px-3 font-medium">{t('trade.symbol')}</th>
-                    <th className="text-left py-2 px-3 font-medium">{t('trade.side')}</th>
-                    <th className="text-left py-2 px-3 font-medium">{t('trade.type')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.price')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.amount')}</th>
+                    <th className="text-start py-2 px-3 font-medium">{t('trade.symbol')}</th>
+                    <th className="text-start py-2 px-3 font-medium">{t('trade.side')}</th>
+                    <th className="text-start py-2 px-3 font-medium">{t('trade.type')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.price')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.amount')}</th>
                     <th className="text-center py-2 px-3 font-medium">{t('trade.status')}</th>
-                    <th className="text-right py-2 px-3 font-medium">{t('trade.time')}</th>
+                    <th className="text-end py-2 px-3 font-medium">{t('trade.time')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -575,8 +575,8 @@ export default function FuturesView() {
                         </span>
                       </td>
                       <td className="py-2 px-3 text-[#848E9C] capitalize">{order.type === 'limit' ? t('trade.limit') : order.type === 'market' ? t('trade.market') : t('trade.stop')}</td>
-                      <td className="py-2 px-3 text-right text-[#EAECEF] tabular-nums">{formatPrice(order.price)}</td>
-                      <td className="py-2 px-3 text-right text-[#848E9C] tabular-nums">{order.amount}</td>
+                      <td className="py-2 px-3 text-end text-[#EAECEF] tabular-nums">{formatPrice(order.price)}</td>
+                      <td className="py-2 px-3 text-end text-[#848E9C] tabular-nums">{order.amount}</td>
                       <td className="py-2 px-3 text-center">
                         <Badge className={`text-[9px] px-1.5 py-0 h-4 border-0 font-medium ${
                           order.status === 'pending' ? 'bg-[#F0B90B]/10 text-[#F0B90B]' :
@@ -586,7 +586,7 @@ export default function FuturesView() {
                           {order.status === 'pending' ? t('wallet.pending') : order.status === 'filled' ? t('trade.filled') : t('trade.cancel')}
                         </Badge>
                       </td>
-                      <td className="py-2 px-3 text-right text-[#5E6673]">{order.time}</td>
+                      <td className="py-2 px-3 text-end text-[#5E6673]">{order.time}</td>
                     </tr>
                   ))}
                 </tbody>

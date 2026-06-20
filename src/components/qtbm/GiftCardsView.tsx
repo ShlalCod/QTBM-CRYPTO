@@ -198,13 +198,13 @@ export default function GiftCardsView() {
                   transition={{ duration: 0.2 }}
                 >
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#848E9C] text-sm">$</span>
+                    <span className="absolute start-3 top-1/2 -translate-y-1/2 text-[#848E9C] text-sm">$</span>
                     <Input
                       type="number"
                       placeholder={t('giftCards.enterAmount')}
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="pl-7 bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] h-10 text-sm"
+                      className="ps-7 bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] h-10 text-sm"
                     />
                   </div>
                 </motion.div>
@@ -283,7 +283,7 @@ export default function GiftCardsView() {
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-                  className="w-4 h-4 border-2 border-[#0B0E11] border-t-transparent rounded-full mr-2"
+                  className="w-4 h-4 border-2 border-[#0B0E11] border-t-transparent rounded-full me-2"
                 />
               ) : null}
               {creating ? t('giftCards.creating') : t('giftCards.createGiftCard')}

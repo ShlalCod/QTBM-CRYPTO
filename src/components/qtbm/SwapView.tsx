@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useModalA11y } from '@/hooks/use-modal-a11y';
 import {
   ArrowLeft,
   ArrowDownUp,
@@ -65,6 +66,9 @@ function TokenSelector({
   exclude: string;
   title: string;
 }) {
+  const modalRef = useRef<HTMLDivElement>(null);
+  useModalA11y({ open: isOpen, onClose, ref: modalRef });
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -72,10 +76,14 @@ function TokenSelector({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={title}
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
@@ -104,11 +112,11 @@ function TokenSelector({
                     <div className="w-8 h-8 rounded-full bg-[#2B3139] flex items-center justify-center text-sm font-bold text-[#F0B90B]">
                       {tk.icon}
                     </div>
-                    <div className="flex-1 text-left">
+                    <div className="flex-1 text-start">
                       <p className="text-sm font-medium text-[#EAECEF]">{tk.symbol}</p>
                       <p className="text-[10px] text-[#5E6673]">{tk.name}</p>
                     </div>
-                    <div className="text-right">
+                    <div className="text-end">
                       <p className="text-sm text-[#EAECEF]">{tk.balance.toFixed(4)}</p>
                       <p className="text-[10px] text-[#5E6673]">${(tk.balance * tk.price).toFixed(2)}</p>
                     </div>
@@ -422,19 +430,19 @@ export default function SwapView() {
                 >
                   {isApproving ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-[#0B0E11]/30 border-t-[#0B0E11] rounded-full animate-spin mr-2" />
+                      <div className="w-4 h-4 border-2 border-[#0B0E11]/30 border-t-[#0B0E11] rounded-full animate-spin me-2" />
                       {t('swap.approving')}
                     </>
                   ) : (
                     <>
-                      <Check className="h-4 w-4 mr-2" />
+                      <Check className="h-4 w-4 me-2" />
                       {t('swap.approve')} {fromToken.symbol}
                     </>
                   )}
                 </Button>
               ) : swapComplete ? (
                 <Button className="w-full h-12 bg-[#0ECB81] hover:bg-[#0ECB81]/90 text-white font-semibold rounded-xl text-sm" disabled>
-                  <Check className="h-4 w-4 mr-2" />
+                  <Check className="h-4 w-4 me-2" />
                   {t('swap.swapComplete')}
                 </Button>
               ) : (
@@ -445,7 +453,7 @@ export default function SwapView() {
                 >
                   {isSwapping ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-[#0B0E11]/30 border-t-[#0B0E11] rounded-full animate-spin mr-2" />
+                      <div className="w-4 h-4 border-2 border-[#0B0E11]/30 border-t-[#0B0E11] rounded-full animate-spin me-2" />
                       {t('swap.swapping')}
                     </>
                   ) : (
@@ -473,12 +481,12 @@ export default function SwapView() {
                   <div className="flex items-center gap-2">
                     <div className="flex items-center text-xs">
                       <span className="text-[#EAECEF] font-medium">{swap.fromAmt}</span>
-                      <span className="text-[#848E9C] ml-1">{swap.from}</span>
+                      <span className="text-[#848E9C] ms-1">{swap.from}</span>
                     </div>
                     <ArrowDownUp className="h-3 w-3 text-[#5E6673]" />
                     <div className="flex items-center text-xs">
                       <span className="text-[#EAECEF] font-medium">{swap.toAmt}</span>
-                      <span className="text-[#848E9C] ml-1">{swap.to}</span>
+                      <span className="text-[#848E9C] ms-1">{swap.to}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">

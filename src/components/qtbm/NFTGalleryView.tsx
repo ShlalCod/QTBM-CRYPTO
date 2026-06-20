@@ -125,7 +125,7 @@ export default function NFTGalleryView() {
                     </div>
                     <div className="mt-1">
                       <span className={`text-xs font-semibold ${collection.changeColor}`}>{collection.change}</span>
-                      <span className="text-[10px] text-[#5E6673] ml-1">{t('nftGallery.h24')}</span>
+                      <span className="text-[10px] text-[#5E6673] ms-1">{t('nftGallery.h24')}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -179,7 +179,7 @@ export default function NFTGalleryView() {
           className="flex justify-center"
         >
           <Button className="gradient-yellow hover:opacity-90 text-[#0B0E11] font-bold h-12 px-8 text-base press-scale glow-pulse-yellow shadow-xl shadow-[#F0B90B]/25">
-            <Plus className="h-5 w-5 mr-2" />
+            <Plus className="h-5 w-5 me-2" />
             {t('nftGallery.mintNft')}
           </Button>
         </motion.div>
@@ -219,7 +219,7 @@ export default function NFTGalleryView() {
                         <span className="text-[10px] text-[#F6465D]">{activity.seller}</span>
                       </div>
                     </div>
-                    <div className="text-right shrink-0 ml-3">
+                    <div className="text-end shrink-0 ms-3">
                       <p className="text-sm font-semibold text-[#EAECEF]">{activity.price}</p>
                       <p className="text-[10px] text-[#5E6673]">{activity.time}</p>
                     </div>

@@ -161,9 +161,9 @@ export default function AssetDetailView() {
                     isPositive ? 'bg-[#0ECB81]/10 text-[#0ECB81]' : 'bg-[#F6465D]/10 text-[#F6465D]'
                   }`}>
                     {isPositive ? (
-                      <TrendingUp className="h-3 w-3 mr-1" />
+                      <TrendingUp className="h-3 w-3 me-1" />
                     ) : (
-                      <TrendingDown className="h-3 w-3 mr-1" />
+                      <TrendingDown className="h-3 w-3 me-1" />
                     )}
                     {isPositive ? '+' : ''}{asset.changePercent24h.toFixed(2)}%
                   </Badge>
@@ -272,7 +272,7 @@ export default function AssetDetailView() {
             }}
             className="bg-[#0ECB81] hover:bg-[#0ECB81]/90 text-[#0B0E11] font-semibold h-11"
           >
-            <ShoppingCart className="h-4 w-4 mr-1.5" />
+            <ShoppingCart className="h-4 w-4 me-1.5" />
             {t('assetDetail.trade')}
           </Button>
           <Button
@@ -282,7 +282,7 @@ export default function AssetDetailView() {
             }}
             className="bg-[#2B3139] hover:bg-[#363C45] text-[#EAECEF] font-semibold h-11 border border-[#2B3139]"
           >
-            <ArrowDownRight className="h-4 w-4 mr-1.5" />
+            <ArrowDownRight className="h-4 w-4 me-1.5" />
             {t('actions.deposit')}
           </Button>
           <Button
@@ -292,7 +292,7 @@ export default function AssetDetailView() {
             }}
             className="bg-[#2B3139] hover:bg-[#363C45] text-[#EAECEF] font-semibold h-11 border border-[#2B3139]"
           >
-            <ArrowUpRight className="h-4 w-4 mr-1.5" />
+            <ArrowUpRight className="h-4 w-4 me-1.5" />
             {t('actions.withdraw')}
           </Button>
         </div>

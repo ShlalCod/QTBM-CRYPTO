@@ -196,7 +196,7 @@ export default function EarnView() {
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-end">
                       <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">
                         +{sub.accruedRewards.toFixed(4)} {sub.asset}
                       </p>
@@ -266,7 +266,7 @@ export default function EarnView() {
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-end">
                       <p className="text-lg font-bold text-[#0ECB81] tabular-nums gradient-text-gold">{product.apr}%</p>
                       <p className="text-[10px] text-[#5E6673]">APR</p>
                     </div>
@@ -332,7 +332,7 @@ export default function EarnView() {
                     placeholder={t('earn.enterAssetAmount')}
                     value={subscribeAmount}
                     onChange={(e) => setSubscribeAmount(e.target.value)}
-                    className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] pr-16 h-11 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
+                    className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] pe-16 h-11 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
                   />
                   <Button
                     variant="ghost"

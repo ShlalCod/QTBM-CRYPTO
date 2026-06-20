@@ -499,7 +499,7 @@ function CandlestickChart({ pairSymbol, livePrice }: { pairSymbol: string; liveP
       )}
       {/* Indicator Tab Bar - below the chart */}
       <div className="flex items-center gap-1 px-2 py-1.5 bg-[#0B0E11] border-t border-b border-[#2B3139]">
-        <span className="text-[10px] text-[#5E6673] mr-1 flex items-center gap-1">
+        <span className="text-[10px] text-[#5E6673] me-1 flex items-center gap-1">
           <Activity className="h-3 w-3" />
           {t('trade.indicator')}
         </span>
@@ -649,9 +649,9 @@ function OrderBook({ currentPrice, isPositive, livePrice }: { currentPrice: numb
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-[#2B3139] text-[10px] text-[#5E6673]">
-        <span className="w-[38%] text-left">{t('trade.price')}(USDT)</span>
-        <span className="w-[30%] text-right">{t('trade.amount')}(BTC)</span>
-        <span className="w-[32%] text-right">{t('trade.total')}</span>
+        <span className="w-[38%] text-start">{t('trade.price')}(USDT)</span>
+        <span className="w-[30%] text-end">{t('trade.amount')}(BTC)</span>
+        <span className="w-[32%] text-end">{t('trade.total')}</span>
       </div>
 
       <ScrollArea className="flex-1 min-h-0">
@@ -667,8 +667,8 @@ function OrderBook({ currentPrice, isPositive, livePrice }: { currentPrice: numb
                 }}
               />
               <span className="w-[38%] text-[#F6465D] tabular-nums relative">{formatPrice(ask.price)}</span>
-              <span className="w-[30%] text-right text-[#848E9C] tabular-nums relative">{ask.quantity.toFixed(4)}</span>
-              <span className="w-[32%] text-right text-[#5E6673] tabular-nums relative">{formatNumber(ask.total, 0)}</span>
+              <span className="w-[30%] text-end text-[#848E9C] tabular-nums relative">{ask.quantity.toFixed(4)}</span>
+              <span className="w-[32%] text-end text-[#5E6673] tabular-nums relative">{formatNumber(ask.total, 0)}</span>
             </div>
           ))}
         </div>
@@ -700,8 +700,8 @@ function OrderBook({ currentPrice, isPositive, livePrice }: { currentPrice: numb
                 }}
               />
               <span className="w-[38%] text-[#0ECB81] tabular-nums relative">{formatPrice(bid.price)}</span>
-              <span className="w-[30%] text-right text-[#848E9C] tabular-nums relative">{bid.quantity.toFixed(4)}</span>
-              <span className="w-[32%] text-right text-[#5E6673] tabular-nums relative">{formatNumber(bid.total, 0)}</span>
+              <span className="w-[30%] text-end text-[#848E9C] tabular-nums relative">{bid.quantity.toFixed(4)}</span>
+              <span className="w-[32%] text-end text-[#5E6673] tabular-nums relative">{formatNumber(bid.total, 0)}</span>
             </div>
           ))}
         </div>
@@ -823,7 +823,7 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
                 placeholder={t('trade.stopPrice')}
                 className="border-0 bg-transparent text-[#EAECEF] text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-[#3B4451]"
               />
-              <span className="text-[10px] text-[#5E6673] shrink-0 ml-1">{pair.quoteAsset}</span>
+              <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">{pair.quoteAsset}</span>
             </div>
           </div>
         )}
@@ -845,7 +845,7 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
               <button onClick={() => setPrice(formatPrice(priceNum + (currentPrice * 0.001)))} className="text-[#5E6673] hover:text-[#EAECEF] shrink-0">
                 <Plus className="h-3 w-3" />
               </button>
-              <span className="text-[10px] text-[#5E6673] shrink-0 ml-1">{pair.quoteAsset}</span>
+              <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">{pair.quoteAsset}</span>
             </div>
           </div>
         )}
@@ -861,7 +861,7 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
               placeholder="0.00"
               className="border-0 bg-transparent text-[#EAECEF] text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-[#3B4451]"
             />
-            <span className="text-[10px] text-[#5E6673] shrink-0 ml-1">{pair.baseAsset}</span>
+            <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">{pair.baseAsset}</span>
           </div>
         </div>
 
@@ -968,10 +968,10 @@ function OpenOrders({ pairSymbol }: { pairSymbol: string }) {
             <div className="grid grid-cols-7 gap-2 text-[10px] text-[#5E6673] pb-1 border-b border-[#2B3139]/50">
               <span>{t('trade.pair')}</span>
               <span>{t('trade.side')}</span>
-              <span className="text-right">{t('trade.price')}</span>
-              <span className="text-right">{t('trade.amount')}</span>
-              <span className="text-right">{t('trade.filled')}</span>
-              <span className="text-right">{t('common.time')}</span>
+              <span className="text-end">{t('trade.price')}</span>
+              <span className="text-end">{t('trade.amount')}</span>
+              <span className="text-end">{t('trade.filled')}</span>
+              <span className="text-end">{t('common.time')}</span>
               <span className="text-center">{t('trade.action')}</span>
             </div>
             {orders.map((order) => {
@@ -982,14 +982,14 @@ function OpenOrders({ pairSymbol }: { pairSymbol: string }) {
                   <span className={order.side === 'buy' ? 'text-[#0ECB81]' : 'text-[#F6465D]'}>
                     {t('trade.' + order.side)}
                   </span>
-                  <span className="text-right text-[#EAECEF] tabular-nums">
+                  <span className="text-end text-[#EAECEF] tabular-nums">
                     {order.price ? formatPrice(order.price) : t('trade.market')}
                   </span>
-                  <span className="text-right text-[#848E9C] tabular-nums">{order.quantity}</span>
-                  <span className="text-right tabular-nums">
+                  <span className="text-end text-[#848E9C] tabular-nums">{order.quantity}</span>
+                  <span className="text-end tabular-nums">
                     <span className={filledPct > 0 ? 'text-[#F0B90B]' : 'text-[#848E9C]'}>{filledPct.toFixed(0)}%</span>
                   </span>
-                  <span className="text-right text-[#5E6673]">{new Date(order.createdAt).toLocaleTimeString()}</span>
+                  <span className="text-end text-[#5E6673]">{new Date(order.createdAt).toLocaleTimeString()}</span>
                   <div className="flex justify-center">
                     <Button
                       variant="ghost"
@@ -1020,8 +1020,8 @@ function RecentTrades() {
       </div>
       <div className="flex items-center justify-between px-3 py-0.5 text-[9px] text-[#5E6673]">
         <span className="w-[35%]">{t('trade.price')}(USDT)</span>
-        <span className="w-[30%] text-right">{t('trade.amount')}(BTC)</span>
-        <span className="w-[35%] text-right">{t('common.time')}</span>
+        <span className="w-[30%] text-end">{t('trade.amount')}(BTC)</span>
+        <span className="w-[35%] text-end">{t('common.time')}</span>
       </div>
       <ScrollArea className="flex-1 min-h-0">
         {mockTrades.map((trade, idx) => (
@@ -1029,8 +1029,8 @@ function RecentTrades() {
             <span className={`w-[35%] tabular-nums ${trade.side === 'buy' ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
               {formatPrice(trade.price)}
             </span>
-            <span className="w-[30%] text-right text-[#848E9C] tabular-nums">{trade.quantity}</span>
-            <span className="w-[35%] text-right text-[#5E6673]">{new Date(trade.createdAt).toLocaleTimeString()}</span>
+            <span className="w-[30%] text-end text-[#848E9C] tabular-nums">{trade.quantity}</span>
+            <span className="w-[35%] text-end text-[#5E6673]">{new Date(trade.createdAt).toLocaleTimeString()}</span>
           </div>
         ))}
       </ScrollArea>
@@ -1130,7 +1130,7 @@ export default function TradeView() {
                 ? 'bg-[#0ECB81]/10 text-[#0ECB81] border-0'
                 : 'bg-[#F6465D]/10 text-[#F6465D] border-0'
             }`}>
-              {isPositive ? <ArrowUpRight className="h-2.5 w-2.5 mr-0.5" /> : <ArrowDownRight className="h-2.5 w-2.5 mr-0.5" />}
+              {isPositive ? <ArrowUpRight className="h-2.5 w-2.5 me-0.5" /> : <ArrowDownRight className="h-2.5 w-2.5 me-0.5" />}
               {isPositive ? '+' : ''}{currentPair.changePercent.toFixed(2)}%
             </Badge>
           </div>

@@ -108,7 +108,7 @@ export default function NotificationsView() {
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 15 }}
               >
-                <CheckCheck className="h-3.5 w-3.5 mr-1" />
+                <CheckCheck className="h-3.5 w-3.5 me-1" />
               </motion.div>
               {t('notifications.markAllRead')}
             </Button>
@@ -136,7 +136,7 @@ export default function NotificationsView() {
                 />
               )}
               {tab.id === 'all' && unreadCount > 0 && (
-                <span className="ml-1 text-[8px] bg-[#F0B90B] text-[#0B0E11] px-1 rounded-full font-bold pulse-badge">{unreadCount}</span>
+                <span className="ms-1 text-[8px] bg-[#F0B90B] text-[#0B0E11] px-1 rounded-full font-bold pulse-badge">{unreadCount}</span>
               )}
             </button>
           ))}
@@ -183,7 +183,7 @@ export default function NotificationsView() {
                 >
                   <button
                     onClick={() => handleNotificationClick(notification.id)}
-                    className="w-full text-left p-4"
+                    className="w-full text-start p-4"
                   >
                   <div className="flex items-start gap-3">
                     <div

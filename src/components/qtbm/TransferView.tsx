@@ -136,7 +136,7 @@ export default function TransferView() {
                     }`}>
                       {fromWallet === 'spot' ? 'S' : fromWallet === 'funding' ? 'F' : fromWallet === 'earn' ? 'E' : 'X'}
                     </div>
-                    <div className="text-left">
+                    <div className="text-start">
                       <p className="text-sm font-semibold text-[#EAECEF]">
                         {t(walletOptions.find(w => w.id === fromWallet)?.labelKey || '')}
                       </p>
@@ -177,12 +177,12 @@ export default function TransferView() {
                           }`}>
                             {wallet.id === 'spot' ? 'S' : wallet.id === 'funding' ? 'F' : wallet.id === 'earn' ? 'E' : 'X'}
                           </div>
-                          <div className="text-left">
+                          <div className="text-start">
                             <p className="text-sm font-medium text-[#EAECEF]">{t(wallet.labelKey)}</p>
                             <p className="text-[10px] text-[#5E6673]">{t(wallet.descriptionKey)}</p>
                           </div>
                           {fromWallet === wallet.id && (
-                            <CheckCircle2 className="h-4 w-4 text-[#F0B90B] ml-auto" />
+                            <CheckCircle2 className="h-4 w-4 text-[#F0B90B] ms-auto" />
                           )}
                         </button>
                       ))}
@@ -219,7 +219,7 @@ export default function TransferView() {
                     }`}>
                       {toWallet === 'spot' ? 'S' : toWallet === 'funding' ? 'F' : toWallet === 'earn' ? 'E' : 'X'}
                     </div>
-                    <div className="text-left">
+                    <div className="text-start">
                       <p className="text-sm font-semibold text-[#EAECEF]">
                         {t(walletOptions.find(w => w.id === toWallet)?.labelKey || '')}
                       </p>
@@ -259,12 +259,12 @@ export default function TransferView() {
                           }`}>
                             {wallet.id === 'spot' ? 'S' : wallet.id === 'funding' ? 'F' : wallet.id === 'earn' ? 'E' : 'X'}
                           </div>
-                          <div className="text-left">
+                          <div className="text-start">
                             <p className="text-sm font-medium text-[#EAECEF]">{t(wallet.labelKey)}</p>
                             <p className="text-[10px] text-[#5E6673]">{t(wallet.descriptionKey)}</p>
                           </div>
                           {toWallet === wallet.id && (
-                            <CheckCircle2 className="h-4 w-4 text-[#F0B90B] ml-auto" />
+                            <CheckCircle2 className="h-4 w-4 text-[#F0B90B] ms-auto" />
                           )}
                         </button>
                       ))}
@@ -289,7 +289,7 @@ export default function TransferView() {
                   <div className="w-8 h-8 rounded-full bg-[#0B0E11] flex items-center justify-center text-sm font-bold">
                     {mockAssets.find(a => a.symbol === selectedAsset)?.icon || '?'}
                   </div>
-                  <div className="text-left">
+                  <div className="text-start">
                     <p className="text-sm font-semibold text-[#EAECEF]">{selectedAsset}</p>
                     <p className="text-[10px] text-[#5E6673]">{mockAssets.find(a => a.symbol === selectedAsset)?.name}</p>
                   </div>
@@ -332,7 +332,7 @@ export default function TransferView() {
                               <div className="w-7 h-7 rounded-full bg-[#0B0E11] flex items-center justify-center text-xs font-bold">
                                 {asset.icon}
                               </div>
-                              <div className="text-left">
+                              <div className="text-start">
                                 <p className="text-sm font-medium text-[#EAECEF]">{symbol}</p>
                                 <p className="text-[10px] text-[#5E6673]">{asset.name}</p>
                               </div>
@@ -365,7 +365,7 @@ export default function TransferView() {
                   placeholder="0.00"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-11 pr-16 text-sm tabular-nums focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
+                  className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-11 pe-16 text-sm tabular-nums focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
                 />
                 <button
                   onClick={handleMax}
@@ -410,13 +410,13 @@ export default function TransferView() {
             >
               {isTransferring ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="h-4 w-4 me-2 animate-spin" />
                   {t('wallet.transferring')}
                 </>
               ) : (
                 <>
                   {t('wallet.transfer')}
-                  <ArrowRight className="h-4 w-4 ml-2" />
+                  <ArrowRight className="h-4 w-4 ms-2" />
                 </>
               )}
             </Button>
@@ -447,7 +447,7 @@ export default function TransferView() {
                           <span>{transfer.from}</span>
                           <ArrowRight className="h-2.5 w-2.5" />
                           <span>{transfer.to}</span>
-                          <span className="ml-1">• {getTimeAgo(transfer.time)}</span>
+                          <span className="ms-1">• {getTimeAgo(transfer.time)}</span>
                         </div>
                       </div>
                     </div>

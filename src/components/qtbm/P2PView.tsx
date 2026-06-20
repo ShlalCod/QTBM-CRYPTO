@@ -233,12 +233,12 @@ export default function P2PView() {
             </SelectContent>
           </Select>
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673]" />
+            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673]" />
             <Input
               placeholder={t('p2p.searchMerchant')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-xs focus:border-[#F0B90B]"
+              className="ps-9 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-xs focus:border-[#F0B90B]"
             />
           </div>
         </div>
@@ -297,7 +297,7 @@ export default function P2PView() {
                           </span>
                         </div>
                         {/* Online status indicator - green/gray based on merchant */}
-                        <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#1E2329] ${isMerchantOnline(listing.user) ? 'bg-[#0ECB81] online-indicator' : 'bg-[#5E6673]'}`} />
+                        <div className={`absolute -bottom-0.5 -end-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#1E2329] ${isMerchantOnline(listing.user) ? 'bg-[#0ECB81] online-indicator' : 'bg-[#5E6673]'}`} />
                       </div>
                       <div>
                         <div className="flex items-center gap-1.5">
@@ -332,7 +332,7 @@ export default function P2PView() {
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-end">
                       <p className="text-lg font-bold text-[#EAECEF] tabular-nums gradient-text-gold">
                         {listing.fiatCurrency === 'SAR' || listing.fiatCurrency === 'AED'
                           ? formatPrice(listing.price)

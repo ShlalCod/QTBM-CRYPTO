@@ -275,7 +275,7 @@ export default function AIChatView() {
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={t('aiChat.placeholder')}
               disabled={isLoading}
-              className="bg-[#1E2329] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-10 text-sm pr-10 focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 rounded-xl"
+              className="bg-[#1E2329] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-10 text-sm pe-10 focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 rounded-xl"
             />
           </div>
           <Button

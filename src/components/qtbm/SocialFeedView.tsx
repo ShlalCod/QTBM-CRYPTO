@@ -180,7 +180,7 @@ export default function SocialFeedView() {
                       ))}
                     </div>
                     <Button className="gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-8 px-4 text-xs press-scale shadow-md shadow-[#F0B90B]/15">
-                      <Send className="h-3.5 w-3.5 mr-1.5" />
+                      <Send className="h-3.5 w-3.5 me-1.5" />
                       {t('socialFeed.post')}
                     </Button>
                   </div>

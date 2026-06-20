@@ -1658,6 +1658,12 @@
   color: #B7BDC6 !important;
 }
 
+[data-theme="light"] .text-\[#F0B90B\] { color: #9A6A00 !important; }
+[data-theme="light"] .text-white { color: #1E2329 !important; }
+[data-theme="light"] .text-\[#0ECB81\] { color: #0A8B5A !important; }
+[data-theme="light"] .text-\[#F6465D\] { color: #C81E3A !important; }
+[data-theme="light"] .text-\[#5E6673\] { color: #6B7280 !important; }
+
 [data-theme="light"] .border-\[\#2B3139\] {
   border-color: #EAECEF !important;
 }

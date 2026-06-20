@@ -682,7 +682,7 @@ export default function HomeView() {
               {announcements.map((ann) => (
                 <button
                   key={ann.id}
-                  className="w-full flex items-center gap-3 p-3.5 hover:bg-[#2B3139]/30 transition-colors text-left"
+                  className="w-full flex items-center gap-3 p-3.5 hover:bg-[#2B3139]/30 transition-colors text-start"
                 >
                   <div className="w-8 h-8 rounded-lg bg-[#2B3139]/50 flex items-center justify-center shrink-0 backdrop-blur-sm">
                     {announcementIcons[ann.type]}
