@@ -202,11 +202,16 @@ export async function getUserTrades(uid: string, limitCount = 50): Promise<Fires
   const q = query(
     collection(firestore, COLLECTIONS.trades),
     where("userId", "==", uid),
-    orderBy("createdAt", "desc"),
     limit(limitCount)
   );
   const snap = await getDocs(q);
-  return snap.docs.map((d) => d.data() as FirestoreTrade);
+  return snap.docs
+    .map((d) => d.data() as FirestoreTrade)
+    .sort((a, b) => {
+      const aTime = a.createdAt?.toMillis?.() ?? 0;
+      const bTime = b.createdAt?.toMillis?.() ?? 0;
+      return bTime - aTime;
+    });
 }
 
 export function subscribeToUserTrades(
@@ -217,11 +222,18 @@ export function subscribeToUserTrades(
   const q = query(
     collection(firestore, COLLECTIONS.trades),
     where("userId", "==", uid),
-    orderBy("createdAt", "desc"),
     limit(limitCount)
   );
   return onSnapshot(q, (snap) => {
-    callback(snap.docs.map((d) => d.data() as FirestoreTrade));
+    callback(
+      snap.docs
+        .map((d) => d.data() as FirestoreTrade)
+        .sort((a, b) => {
+          const aTime = a.createdAt?.toMillis?.() ?? 0;
+          const bTime = b.createdAt?.toMillis?.() ?? 0;
+          return bTime - aTime;
+        })
+    );
   });
 }
 
@@ -229,11 +241,16 @@ export async function getUserOrders(uid: string, limitCount = 50): Promise<Fires
   const q = query(
     collection(firestore, COLLECTIONS.orders),
     where("userId", "==", uid),
-    orderBy("createdAt", "desc"),
     limit(limitCount)
   );
   const snap = await getDocs(q);
-  return snap.docs.map((d) => d.data() as FirestoreTrade);
+  return snap.docs
+    .map((d) => d.data() as FirestoreTrade)
+    .sort((a, b) => {
+      const aTime = a.createdAt?.toMillis?.() ?? 0;
+      const bTime = b.createdAt?.toMillis?.() ?? 0;
+      return bTime - aTime;
+    });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -247,11 +264,16 @@ export async function getUserTransactions(
   const q = query(
     collection(firestore, COLLECTIONS.transactions),
     where("userId", "==", uid),
-    orderBy("createdAt", "desc"),
     limit(limitCount)
   );
   const snap = await getDocs(q);
-  return snap.docs.map((d) => d.data() as FirestoreTransaction);
+  return snap.docs
+    .map((d) => d.data() as FirestoreTransaction)
+    .sort((a, b) => {
+      const aTime = a.createdAt?.toMillis?.() ?? 0;
+      const bTime = b.createdAt?.toMillis?.() ?? 0;
+      return bTime - aTime;
+    });
 }
 
 export function subscribeToUserTransactions(
@@ -262,11 +284,18 @@ export function subscribeToUserTransactions(
   const q = query(
     collection(firestore, COLLECTIONS.transactions),
     where("userId", "==", uid),
-    orderBy("createdAt", "desc"),
     limit(limitCount)
   );
   return onSnapshot(q, (snap) => {
-    callback(snap.docs.map((d) => d.data() as FirestoreTransaction));
+    callback(
+      snap.docs
+        .map((d) => d.data() as FirestoreTransaction)
+        .sort((a, b) => {
+          const aTime = a.createdAt?.toMillis?.() ?? 0;
+          const bTime = b.createdAt?.toMillis?.() ?? 0;
+          return bTime - aTime;
+        })
+    );
   });
 }
 
@@ -281,11 +310,16 @@ export async function getUserNotifications(
   const q = query(
     collection(firestore, COLLECTIONS.notifications),
     where("userId", "==", uid),
-    orderBy("createdAt", "desc"),
     limit(limitCount)
   );
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as FirestoreNotification);
+  return snap.docs
+    .map((d) => ({ id: d.id, ...d.data() }) as FirestoreNotification)
+    .sort((a, b) => {
+      const aTime = a.createdAt?.toMillis?.() ?? 0;
+      const bTime = b.createdAt?.toMillis?.() ?? 0;
+      return bTime - aTime;
+    });
 }
 
 export function subscribeToNotifications(
@@ -296,11 +330,18 @@ export function subscribeToNotifications(
   const q = query(
     collection(firestore, COLLECTIONS.notifications),
     where("userId", "==", uid),
-    orderBy("createdAt", "desc"),
     limit(limitCount)
   );
   return onSnapshot(q, (snap) => {
-    callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as FirestoreNotification));
+    callback(
+      snap.docs
+        .map((d) => ({ id: d.id, ...d.data() }) as FirestoreNotification)
+        .sort((a, b) => {
+          const aTime = a.createdAt?.toMillis?.() ?? 0;
+          const bTime = b.createdAt?.toMillis?.() ?? 0;
+          return bTime - aTime;
+        })
+    );
   });
 }
 
@@ -416,8 +457,7 @@ export async function createSupportTicket(
 export async function getUserSupportTickets(uid: string): Promise<SupportTicket[]> {
   const q = query(
     collection(firestore, COLLECTIONS.supportTickets),
-    where("userId", "==", uid),
-    orderBy("createdAt", "desc")
+    where("userId", "==", uid)
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as SupportTicket);
@@ -442,8 +482,7 @@ export interface PriceAlert {
 export async function getUserPriceAlerts(uid: string): Promise<PriceAlert[]> {
   const q = query(
     collection(firestore, COLLECTIONS.priceAlerts),
-    where("userId", "==", uid),
-    orderBy("createdAt", "desc")
+    where("userId", "==", uid)
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as PriceAlert);
@@ -492,7 +531,6 @@ export async function getActiveP2PListings(limitCount = 50): Promise<P2PListing[
   const q = query(
     collection(firestore, COLLECTIONS.p2pListings),
     where("status", "==", "active"),
-    orderBy("createdAt", "desc"),
     limit(limitCount)
   );
   const snap = await getDocs(q);
