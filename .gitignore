@@ -37,39 +37,33 @@ yarn-error.log*
 # vercel
 .vercel
 
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 local-*
 .claude
 .z-ai-config
+
+# logs (runtime — not source)
 *.log
 dev.log
 dev.out.log
-test
-prompt
-
 server.log
-# Skills directory
-/skills/
 
-# Audit/temp scaffolding (not part of production project)
-/src_scaffold_backup/
-/public_scaffold_backup/
-/audit-workspace/
-/tool-results/
-/agent-ctx/
-/.zscripts/
-/db/
-/upload/
-/examples/
-/mini-services/
+# PID files (runtime)
+*.pid
+
+# local database (binary runtime data — schema is in prisma/)
+/db/*.db
+/db/*.db-journal
 
 # Build artifacts
 /android/app/build/
 /functions/node_modules/
 /functions/lib/
 
-# PID files
-*.pid
+# Scaffold/temp backups (agent working files — not project source)
+/src_scaffold_backup/
+/public_scaffold_backup/
+/tool-results/
+/agent-ctx/
