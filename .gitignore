@@ -67,3 +67,13 @@ server.log
 /public_scaffold_backup/
 /tool-results/
 /agent-ctx/
+android/app/qtbm-release.keystore
+android/keystore.properties
+android/local.properties
+
+# Gradle cache
+android/.gradle/
+android/app/build/
+android/.idea/
+android/local.properties
+*.iml

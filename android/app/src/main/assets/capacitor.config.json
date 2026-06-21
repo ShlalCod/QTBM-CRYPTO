@@ -1,0 +1,40 @@
+{
+	"appId": "com.qtbm.crypto",
+	"appName": "QTBM CRYPTO",
+	"webDir": "out",
+	"backgroundColor": "#0B0E11",
+	"android": {
+		"allowMixedContent": false,
+		"captureInput": true,
+		"webContentsDebuggingEnabled": false
+	},
+	"plugins": {
+		"SplashScreen": {
+			"launchShowDuration": 1200,
+			"launchAutoHide": true,
+			"backgroundColor": "#0B0E11",
+			"androidSplashResourceName": "splash",
+			"androidScaleType": "CENTER_CROP",
+			"showSpinner": false,
+			"androidSpinnerStyle": "large",
+			"spinnerColor": "#F0B90B"
+		},
+		"StatusBar": {
+			"style": "DARK",
+			"backgroundColor": "#0B0E11",
+			"overlaysWebView": false
+		},
+		"NavigationBar": {
+			"backgroundColor": "#0B0E11",
+			"style": "DARK"
+		},
+		"Keyboard": {
+			"resize": "body",
+			"style": "DARK",
+			"resizeOnFullScreen": true
+		}
+	},
+	"server": {
+		"androidScheme": "https"
+	}
+}
