@@ -39,7 +39,8 @@ function PriceSparkline({ data, width = 300, height = 80, positive }: { data: nu
   }).join(' ');
 
   const color = positive ? '#0ECB81' : '#F6465D';
-  const gradientId = `spark-${positive ? 'green' : 'red'}-${Math.random().toString(36).slice(2, 7)}`;
+  // PERF: stable gradient ID derived from `positive` prop (previously Math.random() regenerated the ID on every render)
+  const gradientId = `spark-${positive ? 'green' : 'red'}`;
 
   // Build area path
   const areaPath = `M0,${height} L${points.split(' ').join(' L')} L${width},${height} Z`;
@@ -92,7 +93,7 @@ const assetDescriptions: Record<string, string> = {
 
 export default function AssetDetailView() {
   const { goBack, selectedAsset, navigateTo } = useAppStore();
-  const { t } = useTranslation();
+  const { t, isRTL, language } = useTranslation();
   
   const asset = mockAssets.find(a => a.symbol === selectedAsset) || mockAssets[0];
   const balance = mockWalletBalances.find(b => b.asset === asset.symbol);
@@ -123,42 +124,43 @@ export default function AssetDetailView() {
   ];
 
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)] lg:h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-8rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="space-y-4 p-4 max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-2">
           <button
             onClick={goBack}
-            className="w-9 h-9 rounded-lg bg-[#2B3139] flex items-center justify-center hover:bg-[#363C45] transition-colors"
+            aria-label={t('actions.back')}
+            className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
           >
-            <ArrowLeft className="h-5 w-5 text-[#EAECEF]" />
+            <ArrowLeft className={`h-5 w-5 text-foreground ${isRTL ? 'rotate-180' : ''}`} />
           </button>
           <div className="flex items-center gap-3 flex-1">
-            <div className="w-9 h-9 rounded-full bg-[#2B3139] flex items-center justify-center text-lg font-bold">
+            <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-lg font-bold">
               {asset.icon}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold text-[#EAECEF]">{asset.name}</h1>
-                <span className="text-xs text-[#5E6673] font-medium">{asset.symbol}</span>
+                <h1 className="text-lg font-bold text-foreground">{asset.name}</h1>
+                <span className="text-xs text-muted-foreground font-medium">{asset.symbol}</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Price Display */}
-        <Card className="bg-[#1E2329] border-[#2B3139]">
+        <Card className="bg-card border-border">
           <CardContent className="p-4">
             <div className="flex items-start justify-between mb-3">
               <div>
                 <div className="flex items-end gap-2 mb-1">
-                  <span className="text-3xl font-bold text-[#EAECEF] tabular-nums">
+                  <span className="text-3xl font-bold text-foreground tabular-nums">
                     ${formatPrice(asset.price)}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge className={`text-xs h-6 px-2 border-0 ${
-                    isPositive ? 'bg-[#0ECB81]/10 text-[#0ECB81]' : 'bg-[#F6465D]/10 text-[#F6465D]'
+                    isPositive ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
                   }`}>
                     {isPositive ? (
                       <TrendingUp className="h-3 w-3 me-1" />
@@ -167,12 +169,12 @@ export default function AssetDetailView() {
                     )}
                     {isPositive ? '+' : ''}{asset.changePercent24h.toFixed(2)}%
                   </Badge>
-                  <span className="text-xs text-[#5E6673]">{t('assetDetail.h24')}</span>
+                  <span className="text-xs text-muted-foreground">{t('assetDetail.h24')}</span>
                 </div>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-[#5E6673]">{t('assetDetail.change24h')}</span>
-                <span className={`text-sm font-semibold tabular-nums ${isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+                <span className="text-[10px] text-muted-foreground">{t('assetDetail.change24h')}</span>
+                <span className={`text-sm font-semibold tabular-nums ${isPositive ? 'text-success' : 'text-destructive'}`}>
                   {isPositive ? '+' : ''}{formatPrice(Math.abs(asset.change24h))}
                 </span>
               </div>
@@ -184,19 +186,19 @@ export default function AssetDetailView() {
         </Card>
 
         {/* Stats Grid */}
-        <Card className="bg-[#1E2329] border-[#2B3139]">
+        <Card className="bg-card border-border">
           <CardContent className="p-4">
-            <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">{t('assetDetail.marketStatistics')}</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('assetDetail.marketStatistics')}</h3>
             <div className="grid grid-cols-2 gap-3">
               {statsItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.label} className="bg-[#2B3139] rounded-lg p-3">
+                  <div key={item.label} className="bg-secondary rounded-lg p-3">
                     <div className="flex items-center gap-1.5 mb-1">
-                      <Icon className="h-3 w-3 text-[#5E6673]" />
-                      <span className="text-[10px] text-[#5E6673]">{item.label}</span>
+                      <Icon className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-[10px] text-muted-foreground">{item.label}</span>
                     </div>
-                    <p className="text-sm font-semibold text-[#EAECEF] tabular-nums">{item.value}</p>
+                    <p className="text-sm font-semibold text-foreground tabular-nums">{item.value}</p>
                   </div>
                 );
               })}
@@ -206,29 +208,29 @@ export default function AssetDetailView() {
 
         {/* Balance Card (if user holds this asset) */}
         {balance && (
-          <Card className="bg-[#1E2329] border-[#2B3139]">
+          <Card className="bg-card border-border">
             <CardContent className="p-4">
-              <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">{t('assetDetail.your')} {asset.symbol} {t('assetDetail.balance')}</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-3">{t('assetDetail.your')} {asset.symbol} {t('assetDetail.balance')}</h3>
               <div className="grid grid-cols-3 gap-3">
-                <div className="bg-[#2B3139] rounded-lg p-3">
-                  <span className="text-[10px] text-[#5E6673] block">{t('assetDetail.total')}</span>
-                  <p className="text-sm font-semibold text-[#EAECEF] tabular-nums mt-0.5">
-                    {balance.total.toLocaleString('en-US', { maximumFractionDigits: 4 })}
+                <div className="bg-secondary rounded-lg p-3">
+                  <span className="text-[10px] text-muted-foreground block">{t('assetDetail.total')}</span>
+                  <p className="text-sm font-semibold text-foreground tabular-nums mt-0.5">
+                    {balance.total.toLocaleString(language, { maximumFractionDigits: 4 })}
                   </p>
-                  <p className="text-[10px] text-[#5E6673] tabular-nums">
+                  <p className="text-[10px] text-muted-foreground tabular-nums">
                     ≈ ${formatPrice(balance.usdValue)}
                   </p>
                 </div>
-                <div className="bg-[#2B3139] rounded-lg p-3">
-                  <span className="text-[10px] text-[#5E6673] block">{t('assetDetail.available')}</span>
-                  <p className="text-sm font-semibold text-[#0ECB81] tabular-nums mt-0.5">
-                    {balance.available.toLocaleString('en-US', { maximumFractionDigits: 4 })}
+                <div className="bg-secondary rounded-lg p-3">
+                  <span className="text-[10px] text-muted-foreground block">{t('assetDetail.available')}</span>
+                  <p className="text-sm font-semibold text-success tabular-nums mt-0.5">
+                    {balance.available.toLocaleString(language, { maximumFractionDigits: 4 })}
                   </p>
                 </div>
-                <div className="bg-[#2B3139] rounded-lg p-3">
-                  <span className="text-[10px] text-[#5E6673] block">{t('assetDetail.inOrders')}</span>
-                  <p className="text-sm font-semibold text-[#F0B90B] tabular-nums mt-0.5">
-                    {balance.locked.toLocaleString('en-US', { maximumFractionDigits: 4 })}
+                <div className="bg-secondary rounded-lg p-3">
+                  <span className="text-[10px] text-muted-foreground block">{t('assetDetail.inOrders')}</span>
+                  <p className="text-sm font-semibold text-primary tabular-nums mt-0.5">
+                    {balance.locked.toLocaleString(language, { maximumFractionDigits: 4 })}
                   </p>
                 </div>
               </div>
@@ -237,25 +239,25 @@ export default function AssetDetailView() {
         )}
 
         {/* About Section */}
-        <Card className="bg-[#1E2329] border-[#2B3139]">
+        <Card className="bg-card border-border">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Info className="h-4 w-4 text-[#F0B90B]" />
-              <h3 className="text-sm font-semibold text-[#EAECEF]">{t('assetDetail.about')} {asset.name}</h3>
+              <Info className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-semibold text-foreground">{t('assetDetail.about')} {asset.name}</h3>
             </div>
-            <p className="text-xs text-[#848E9C] leading-relaxed">
-              {assetDescriptions[asset.symbol] || `${asset.name} ${t('assetDetail.genericAbout')} $${formatNumber(asset.marketCap)} ${t('assetDetail.andVolume')} $${formatNumber(asset.volume24h)}.`}
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {t(`assetDetail.descriptions.${asset.symbol}`) || assetDescriptions[asset.symbol] || `${asset.name} ${t('assetDetail.genericAbout')} $${formatNumber(asset.marketCap)} ${t('assetDetail.andVolume')} $${formatNumber(asset.volume24h)}.`}
             </p>
             
             <div className="mt-3 flex flex-wrap gap-2">
-              <Badge variant="outline" className="text-[10px] h-5 border-[#2B3139] text-[#848E9C]">
+              <Badge variant="outline" className="text-[10px] h-5 border-border text-muted-foreground">
                 #{mockAssets.indexOf(asset) + 1} {t('assetDetail.rankByMarketCap')}
               </Badge>
-              <Badge variant="outline" className="text-[10px] h-5 border-[#2B3139] text-[#848E9C]">
+              <Badge variant="outline" className="text-[10px] h-5 border-border text-muted-foreground">
                 {asset.symbol}/USDT
               </Badge>
               {balance && (
-                <Badge variant="outline" className="text-[10px] h-5 border-[#0ECB81]/30 text-[#0ECB81]">
+                <Badge variant="outline" className="text-[10px] h-5 border-success/30 text-success">
                   {t('assetDetail.inPortfolio')}
                 </Badge>
               )}
@@ -270,7 +272,7 @@ export default function AssetDetailView() {
               useAppStore.getState().setSelectedMarket(`${asset.symbol}USDT`);
               navigateTo('trade');
             }}
-            className="bg-[#0ECB81] hover:bg-[#0ECB81]/90 text-[#0B0E11] font-semibold h-11"
+            className="bg-success hover:bg-success/90 text-background font-semibold h-11"
           >
             <ShoppingCart className="h-4 w-4 me-1.5" />
             {t('assetDetail.trade')}
@@ -280,7 +282,7 @@ export default function AssetDetailView() {
               useAppStore.getState().setSelectedAsset(asset.symbol);
               navigateTo('deposit');
             }}
-            className="bg-[#2B3139] hover:bg-[#363C45] text-[#EAECEF] font-semibold h-11 border border-[#2B3139]"
+            className="bg-secondary hover:bg-secondary/80 text-foreground font-semibold h-11 border border-border"
           >
             <ArrowDownRight className="h-4 w-4 me-1.5" />
             {t('actions.deposit')}
@@ -290,7 +292,7 @@ export default function AssetDetailView() {
               useAppStore.getState().setSelectedAsset(asset.symbol);
               navigateTo('withdraw');
             }}
-            className="bg-[#2B3139] hover:bg-[#363C45] text-[#EAECEF] font-semibold h-11 border border-[#2B3139]"
+            className="bg-secondary hover:bg-secondary/80 text-foreground font-semibold h-11 border border-border"
           >
             <ArrowUpRight className="h-4 w-4 me-1.5" />
             {t('actions.withdraw')}

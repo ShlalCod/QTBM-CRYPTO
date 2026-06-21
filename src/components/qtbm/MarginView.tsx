@@ -47,7 +47,7 @@ const mockBorrowHistory = [
 ];
 
 export default function MarginView() {
-  const { goBack, livePrices } = useAppStore();
+  const { goBack, livePrices, isRTL } = useAppStore();
   const { t } = useTranslation();
 
   const [selectedAsset, setSelectedAsset] = useState(marginAssets[0]);
@@ -78,25 +78,25 @@ export default function MarginView() {
   const totalBorrowedUSD = marginAssets.reduce((sum, a) => sum + a.borrowed * a.price, 0);
 
   return (
-    <div className="flex flex-col h-full bg-[#0B0E11]">
+    <div className="flex flex-col h-full bg-background">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#2B3139] shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139]" onClick={goBack}>
-            <ArrowLeft className="h-5 w-5" />
+          <Button variant="ghost" size="icon" aria-label={t('actions.back')} className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-secondary" onClick={goBack}>
+            <ArrowLeft className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
           </Button>
           <div className="flex items-center gap-2">
-            <h1 className="text-base font-bold text-[#EAECEF]">{t('trade.marginTradingTitle')}</h1>
-            <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-0 text-[9px] px-1.5 py-0 h-4 font-semibold">
+            <h1 className="text-base font-bold text-foreground">{t('trade.marginTradingTitle')}</h1>
+            <Badge className="bg-primary/10 text-primary border-0 text-[10px] px-1.5 py-0 h-4 font-semibold">
               3x-5x
             </Badge>
           </div>
         </div>
         <div className="flex items-center gap-1.5">
-          <Shield className="h-3.5 w-3.5 text-[#5E6673]" />
-          <span className="text-[10px] text-[#5E6673]">{t('trade.risk')}: </span>
+          <Shield className="h-3.5 w-3.5 text-muted-foreground" />
+          <span className="text-[10px] text-muted-foreground">{t('trade.risk')}: </span>
           <span className={`text-[10px] font-semibold risk-meter-animate ${
-            riskLevel === 'safe' ? 'text-[#0ECB81] glow-pulse-green' : riskLevel === 'moderate' ? 'text-[#F0B90B] glow-pulse-yellow' : 'text-[#F6465D] glow-pulse-red'
+            riskLevel === 'safe' ? 'text-success glow-pulse-green' : riskLevel === 'moderate' ? 'text-primary glow-pulse-yellow' : 'text-destructive glow-pulse-red'
           }`}>
             {riskLevel === 'safe' ? t('trade.safe') : riskLevel === 'moderate' ? t('trade.moderate') : t('trade.danger')}
           </span>
@@ -106,51 +106,51 @@ export default function MarginView() {
       <ScrollArea className="flex-1">
         <div className="p-3 space-y-3 max-w-4xl mx-auto">
           {/* Margin Account Summary */}
-          <div className="bg-[#1E2329] rounded-lg p-4">
-            <h2 className="text-xs font-semibold text-[#848E9C] mb-3 flex items-center gap-1.5">
+          <div className="bg-card rounded-lg p-4">
+            <h2 className="text-xs font-semibold text-muted-foreground mb-3 flex items-center gap-1.5">
               <CircleDollarSign className="h-3.5 w-3.5" />
               {t('trade.accountSummary')}
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div>
-                <span className="text-[10px] text-[#5E6673]">{t('trade.totalEquity')}</span>
-                <p className="text-base font-bold text-[#EAECEF] tabular-nums mt-0.5">{formatPrice(totalEquity)}</p>
-                <p className="text-[9px] text-[#5E6673]">USD</p>
+                <span className="text-[10px] text-muted-foreground">{t('trade.totalEquity')}</span>
+                <p className="text-base font-bold text-foreground tabular-nums mt-0.5">{formatPrice(totalEquity)}</p>
+                <p className="text-[10px] text-muted-foreground">USD</p>
               </div>
               <div>
-                <span className="text-[10px] text-[#5E6673]">{t('trade.totalBorrowed')}</span>
-                <p className="text-base font-bold text-[#F6465D] tabular-nums mt-0.5">{formatPrice(totalBorrowedUSD)}</p>
-                <p className="text-[9px] text-[#5E6673]">USD</p>
+                <span className="text-[10px] text-muted-foreground">{t('trade.totalBorrowed')}</span>
+                <p className="text-base font-bold text-destructive tabular-nums mt-0.5">{formatPrice(totalBorrowedUSD)}</p>
+                <p className="text-[10px] text-muted-foreground">USD</p>
               </div>
               <div>
-                <span className="text-[10px] text-[#5E6673]">{t('trade.totalInterest')}</span>
-                <p className="text-base font-bold text-[#F0B90B] tabular-nums mt-0.5">{totalInterest.toFixed(4)}</p>
-                <p className="text-[9px] text-[#5E6673]">{t('trade.accrued')}</p>
+                <span className="text-[10px] text-muted-foreground">{t('trade.totalInterest')}</span>
+                <p className="text-base font-bold text-primary tabular-nums mt-0.5">{totalInterest.toFixed(4)}</p>
+                <p className="text-[10px] text-muted-foreground">{t('trade.accrued')}</p>
               </div>
               <div>
-                <span className="text-[10px] text-[#5E6673]">{t('trade.marginLevel')}</span>
-                <p className="text-base font-bold text-[#0ECB81] tabular-nums mt-0.5">{(totalEquity / totalBorrowedUSD * 100).toFixed(0)}%</p>
-                <p className="text-[9px] text-[#5E6673]">{t('trade.health')}</p>
+                <span className="text-[10px] text-muted-foreground">{t('trade.marginLevel')}</span>
+                <p className="text-base font-bold text-success tabular-nums mt-0.5">{(totalEquity / totalBorrowedUSD * 100).toFixed(0)}%</p>
+                <p className="text-[10px] text-muted-foreground">{t('trade.health')}</p>
               </div>
             </div>
 
             {/* Risk Level Bar */}
             <div className="mt-3">
-              <div className="flex items-center justify-between text-[9px] text-[#5E6673] mb-1">
+              <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
                 <span>{t('trade.riskLevel')}</span>
-                <span className={`font-semibold ${riskLevel === 'safe' ? 'text-[#0ECB81]' : riskLevel === 'moderate' ? 'text-[#F0B90B]' : 'text-[#F6465D]'}`}>
+                <span className={`font-semibold ${riskLevel === 'safe' ? 'text-success' : riskLevel === 'moderate' ? 'text-primary' : 'text-destructive'}`}>
                   {riskPercent.toFixed(0)}%
                 </span>
               </div>
-              <div className="h-2 bg-[#2B3139] rounded-full overflow-hidden">
+              <div className="h-2 bg-secondary rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 risk-meter-animate ${
-                    riskLevel === 'safe' ? 'bg-gradient-to-r from-[#0ECB81] to-[#0ECB81]/80' : riskLevel === 'moderate' ? 'bg-gradient-to-r from-[#0ECB81] via-[#F0B90B] to-[#F0B90B]/80' : 'bg-gradient-to-r from-[#F0B90B] via-[#F6465D] to-[#F6465D]/80'
+                    riskLevel === 'safe' ? 'bg-gradient-to-r from-success to-success/80' : riskLevel === 'moderate' ? 'bg-gradient-to-r from-success via-primary to-primary/80' : 'bg-gradient-to-r from-primary via-destructive to-destructive/80'
                   }`}
                   style={{ width: `${riskPercent}%` }}
                 />
               </div>
-              <div className="flex justify-between mt-1 text-[8px] text-[#5E6673]">
+              <div className="flex justify-between mt-1 text-[10px] text-muted-foreground">
                 <span>{t('trade.safe')}</span>
                 <span>{t('trade.moderate')}</span>
                 <span>{t('trade.danger')}</span>
@@ -158,23 +158,23 @@ export default function MarginView() {
             </div>
 
             {riskLevel === 'danger' && (
-              <div className="mt-3 bg-[#F6465D]/5 border border-[#F6465D]/20 rounded p-2 flex items-center gap-1.5">
-                <AlertTriangle className="h-3.5 w-3.5 text-[#F6465D] shrink-0" />
-                <span className="text-[10px] text-[#F6465D]">{t('trade.marginWarning')}</span>
+              <div className="mt-3 bg-destructive/10 border border-destructive/20 rounded p-2 flex items-center gap-1.5">
+                <AlertTriangle className="h-3.5 w-3.5 text-destructive shrink-0" />
+                <span className="text-[10px] text-destructive">{t('trade.marginWarning')}</span>
               </div>
             )}
           </div>
 
           {/* Tab Selector */}
-          <div className="flex gap-1 bg-[#1E2329] rounded-lg p-1">
+          <div className="flex gap-1 bg-card rounded-lg p-1">
             {(['trade', 'borrow', 'repay'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`flex-1 py-2 rounded-md text-xs font-medium transition-all duration-200 tab-spring-transition touch-feedback ${
                   activeTab === tab
-                    ? 'bg-[#2B3139] text-[#F0B90B] wallet-tab-pop'
-                    : 'text-[#5E6673] hover:text-[#848E9C]'
+                    ? 'bg-secondary text-primary wallet-tab-pop'
+                    : 'text-muted-foreground hover:text-muted-foreground'
                 }`}
               >
                 {tab === 'trade' ? t('trade.title') : tab === 'borrow' ? t('trade.borrow') : t('trade.repay')}
@@ -186,15 +186,15 @@ export default function MarginView() {
           {activeTab === 'trade' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {/* Asset Selector */}
-              <div className="bg-[#1E2329] rounded-lg p-3">
-                <label className="text-[10px] text-[#5E6673] mb-1.5 block">{t('trade.selectAsset')}</label>
+              <div className="bg-card rounded-lg p-3">
+                <label className="text-[10px] text-muted-foreground mb-1.5 block">{t('trade.selectAsset')}</label>
                 <div className="space-y-1 max-h-40 overflow-y-auto">
                   {marginAssets.map((a) => (
                     <button
                       key={a.asset}
                       onClick={() => setSelectedAsset(a)}
                       className={`w-full flex items-center justify-between px-3 py-2 rounded text-xs transition-colors ${
-                        selectedAsset.asset === a.asset ? 'bg-[#2B3139] text-[#EAECEF]' : 'text-[#848E9C] hover:bg-[#2B3139]/50'
+                        selectedAsset.asset === a.asset ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:bg-secondary/50'
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -202,7 +202,7 @@ export default function MarginView() {
                         <span className="font-medium">{a.asset}</span>
                       </div>
                       <div className="text-end">
-                        <span className="text-[#848E9C] tabular-nums">{a.available.toFixed(4)}</span>
+                        <span className="text-muted-foreground tabular-nums">{a.available.toFixed(4)}</span>
                       </div>
                     </button>
                   ))}
@@ -210,15 +210,15 @@ export default function MarginView() {
               </div>
 
               {/* Order Panel */}
-              <div className="bg-[#1E2329] rounded-lg p-3">
+              <div className="bg-card rounded-lg p-3">
                 {/* Buy/Sell Toggle */}
                 <div className="flex gap-1 mb-3">
                   <button
                     onClick={() => setSide('buy')}
                     className={`flex-1 py-2 rounded-md text-sm font-semibold transition-all ${
                       side === 'buy'
-                        ? 'bg-[#0ECB81] text-white shadow-lg shadow-[#0ECB81]/20'
-                        : 'bg-[#2B3139] text-[#5E6673] hover:text-[#848E9C]'
+                        ? 'bg-success text-white shadow-lg shadow-success/20'
+                        : 'bg-secondary text-muted-foreground hover:text-muted-foreground'
                     }`}
                   >
                     <TrendingUp className="h-4 w-4 inline me-1" />
@@ -228,8 +228,8 @@ export default function MarginView() {
                     onClick={() => setSide('sell')}
                     className={`flex-1 py-2 rounded-md text-sm font-semibold transition-all ${
                       side === 'sell'
-                        ? 'bg-[#F6465D] text-white shadow-lg shadow-[#F6465D]/20'
-                        : 'bg-[#2B3139] text-[#5E6673] hover:text-[#848E9C]'
+                        ? 'bg-destructive text-white shadow-lg shadow-[#F6465D]/20'
+                        : 'bg-secondary text-muted-foreground hover:text-muted-foreground'
                     }`}
                   >
                     <TrendingDown className="h-4 w-4 inline me-1" />
@@ -246,8 +246,8 @@ export default function MarginView() {
                         onClick={() => setMarginMode(mode)}
                         className={`flex-1 py-1.5 rounded text-[10px] font-medium transition-colors ${
                           marginMode === mode
-                            ? 'bg-[#F0B90B]/15 text-[#F0B90B] border border-[#F0B90B]/30'
-                            : 'bg-[#2B3139] text-[#5E6673] border border-transparent'
+                            ? 'bg-primary/15 text-primary border border-primary/30'
+                            : 'bg-secondary text-muted-foreground border border-transparent'
                         }`}
                       >
                         {mode === 'cross' ? t('trade.cross') : t('trade.isolated')}
@@ -261,8 +261,8 @@ export default function MarginView() {
                         onClick={() => setMarginLeverage(lev)}
                         className={`px-3 py-1.5 rounded text-[10px] font-medium transition-colors ${
                           marginLeverage === lev
-                            ? 'bg-[#F0B90B] text-[#0B0E11]'
-                            : 'bg-[#2B3139] text-[#848E9C] hover:text-[#EAECEF]'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-secondary text-muted-foreground hover:text-foreground'
                         }`}
                       >
                         {lev}x
@@ -279,8 +279,8 @@ export default function MarginView() {
                       onClick={() => setOrderType(type)}
                       className={`flex-1 py-1.5 rounded text-[11px] font-medium transition-colors ${
                         orderType === type
-                          ? 'bg-[#2B3139] text-[#F0B90B]'
-                          : 'text-[#5E6673] hover:text-[#848E9C]'
+                          ? 'bg-secondary text-primary'
+                          : 'text-muted-foreground hover:text-muted-foreground'
                       }`}
                     >
                       {type === 'limit' ? t('trade.limit') : type === 'market' ? t('trade.market') : t('trade.stop')}
@@ -291,9 +291,9 @@ export default function MarginView() {
                 {/* Price */}
                 {orderType === 'limit' && (
                   <div className="mb-2">
-                    <label className="text-[10px] text-[#5E6673]">{t('trade.price')}</label>
-                    <div className="flex items-center bg-[#2B3139] rounded h-8 px-2 mt-0.5">
-                      <button onClick={() => setTradePrice(formatPrice(Math.max(0, priceNum - (currentPrice * 0.001))))} className="text-[#5E6673] hover:text-[#EAECEF] shrink-0">
+                    <label className="text-[10px] text-muted-foreground">{t('trade.price')}</label>
+                    <div className="flex items-center bg-secondary rounded h-8 px-2 mt-0.5">
+                      <button onClick={() => setTradePrice(formatPrice(Math.max(0, priceNum - (currentPrice * 0.001))))} className="text-muted-foreground hover:text-foreground shrink-0">
                         <Minus className="h-3 w-3" />
                       </button>
                       <Input
@@ -301,45 +301,45 @@ export default function MarginView() {
                         value={tradePrice}
                         onChange={(e) => setTradePrice(e.target.value)}
                         placeholder={formatPrice(currentPrice)}
-                        className="border-0 bg-transparent text-[#EAECEF] text-sm h-full p-0 mx-1.5 focus:ring-0 focus:outline-none tabular-nums text-center"
+                        className="border-0 bg-transparent text-foreground text-sm h-full p-0 mx-1.5 focus:ring-0 focus:outline-none tabular-nums text-center"
                       />
-                      <button onClick={() => setTradePrice(formatPrice(priceNum + (currentPrice * 0.001)))} className="text-[#5E6673] hover:text-[#EAECEF] shrink-0">
+                      <button onClick={() => setTradePrice(formatPrice(priceNum + (currentPrice * 0.001)))} className="text-muted-foreground hover:text-foreground shrink-0">
                         <Plus className="h-3 w-3" />
                       </button>
-                      <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">USDT</span>
+                      <span className="text-[10px] text-muted-foreground shrink-0 ms-1">USDT</span>
                     </div>
                   </div>
                 )}
 
                 {/* Amount */}
                 <div className="mb-2">
-                  <label className="text-[10px] text-[#5E6673]">{t('trade.amount')}</label>
-                  <div className="flex items-center bg-[#2B3139] rounded h-8 px-2 mt-0.5">
+                  <label className="text-[10px] text-muted-foreground">{t('trade.amount')}</label>
+                  <div className="flex items-center bg-secondary rounded h-8 px-2 mt-0.5">
                     <Input
                       type="number"
                       value={tradeAmount}
                       onChange={(e) => setTradeAmount(e.target.value)}
                       placeholder="0.00"
-                      className="border-0 bg-transparent text-[#EAECEF] text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-[#3B4451]"
+                      className="border-0 bg-transparent text-foreground text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-muted-foreground/50"
                     />
-                    <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">{selectedAsset.asset}</span>
+                    <span className="text-[10px] text-muted-foreground shrink-0 ms-1">{selectedAsset.asset}</span>
                   </div>
                 </div>
 
                 {/* Margin Summary */}
                 {amountNum > 0 && (
-                  <div className="bg-[#0B0E11] rounded p-2 space-y-1 mb-2">
+                  <div className="bg-background rounded p-2 space-y-1 mb-2">
                     <div className="flex justify-between text-[10px]">
-                      <span className="text-[#5E6673]">{t('trade.total')}</span>
-                      <span className="text-[#EAECEF] tabular-nums">{formatPrice(totalCost)} USDT</span>
+                      <span className="text-muted-foreground">{t('trade.total')}</span>
+                      <span className="text-foreground tabular-nums">{formatPrice(totalCost)} USDT</span>
                     </div>
                     <div className="flex justify-between text-[10px]">
-                      <span className="text-[#5E6673]">{t('trade.marginRatio')}</span>
-                      <span className="text-[#F0B90B] tabular-nums font-medium">{formatPrice(marginRequired)} USDT</span>
+                      <span className="text-muted-foreground">{t('trade.marginRatio')}</span>
+                      <span className="text-primary tabular-nums font-medium">{formatPrice(marginRequired)} USDT</span>
                     </div>
                     <div className="flex justify-between text-[10px]">
-                      <span className="text-[#5E6673]">{t('trade.leverage')}</span>
-                      <span className="text-[#EAECEF] tabular-nums">{marginLeverage}x</span>
+                      <span className="text-muted-foreground">{t('trade.leverage')}</span>
+                      <span className="text-foreground tabular-nums">{marginLeverage}x</span>
                     </div>
                   </div>
                 )}
@@ -347,8 +347,8 @@ export default function MarginView() {
                 <Button
                   className={`w-full font-semibold h-10 text-sm ${
                     side === 'buy'
-                      ? 'bg-[#0ECB81] hover:bg-[#0ECB81]/90 text-white'
-                      : 'bg-[#F6465D] hover:bg-[#F6465D]/90 text-white'
+                      ? 'bg-success hover:bg-success/90 text-white'
+                      : 'bg-destructive hover:bg-destructive/90 text-white'
                   }`}
                 >
                   {side === 'buy' ? t('trade.buyLong') : t('trade.sellShort')} {selectedAsset.asset}
@@ -359,15 +359,15 @@ export default function MarginView() {
 
           {/* Borrow Tab */}
           {activeTab === 'borrow' && (
-            <div className="bg-[#1E2329] rounded-lg p-4 max-w-lg">
-              <h3 className="text-sm font-semibold text-[#EAECEF] mb-3 flex items-center gap-1.5">
-                <DollarSign className="h-4 w-4 text-[#F0B90B]" />
+            <div className="bg-card rounded-lg p-4 max-w-lg">
+              <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-1.5">
+                <DollarSign className="h-4 w-4 text-primary" />
                 {t('trade.borrowAsset')}
               </h3>
 
               {/* Asset Select */}
               <div className="mb-3">
-                <label className="text-[10px] text-[#5E6673]">{t('trade.asset')}</label>
+                <label className="text-[10px] text-muted-foreground">{t('trade.asset')}</label>
                 <div className="flex gap-1 mt-0.5 flex-wrap">
                   {marginAssets.map((a) => (
                     <button
@@ -375,8 +375,8 @@ export default function MarginView() {
                       onClick={() => setSelectedAsset(a)}
                       className={`px-3 py-1.5 rounded text-[11px] font-medium transition-colors ${
                         selectedAsset.asset === a.asset
-                          ? 'bg-[#F0B90B] text-[#0B0E11]'
-                          : 'bg-[#2B3139] text-[#848E9C] hover:text-[#EAECEF]'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-secondary text-muted-foreground hover:text-foreground'
                       }`}
                     >
                       {a.icon} {a.asset}
@@ -388,42 +388,42 @@ export default function MarginView() {
               {/* Borrow Amount */}
               <div className="mb-3">
                 <div className="flex justify-between text-[10px] mb-1">
-                  <span className="text-[#5E6673]">{t('trade.borrowAmount')}</span>
-                  <span className="text-[#848E9C]">{t('trade.available')}: {selectedAsset.available.toFixed(4)} {selectedAsset.asset}</span>
+                  <span className="text-muted-foreground">{t('trade.borrowAmount')}</span>
+                  <span className="text-muted-foreground">{t('trade.available')}: {selectedAsset.available.toFixed(4)} {selectedAsset.asset}</span>
                 </div>
-                <div className="flex items-center bg-[#2B3139] rounded h-9 px-2">
+                <div className="flex items-center bg-secondary rounded h-9 px-2">
                   <Input
                     type="number"
                     value={borrowAmount}
                     onChange={(e) => setBorrowAmount(e.target.value)}
                     placeholder="0.00"
-                    className="border-0 bg-transparent text-[#EAECEF] text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-[#3B4451]"
+                    className="border-0 bg-transparent text-foreground text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-muted-foreground/50"
                   />
-                  <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">{selectedAsset.asset}</span>
+                  <span className="text-[10px] text-muted-foreground shrink-0 ms-1">{selectedAsset.asset}</span>
                 </div>
               </div>
 
               {/* Interest Info */}
-              <div className="bg-[#0B0E11] rounded p-2.5 space-y-1.5 mb-3">
+              <div className="bg-background rounded p-2.5 space-y-1.5 mb-3">
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-[#5E6673]">{t('trade.dailyInterestRate')}</span>
-                  <span className="text-[#F0B90B] tabular-nums">{(selectedAsset.interestRate * 100).toFixed(4)}%</span>
+                  <span className="text-muted-foreground">{t('trade.dailyInterestRate')}</span>
+                  <span className="text-primary tabular-nums">{(selectedAsset.interestRate * 100).toFixed(4)}%</span>
                 </div>
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-[#5E6673]">{t('trade.hourlyInterest')}</span>
-                  <span className="text-[#848E9C] tabular-nums">{(parseFloat(borrowAmount) * selectedAsset.interestRate / 24).toFixed(6)} {selectedAsset.asset}</span>
+                  <span className="text-muted-foreground">{t('trade.hourlyInterest')}</span>
+                  <span className="text-muted-foreground tabular-nums">{(parseFloat(borrowAmount) * selectedAsset.interestRate / 24).toFixed(6)} {selectedAsset.asset}</span>
                 </div>
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-[#5E6673]">{t('trade.outstandingDebt')}</span>
-                  <span className="text-[#F6465D] tabular-nums">{selectedAsset.borrowed.toFixed(4)} {selectedAsset.asset}</span>
+                  <span className="text-muted-foreground">{t('trade.outstandingDebt')}</span>
+                  <span className="text-destructive tabular-nums">{selectedAsset.borrowed.toFixed(4)} {selectedAsset.asset}</span>
                 </div>
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-[#5E6673]">{t('trade.accruedInterest')}</span>
-                  <span className="text-[#F0B90B] tabular-nums">{selectedAsset.interest.toFixed(6)} {selectedAsset.asset}</span>
+                  <span className="text-muted-foreground">{t('trade.accruedInterest')}</span>
+                  <span className="text-primary tabular-nums">{selectedAsset.interest.toFixed(6)} {selectedAsset.asset}</span>
                 </div>
               </div>
 
-              <Button className="w-full bg-[#F0B90B] hover:bg-[#F0B90B]/90 text-[#0B0E11] font-semibold h-10 text-sm">
+              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-10 text-sm">
                 {t('trade.borrow')} {selectedAsset.asset}
               </Button>
             </div>
@@ -431,15 +431,15 @@ export default function MarginView() {
 
           {/* Repay Tab */}
           {activeTab === 'repay' && (
-            <div className="bg-[#1E2329] rounded-lg p-4 max-w-lg">
-              <h3 className="text-sm font-semibold text-[#EAECEF] mb-3 flex items-center gap-1.5">
-                <ArrowRightLeft className="h-4 w-4 text-[#0ECB81]" />
+            <div className="bg-card rounded-lg p-4 max-w-lg">
+              <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-1.5">
+                <ArrowRightLeft className="h-4 w-4 text-success" />
                 {t('trade.repayLoan')}
               </h3>
 
               {/* Asset Select */}
               <div className="mb-3">
-                <label className="text-[10px] text-[#5E6673]">{t('trade.asset')}</label>
+                <label className="text-[10px] text-muted-foreground">{t('trade.asset')}</label>
                 <div className="flex gap-1 mt-0.5 flex-wrap">
                   {marginAssets.filter(a => a.borrowed > 0).map((a) => (
                     <button
@@ -447,8 +447,8 @@ export default function MarginView() {
                       onClick={() => setSelectedAsset(a)}
                       className={`px-3 py-1.5 rounded text-[11px] font-medium transition-colors ${
                         selectedAsset.asset === a.asset
-                          ? 'bg-[#0ECB81] text-[#0B0E11]'
-                          : 'bg-[#2B3139] text-[#848E9C] hover:text-[#EAECEF]'
+                          ? 'bg-success text-primary-foreground'
+                          : 'bg-secondary text-muted-foreground hover:text-foreground'
                       }`}
                     >
                       {a.icon} {a.asset}
@@ -460,22 +460,22 @@ export default function MarginView() {
               {/* Repay Amount */}
               <div className="mb-3">
                 <div className="flex justify-between text-[10px] mb-1">
-                  <span className="text-[#5E6673]">{t('trade.repayAmount')}</span>
-                  <span className="text-[#848E9C]">{t('trade.debt')}: {selectedAsset.borrowed.toFixed(4)} {selectedAsset.asset}</span>
+                  <span className="text-muted-foreground">{t('trade.repayAmount')}</span>
+                  <span className="text-muted-foreground">{t('trade.debt')}: {selectedAsset.borrowed.toFixed(4)} {selectedAsset.asset}</span>
                 </div>
-                <div className="flex items-center bg-[#2B3139] rounded h-9 px-2">
+                <div className="flex items-center bg-secondary rounded h-9 px-2">
                   <Input
                     type="number"
                     value={repayAmount}
                     onChange={(e) => setRepayAmount(e.target.value)}
                     placeholder="0.00"
-                    className="border-0 bg-transparent text-[#EAECEF] text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-[#3B4451]"
+                    className="border-0 bg-transparent text-foreground text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-muted-foreground/50"
                   />
-                  <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">{selectedAsset.asset}</span>
+                  <span className="text-[10px] text-muted-foreground shrink-0 ms-1">{selectedAsset.asset}</span>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-6 px-2 text-[9px] text-[#F0B90B] hover:text-[#F0B90B] hover:bg-[#F0B90B]/10 ms-1"
+                    className="h-6 px-2 text-[10px] text-primary hover:text-primary hover:bg-primary/10 ms-1"
                     onClick={() => setRepayAmount((selectedAsset.borrowed + selectedAsset.interest).toFixed(6))}
                   >
                     {t('trade.max')}
@@ -484,37 +484,37 @@ export default function MarginView() {
               </div>
 
               {/* Repay Summary */}
-              <div className="bg-[#0B0E11] rounded p-2.5 space-y-1.5 mb-3">
+              <div className="bg-background rounded p-2.5 space-y-1.5 mb-3">
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-[#5E6673]">{t('trade.outstandingPrincipal')}</span>
-                  <span className="text-[#F6465D] tabular-nums">{selectedAsset.borrowed.toFixed(4)} {selectedAsset.asset}</span>
+                  <span className="text-muted-foreground">{t('trade.outstandingPrincipal')}</span>
+                  <span className="text-destructive tabular-nums">{selectedAsset.borrowed.toFixed(4)} {selectedAsset.asset}</span>
                 </div>
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-[#5E6673]">{t('trade.interestToRepay')}</span>
-                  <span className="text-[#F0B90B] tabular-nums">{selectedAsset.interest.toFixed(6)} {selectedAsset.asset}</span>
+                  <span className="text-muted-foreground">{t('trade.interestToRepay')}</span>
+                  <span className="text-primary tabular-nums">{selectedAsset.interest.toFixed(6)} {selectedAsset.asset}</span>
                 </div>
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-[#5E6673]">{t('trade.totalToRepay')}</span>
-                  <span className="text-[#EAECEF] tabular-nums font-medium">{(selectedAsset.borrowed + selectedAsset.interest).toFixed(4)} {selectedAsset.asset}</span>
+                  <span className="text-muted-foreground">{t('trade.totalToRepay')}</span>
+                  <span className="text-foreground tabular-nums font-medium">{(selectedAsset.borrowed + selectedAsset.interest).toFixed(4)} {selectedAsset.asset}</span>
                 </div>
               </div>
 
-              <Button className="w-full bg-[#0ECB81] hover:bg-[#0ECB81]/90 text-white font-semibold h-10 text-sm">
+              <Button className="w-full bg-success hover:bg-success/90 text-white font-semibold h-10 text-sm">
                 {t('trade.repay')} {selectedAsset.asset}
               </Button>
             </div>
           )}
 
           {/* Open Margin Positions */}
-          <div className="bg-[#1E2329] rounded-lg">
-            <div className="flex items-center justify-between px-3 py-2.5 border-b border-[#2B3139]">
-              <span className="text-xs font-semibold text-[#848E9C]">{t('trade.marginPositions')}</span>
-              <Badge className="bg-[#2B3139] text-[#848E9C] border-0 text-[9px] px-1.5 py-0 h-4">{mockMarginPositions.length}</Badge>
+          <div className="bg-card rounded-lg">
+            <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
+              <span className="text-xs font-semibold text-muted-foreground">{t('trade.marginPositions')}</span>
+              <Badge className="bg-secondary text-muted-foreground border-0 text-[10px] px-1.5 py-0 h-4">{mockMarginPositions.length}</Badge>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto touch-pan-x">
               <table className="w-full text-[11px]">
                 <thead>
-                  <tr className="text-[#5E6673] border-b border-[#2B3139]/50">
+                  <tr className="text-muted-foreground border-b border-border/50">
                     <th className="text-start py-2 px-3 font-medium">{t('trade.asset')}</th>
                     <th className="text-start py-2 px-3 font-medium">{t('trade.side')}</th>
                     <th className="text-end py-2 px-3 font-medium">{t('trade.size')}</th>
@@ -533,29 +533,29 @@ export default function MarginView() {
                       ? (liveP - pos.entryPrice) * pos.size
                       : (pos.entryPrice - liveP) * pos.size;
                     return (
-                      <tr key={pos.id} className="border-b border-[#2B3139]/30 hover:bg-[#2B3139]/30">
+                      <tr key={pos.id} className="border-b border-border/30 hover:bg-secondary/30">
                         <td className="py-2.5 px-3">
-                          <span className="text-[#EAECEF] font-medium">{pos.asset}</span>
-                          <span className="text-[8px] text-[#F0B90B] ms-1">{pos.leverage}x</span>
+                          <span className="text-foreground font-medium">{pos.asset}</span>
+                          <span className="text-[10px] text-primary ms-1">{pos.leverage}x</span>
                         </td>
                         <td className="py-2.5 px-3">
-                          <span className={`font-semibold ${pos.side === 'long' ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+                          <span className={`font-semibold ${pos.side === 'long' ? 'text-success' : 'text-destructive'}`}>
                             {pos.side === 'long' ? t('trade.long') : t('trade.short')}
                           </span>
                         </td>
-                        <td className="py-2.5 px-3 text-end text-[#EAECEF] tabular-nums">{pos.size}</td>
-                        <td className="py-2.5 px-3 text-end text-[#848E9C] tabular-nums">{formatPrice(pos.entryPrice)}</td>
-                        <td className="py-2.5 px-3 text-end text-[#EAECEF] tabular-nums">{formatPrice(liveP)}</td>
-                        <td className="py-2.5 px-3 text-end text-[#848E9C] tabular-nums">{formatPrice(pos.margin)}</td>
-                        <td className={`py-2.5 px-3 text-end font-medium tabular-nums ${posPnl >= 0 ? 'text-[#0ECB81] pnl-glow-profit' : 'text-[#F6465D] pnl-glow-loss'}`}>
+                        <td className="py-2.5 px-3 text-end text-foreground tabular-nums">{pos.size}</td>
+                        <td className="py-2.5 px-3 text-end text-muted-foreground tabular-nums">{formatPrice(pos.entryPrice)}</td>
+                        <td className="py-2.5 px-3 text-end text-foreground tabular-nums">{formatPrice(liveP)}</td>
+                        <td className="py-2.5 px-3 text-end text-muted-foreground tabular-nums">{formatPrice(pos.margin)}</td>
+                        <td className={`py-2.5 px-3 text-end font-medium tabular-nums ${posPnl >= 0 ? 'text-success pnl-glow-profit' : 'text-destructive pnl-glow-loss'}`}>
                           {posPnl >= 0 ? '+' : ''}{formatPrice(posPnl)}
                         </td>
-                        <td className={`py-2.5 px-3 text-end font-medium tabular-nums ${pos.roe >= 0 ? 'text-[#0ECB81] pnl-glow-profit' : 'text-[#F6465D] pnl-glow-loss'}`}>
+                        <td className={`py-2.5 px-3 text-end font-medium tabular-nums ${pos.roe >= 0 ? 'text-success pnl-glow-profit' : 'text-destructive pnl-glow-loss'}`}>
                           {pos.roe >= 0 ? '+' : ''}{pos.roe.toFixed(2)}%
                         </td>
                         <td className="py-2.5 px-3">
-                          <Badge className={`text-[8px] px-1.5 py-0 h-3.5 border-0 font-medium ${
-                            pos.mode === 'cross' ? 'bg-[#F0B90B]/10 text-[#F0B90B]' : 'bg-[#848E9C]/10 text-[#848E9C]'
+                          <Badge className={`text-[10px] px-1.5 py-0 h-3.5 border-0 font-medium ${
+                            pos.mode === 'cross' ? 'bg-primary/10 text-primary' : 'bg-muted-foreground/10 text-muted-foreground'
                           }`}>
                             {pos.mode === 'cross' ? t('trade.cross') : t('trade.isolated')}
                           </Badge>
@@ -569,14 +569,14 @@ export default function MarginView() {
           </div>
 
           {/* Borrow History */}
-          <div className="bg-[#1E2329] rounded-lg">
-            <div className="px-3 py-2.5 border-b border-[#2B3139]">
-              <span className="text-xs font-semibold text-[#848E9C]">{t('trade.borrowRepayHistory')}</span>
+          <div className="bg-card rounded-lg">
+            <div className="px-3 py-2.5 border-b border-border">
+              <span className="text-xs font-semibold text-muted-foreground">{t('trade.borrowRepayHistory')}</span>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto touch-pan-x">
               <table className="w-full text-[11px]">
                 <thead>
-                  <tr className="text-[#5E6673] border-b border-[#2B3139]/50">
+                  <tr className="text-muted-foreground border-b border-border/50">
                     <th className="text-start py-2 px-3 font-medium">{t('trade.asset')}</th>
                     <th className="text-start py-2 px-3 font-medium">{t('trade.action')}</th>
                     <th className="text-end py-2 px-3 font-medium">{t('trade.amount')}</th>
@@ -586,18 +586,18 @@ export default function MarginView() {
                 </thead>
                 <tbody>
                   {mockBorrowHistory.map((record) => (
-                    <tr key={record.id} className="border-b border-[#2B3139]/30 hover:bg-[#2B3139]/30">
-                      <td className="py-2 px-3 text-[#EAECEF] font-medium">{record.asset}</td>
+                    <tr key={record.id} className="border-b border-border/30 hover:bg-secondary/30">
+                      <td className="py-2 px-3 text-foreground font-medium">{record.asset}</td>
                       <td className="py-2 px-3">
-                        <Badge className={`text-[9px] px-1.5 py-0 h-4 border-0 font-medium ${
-                          record.action === 'borrow' ? 'bg-[#F6465D]/10 text-[#F6465D]' : 'bg-[#0ECB81]/10 text-[#0ECB81]'
+                        <Badge className={`text-[10px] px-1.5 py-0 h-4 border-0 font-medium ${
+                          record.action === 'borrow' ? 'bg-destructive/10 text-destructive' : 'bg-success/10 text-success'
                         }`}>
                           {record.action === 'borrow' ? t('trade.borrow') : t('trade.repay')}
                         </Badge>
                       </td>
-                      <td className="py-2 px-3 text-end text-[#EAECEF] tabular-nums">{record.amount}</td>
-                      <td className="py-2 px-3 text-end text-[#848E9C] tabular-nums">{(record.interestRate * 100).toFixed(4)}%</td>
-                      <td className="py-2 px-3 text-end text-[#5E6673]">{record.date}</td>
+                      <td className="py-2 px-3 text-end text-foreground tabular-nums">{record.amount}</td>
+                      <td className="py-2 px-3 text-end text-muted-foreground tabular-nums">{(record.interestRate * 100).toFixed(4)}%</td>
+                      <td className="py-2 px-3 text-end text-muted-foreground">{record.date}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -606,11 +606,11 @@ export default function MarginView() {
           </div>
 
           {/* Risk Warning */}
-          <div className="bg-[#F0B90B]/5 border border-[#F0B90B]/20 rounded-lg p-3 flex items-start gap-2">
-            <AlertTriangle className="h-4 w-4 text-[#F0B90B] shrink-0 mt-0.5" />
+          <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 flex items-start gap-2">
+            <AlertTriangle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <div>
-              <p className="text-[11px] text-[#F0B90B] font-medium">{t('trade.marginNoticeTitle')}</p>
-              <p className="text-[10px] text-[#848E9C] mt-0.5">
+              <p className="text-[11px] text-primary font-medium">{t('trade.marginNoticeTitle')}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">
                 {t('trade.marginNoticeDesc')}
               </p>
             </div>

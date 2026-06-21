@@ -68,7 +68,7 @@ function TokenSelector({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
@@ -80,12 +80,12 @@ function TokenSelector({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="w-full max-w-sm mx-4 mb-4 sm:mb-0 bg-[#1E2329] border border-[#2B3139] rounded-2xl overflow-hidden glass-card"
+            className="w-full max-w-sm mx-4 mb-4 sm:mb-0 bg-card border border-border rounded-2xl overflow-hidden glass-card"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-4 border-b border-[#2B3139]">
-              <h3 className="text-sm font-semibold text-[#EAECEF]">{title}</h3>
-              <Button variant="ghost" size="icon" className="h-7 w-7 text-[#848E9C]" onClick={onClose}>
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+              <Button variant="ghost" size="icon" aria-label="Close" className="h-9 w-9 text-muted-foreground" onClick={onClose}>
                 ✕
               </Button>
             </div>
@@ -99,18 +99,18 @@ function TokenSelector({
                       onSelect(tk);
                       onClose();
                     }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#2B3139] transition-colors"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-secondary transition-colors"
                   >
-                    <div className="w-8 h-8 rounded-full bg-[#2B3139] flex items-center justify-center text-sm font-bold text-[#F0B90B]">
+                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-sm font-bold text-primary">
                       {tk.icon}
                     </div>
                     <div className="flex-1 text-start">
-                      <p className="text-sm font-medium text-[#EAECEF]">{tk.symbol}</p>
-                      <p className="text-[10px] text-[#5E6673]">{tk.name}</p>
+                      <p className="text-sm font-medium text-foreground">{tk.symbol}</p>
+                      <p className="text-[10px] text-muted-foreground">{tk.name}</p>
                     </div>
                     <div className="text-end">
-                      <p className="text-sm text-[#EAECEF]">{tk.balance.toFixed(4)}</p>
-                      <p className="text-[10px] text-[#5E6673]">${(tk.balance * tk.price).toFixed(2)}</p>
+                      <p className="text-sm text-foreground">{tk.balance.toFixed(4)}</p>
+                      <p className="text-[10px] text-muted-foreground">${(tk.balance * tk.price).toFixed(2)}</p>
                     </div>
                   </button>
                 ))}
@@ -123,8 +123,8 @@ function TokenSelector({
 }
 
 export default function ConvertView() {
-  const { goBack } = useAppStore();
-  const { t } = useTranslation();
+  const { goBack, isRTL } = useAppStore();
+  const { t, language } = useTranslation();
   const [fromToken, setFromToken] = useState<ConvertToken>(tokens[4]); // USDT
   const [toToken, setToToken] = useState<ConvertToken>(tokens[0]); // BTC
   const [fromAmount, setFromAmount] = useState('');
@@ -137,7 +137,7 @@ export default function ConvertView() {
     ? ((parseFloat(fromAmount) * fromToken.price) / toToken.price).toFixed(6)
     : '';
   const exchangeRate = (fromToken.price / toToken.price).toFixed(6);
-  const lastUpdated = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const lastUpdated = new Date().toLocaleTimeString(language === 'ar' ? 'ar' : undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   const handleSwapDirection = () => {
     setFromToken(toToken);
@@ -159,34 +159,35 @@ export default function ConvertView() {
   };
 
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)] lg:h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-8rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="p-4 max-w-lg mx-auto space-y-4">
         {/* Header */}
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
-            className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-8 w-8"
+            aria-label={t('actions.back')}
+            className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9"
             onClick={goBack}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
           </Button>
-          <h1 className="text-lg font-semibold text-[#EAECEF]">{t('convert.title')}</h1>
-          <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[9px] px-1.5 py-0 h-5 font-semibold">
+          <h1 className="text-lg font-semibold text-foreground">{t('convert.title')}</h1>
+          <Badge className="bg-success/10 text-success border-0 text-[10px] px-1.5 py-0 h-5 font-semibold">
             {t('convert.instant')}
           </Badge>
         </div>
 
         {/* Convert Card */}
-        <Card className="bg-[#1E2329] border-[#2B3139] glass-card overflow-hidden relative">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#F0B90B] via-[#0ECB81] to-[#F0B90B]" />
+        <Card className="bg-card border-border glass-card overflow-hidden relative">
+          <div className="absolute top-0 start-0 end-0 h-1 bg-gradient-to-r from-primary via-[#0ECB81] to-primary" />
           <CardContent className="p-4 space-y-3">
             {/* From Token */}
-            <div className="bg-[#0B0E11]/50 rounded-xl p-3 space-y-2">
+            <div className="bg-background/50 rounded-xl p-3 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium">{t('convert.from')}</span>
-                <span className="text-[10px] text-[#5E6673]">
-                  {t('convert.balance')}: <span className="text-[#848E9C]">{fromToken.balance.toFixed(4)} {fromToken.symbol}</span>
+                <span className="text-[10px] text-muted-foreground tracking-wider font-medium">{t('convert.from')}</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {t('convert.balance')}: <span className="text-muted-foreground">{fromToken.balance.toFixed(4)} {fromToken.symbol}</span>
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -198,26 +199,26 @@ export default function ConvertView() {
                     setFromAmount(e.target.value);
                     setConvertComplete(false);
                   }}
-                  className="flex-1 bg-transparent border-0 text-xl font-semibold text-[#EAECEF] placeholder:text-[#3E444D] p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="flex-1 bg-transparent border-0 text-xl font-semibold text-foreground placeholder:text-muted-foreground/50 p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
                 <button
                   onClick={() => setShowFromSelector(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#2B3139] hover:bg-[#3B4451] transition-colors shrink-0"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-secondary hover:bg-muted transition-colors shrink-0"
                 >
-                  <div className="w-5 h-5 rounded-full bg-[#F0B90B]/20 flex items-center justify-center text-[10px] font-bold text-[#F0B90B]">
+                  <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">
                     {fromToken.icon}
                   </div>
-                  <span className="text-sm font-medium text-[#EAECEF]">{fromToken.symbol}</span>
-                  <ChevronDown className="h-3 w-3 text-[#848E9C]" />
+                  <span className="text-sm font-medium text-foreground">{fromToken.symbol}</span>
+                  <ChevronDown className="h-3 w-3 text-muted-foreground" />
                 </button>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[#5E6673]">
+                <span className="text-[10px] text-muted-foreground">
                   ≈ ${fromAmount ? (parseFloat(fromAmount) * fromToken.price).toFixed(2) : '0.00'}
                 </span>
                 <button
                   onClick={() => setFromAmount(fromToken.balance.toString())}
-                  className="text-[10px] text-[#F0B90B] font-medium hover:underline"
+                  className="text-[10px] text-primary font-medium hover:underline"
                 >
                   {t('convert.max')}
                 </button>
@@ -229,36 +230,36 @@ export default function ConvertView() {
               <motion.button
                 onClick={handleSwapDirection}
                 whileTap={{ scale: 0.9 }}
-                className="w-9 h-9 rounded-full bg-[#2B3139] border border-[#3B4451] flex items-center justify-center hover:bg-[#3B4451] hover:border-[#F0B90B]/30 transition-all"
+                className="w-9 h-9 rounded-full bg-secondary border border-muted-foreground/40 flex items-center justify-center hover:bg-muted hover:border-primary/30 transition-all"
               >
-                <ArrowDown className="h-4 w-4 text-[#F0B90B]" />
+                <ArrowDown className="h-4 w-4 text-primary" />
               </motion.button>
             </div>
 
             {/* To Token */}
-            <div className="bg-[#0B0E11]/50 rounded-xl p-3 space-y-2">
+            <div className="bg-background/50 rounded-xl p-3 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium">{t('convert.to')}</span>
-                <span className="text-[10px] text-[#5E6673]">
-                  {t('convert.balance')}: <span className="text-[#848E9C]">{toToken.balance.toFixed(4)} {toToken.symbol}</span>
+                <span className="text-[10px] text-muted-foreground tracking-wider font-medium">{t('convert.to')}</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {t('convert.balance')}: <span className="text-muted-foreground">{toToken.balance.toFixed(4)} {toToken.symbol}</span>
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="flex-1 text-xl font-semibold text-[#EAECEF] placeholder:text-[#3E444D] p-0">
-                  {toAmount || <span className="text-[#3E444D]">0.0</span>}
+                <div className="flex-1 text-xl font-semibold text-foreground placeholder:text-muted-foreground/50 p-0">
+                  {toAmount || <span className="text-muted-foreground/50">0.0</span>}
                 </div>
                 <button
                   onClick={() => setShowToSelector(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#2B3139] hover:bg-[#3B4451] transition-colors shrink-0"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-secondary hover:bg-muted transition-colors shrink-0"
                 >
-                  <div className="w-5 h-5 rounded-full bg-[#0ECB81]/20 flex items-center justify-center text-[10px] font-bold text-[#0ECB81]">
+                  <div className="w-5 h-5 rounded-full bg-success/20 flex items-center justify-center text-[10px] font-bold text-success">
                     {toToken.icon}
                   </div>
-                  <span className="text-sm font-medium text-[#EAECEF]">{toToken.symbol}</span>
-                  <ChevronDown className="h-3 w-3 text-[#848E9C]" />
+                  <span className="text-sm font-medium text-foreground">{toToken.symbol}</span>
+                  <ChevronDown className="h-3 w-3 text-muted-foreground" />
                 </button>
               </div>
-              <span className="text-[10px] text-[#5E6673]">
+              <span className="text-[10px] text-muted-foreground">
                 ≈ ${toAmount ? (parseFloat(toAmount) * toToken.price).toFixed(2) : '0.00'}
               </span>
             </div>
@@ -266,38 +267,37 @@ export default function ConvertView() {
             {/* Rate Info */}
             <div className="space-y-1.5 pt-1">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] text-[#5E6673]">{t('convert.rate')}</span>
-                <span className="text-[11px] text-[#848E9C]">
+                <span className="text-[11px] text-muted-foreground">{t('convert.rate')}</span>
+                <span className="text-[11px] text-muted-foreground">
                   1 {fromToken.symbol} = {exchangeRate} {toToken.symbol}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[11px] text-[#5E6673]">{t('convert.lastUpdated')}</span>
-                <span className="text-[11px] text-[#5E6673]">{lastUpdated}</span>
+                <span className="text-[11px] text-muted-foreground">{t('convert.lastUpdated')}</span>
+                <span className="text-[11px] text-muted-foreground">{lastUpdated}</span>
               </div>
             </div>
 
             {/* Convert Button */}
             <div className="pt-2">
               {!fromAmount || parseFloat(fromAmount) <= 0 ? (
-                <Button className="w-full h-12 bg-[#2B3139] text-[#5E6673] cursor-not-allowed rounded-xl text-sm font-semibold" disabled>
+                <Button className="w-full h-12 bg-secondary text-muted-foreground cursor-not-allowed rounded-xl text-sm font-semibold" disabled>
                   {t('convert.enterAmount')}
                 </Button>
               ) : convertComplete ? (
-                <Button className="w-full h-12 bg-[#0ECB81] hover:bg-[#0ECB81]/90 text-white font-semibold rounded-xl text-sm" disabled>
+                <Button className="w-full h-12 bg-success hover:bg-success/90 text-white font-semibold rounded-xl text-sm" disabled>
                   <Check className="h-4 w-4 me-2" />
                   {t('convert.convertComplete')}
                 </Button>
               ) : (
                 <Button
-                  className="w-full h-12 gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold rounded-xl text-sm shadow-md shadow-[#F0B90B]/20 press-scale"
+                  className="w-full h-12 gradient-yellow hover:opacity-90 text-primary-foreground font-semibold rounded-xl text-sm shadow-md shadow-primary/20 press-scale"
                   onClick={handleConvert}
                   disabled={isConverting}
-                  style={{ boxShadow: '0 0 15px rgba(240, 185, 11, 0.25)' }}
                 >
                   {isConverting ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-[#0B0E11]/30 border-t-[#0B0E11] rounded-full animate-spin me-2" />
+                      <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin me-2" />
                       {t('convert.converting')}
                     </>
                   ) : (
@@ -313,31 +313,31 @@ export default function ConvertView() {
         </Card>
 
         {/* Recent Conversions */}
-        <Card className="bg-[#1E2329] border-[#2B3139] glass-card">
+        <Card className="bg-card border-border glass-card">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Clock className="h-4 w-4 text-[#5E6673]" />
-              <h3 className="text-sm font-medium text-[#EAECEF]">{t('convert.recentConversions')}</h3>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <h3 className="text-sm font-medium text-foreground">{t('convert.recentConversions')}</h3>
             </div>
             <div className="space-y-2">
               {recentConversions.map((conv) => (
                 <div
                   key={conv.id}
-                  className="flex items-center justify-between py-2 px-3 rounded-lg bg-[#0B0E11]/30"
+                  className="flex items-center justify-between py-2 px-3 rounded-lg bg-background/30"
                 >
                   <div className="flex items-center gap-2">
                     <div className="flex items-center text-xs">
-                      <span className="text-[#EAECEF] font-medium">{conv.fromAmt}</span>
-                      <span className="text-[#848E9C] ms-1">{conv.from}</span>
+                      <span className="text-foreground font-medium">{conv.fromAmt}</span>
+                      <span className="text-muted-foreground ms-1">{conv.from}</span>
                     </div>
-                    <ArrowDown className="h-3 w-3 text-[#5E6673] rotate-90" />
+                    <ArrowDown className={`h-3 w-3 text-muted-foreground ${isRTL ? '-rotate-90' : 'rotate-90'}`} />
                     <div className="flex items-center text-xs">
-                      <span className="text-[#EAECEF] font-medium">{conv.toAmt}</span>
-                      <span className="text-[#848E9C] ms-1">{conv.to}</span>
+                      <span className="text-foreground font-medium">{conv.toAmt}</span>
+                      <span className="text-muted-foreground ms-1">{conv.to}</span>
                     </div>
                   </div>
                   <div className="text-end">
-                    <p className="text-[9px] text-[#5E6673]">{conv.time}</p>
+                    <p className="text-[10px] text-muted-foreground">{conv.time}</p>
                   </div>
                 </div>
               ))}

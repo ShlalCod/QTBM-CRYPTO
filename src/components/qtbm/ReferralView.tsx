@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
 import { useTranslation } from '@/lib/i18n';
+import { useLocaleFmt } from '@/hooks/use-locale-fmt';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -64,8 +65,9 @@ const howItWorksKeys = [
 ];
 
 export default function ReferralView() {
-  const { goBack } = useAppStore();
+  const { goBack, isRTL } = useAppStore();
   const { t } = useTranslation();
+  const { formatDate } = useLocaleFmt();
   const [copied, setCopied] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
@@ -86,44 +88,46 @@ export default function ReferralView() {
     : 100;
 
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)] lg:h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-8rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="p-4 max-w-lg mx-auto space-y-4">
         {/* Header */}
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
-            className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-8 w-8"
+            className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9"
             onClick={goBack}
+            aria-label={t('common.back')}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
           </Button>
-          <h1 className="text-lg font-semibold text-[#EAECEF]">{t('referral.title')}</h1>
+          <h1 className="text-lg font-semibold text-foreground">{t('referral.title')}</h1>
         </div>
 
         {/* Animated Rewards Card */}
-        <Card className="bg-[#1E2329] border-[#2B3139] overflow-hidden relative glass-card">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#F0B90B]/10 via-transparent to-[#0ECB81]/5 animate-gradient-shift" style={{ backgroundSize: '200% 200%' }} />
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#F0B90B] via-[#0ECB81] to-[#F0B90B]" />
+        <Card className="bg-card border-border overflow-hidden relative glass-card">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-success/5 animate-gradient-shift" style={{ backgroundSize: '200% 200%' }} />
+          <div className="absolute top-0 start-0 end-0 h-1 bg-gradient-to-r from-primary via-[#0ECB81] to-primary" />
           <CardContent className="p-5 relative z-10">
             <div className="flex items-center gap-2 mb-4">
-              <Gift className="h-5 w-5 text-[#F0B90B]" />
-              <h2 className="text-base font-semibold text-[#EAECEF]">{t('referral.earnRewards')}</h2>
+              <Gift className="h-5 w-5 text-primary" />
+              <h2 className="text-base font-semibold text-foreground">{t('referral.earnRewards')}</h2>
             </div>
 
             {/* Referral Code */}
-            <div className="bg-[#0B0E11]/50 rounded-xl p-4 mb-4">
-              <p className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-2">{t('referral.yourCode')}</p>
+            <div className="bg-background/50 rounded-xl p-4 mb-4">
+              <p className="text-[10px] text-muted-foreground tracking-wider font-medium mb-2">{t('referral.yourCode')}</p>
               <div className="flex items-center justify-between">
-                <span className="text-xl font-bold text-[#F0B90B] tracking-wider">{referralCode}</span>
+                <span className="text-xl font-bold text-primary tracking-wider" dir="ltr">{referralCode}</span>
                 <Button
                   size="sm"
-                  className={`h-8 px-3 text-xs font-medium transition-all ${
+                  className={`h-9 px-3 text-xs font-medium transition-all ${
                     copied
-                      ? 'bg-[#0ECB81] hover:bg-[#0ECB81]/90 text-white'
-                      : 'bg-[#2B3139] hover:bg-[#3B4451] text-[#EAECEF]'
+                      ? 'bg-success hover:bg-success/90 text-white'
+                      : 'bg-secondary hover:bg-secondary/80 text-foreground'
                   }`}
                   onClick={handleCopyCode}
+                  aria-label={t('common.copy')}
                 >
                   {copied ? <Check className="h-3 w-3 me-1" /> : <Copy className="h-3 w-3 me-1" />}
                   {copied ? t('actions.copy') + '!' : t('actions.copy')}
@@ -134,7 +138,7 @@ export default function ReferralView() {
             {/* QR Code Placeholder */}
             <div className="flex justify-center mb-4">
               <div className="w-28 h-28 bg-white rounded-xl flex items-center justify-center">
-                <QrCode className="h-20 w-20 text-[#0B0E11]" />
+                <QrCode className="h-20 w-20 text-background" />
               </div>
             </div>
 
@@ -142,39 +146,39 @@ export default function ReferralView() {
             <div className="grid grid-cols-4 gap-2">
               <button
                 onClick={handleCopyLink}
-                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-[#0B0E11]/50 hover:bg-[#2B3139] transition-all"
+                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-background/50 hover:bg-secondary transition-all"
               >
-                <div className="w-8 h-8 rounded-full bg-[#2B3139] flex items-center justify-center">
-                  {copiedLink ? <Check className="h-4 w-4 text-[#0ECB81]" /> : <Copy className="h-4 w-4 text-[#848E9C]" />}
+                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+                  {copiedLink ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4 text-muted-foreground" />}
                 </div>
-                <span className="text-[9px] text-[#848E9C]">{t('referral.copyLink')}</span>
+                <span className="text-[10px] text-muted-foreground">{t('referral.copyLink')}</span>
               </button>
               <a
                 href={`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(t('referral.shareMessage'))}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-[#0B0E11]/50 hover:bg-[#2B3139] transition-all"
+                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-background/50 hover:bg-secondary transition-all"
               >
                 <div className="w-8 h-8 rounded-full bg-[#229ED9]/20 flex items-center justify-center text-sm font-bold text-[#229ED9]">T</div>
-                <span className="text-[9px] text-[#848E9C]">Telegram</span>
+                <span className="text-[10px] text-muted-foreground">Telegram</span>
               </a>
               <a
                 href={`https://wa.me/?text=${encodeURIComponent(t('referral.shareMessage') + ' ' + referralLink)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-[#0B0E11]/50 hover:bg-[#2B3139] transition-all"
+                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-background/50 hover:bg-secondary transition-all"
               >
                 <div className="w-8 h-8 rounded-full bg-[#25D366]/20 flex items-center justify-center text-sm font-bold text-[#25D366]">W</div>
-                <span className="text-[9px] text-[#848E9C]">WhatsApp</span>
+                <span className="text-[10px] text-muted-foreground">WhatsApp</span>
               </a>
               <a
                 href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(t('referral.shareMessage'))}&url=${encodeURIComponent(referralLink)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-[#0B0E11]/50 hover:bg-[#2B3139] transition-all"
+                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-background/50 hover:bg-secondary transition-all"
               >
-                <div className="w-8 h-8 rounded-full bg-[#EAECEF]/10 flex items-center justify-center text-sm font-bold text-[#EAECEF]">X</div>
-                <span className="text-[9px] text-[#848E9C]">Twitter</span>
+                <div className="w-8 h-8 rounded-full bg-foreground/10 flex items-center justify-center text-sm font-bold text-foreground">X</div>
+                <span className="text-[10px] text-muted-foreground">Twitter</span>
               </a>
             </div>
           </CardContent>
@@ -182,63 +186,63 @@ export default function ReferralView() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
-          <Card className="bg-[#1E2329] border-[#2B3139] glass-card">
+          <Card className="bg-card border-border glass-card">
             <CardContent className="p-3 text-center">
-              <Users className="h-4 w-4 text-[#F0B90B] mx-auto mb-1" />
-              <p className="text-lg font-bold text-[#EAECEF]">{totalInvited}</p>
-              <p className="text-[9px] text-[#5E6673]">{t('referral.totalInvited')}</p>
+              <Users className="h-4 w-4 text-primary mx-auto mb-1" />
+              <p className="text-lg font-bold text-foreground">{totalInvited}</p>
+              <p className="text-[10px] text-muted-foreground">{t('referral.totalInvited')}</p>
             </CardContent>
           </Card>
-          <Card className="bg-[#1E2329] border-[#2B3139] glass-card">
+          <Card className="bg-card border-border glass-card">
             <CardContent className="p-3 text-center">
-              <TrendingUp className="h-4 w-4 text-[#0ECB81] mx-auto mb-1" />
-              <p className="text-lg font-bold text-[#EAECEF]">{activeReferrals}</p>
-              <p className="text-[9px] text-[#5E6673]">{t('referral.activeReferrals')}</p>
+              <TrendingUp className="h-4 w-4 text-success mx-auto mb-1" />
+              <p className="text-lg font-bold text-foreground">{activeReferrals}</p>
+              <p className="text-[10px] text-muted-foreground">{t('referral.activeReferrals')}</p>
             </CardContent>
           </Card>
-          <Card className="bg-[#1E2329] border-[#2B3139] glass-card">
+          <Card className="bg-card border-border glass-card">
             <CardContent className="p-3 text-center">
-              <Trophy className="h-4 w-4 text-[#F0B90B] mx-auto mb-1" />
-              <p className="text-lg font-bold text-[#EAECEF]">${totalEarned}</p>
-              <p className="text-[9px] text-[#5E6673]">{t('referral.totalEarned')}</p>
+              <Trophy className="h-4 w-4 text-primary mx-auto mb-1" />
+              <p className="text-lg font-bold text-foreground">${totalEarned}</p>
+              <p className="text-[10px] text-muted-foreground">{t('referral.totalEarned')}</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Reward Tiers */}
-        <Card className="bg-[#1E2329] border-[#2B3139] glass-card">
+        <Card className="bg-card border-border glass-card">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Medal className="h-4 w-4 text-[#F0B90B]" />
-              <h3 className="text-sm font-medium text-[#EAECEF]">{t('referral.rewardTiers')}</h3>
+              <Medal className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-medium text-foreground">{t('referral.rewardTiers')}</h3>
             </div>
 
             {/* Current Tier Progress */}
-            <div className="bg-[#0B0E11]/50 rounded-xl p-3 mb-4">
+            <div className="bg-background/50 rounded-xl p-3 mb-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">{currentTier.icon}</span>
-                  <span className="text-xs font-medium text-[#EAECEF]">{t(currentTier.nameKey)}</span>
+                  <span className="text-xs font-medium text-foreground">{t(currentTier.nameKey)}</span>
                 </div>
                 {nextTier && (
-                  <div className="flex items-center gap-1 text-[10px] text-[#5E6673]">
+                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
                     <span>{nextTier.icon}</span>
                     <span>{t('referral.next')}: {t(nextTier.nameKey)}</span>
                   </div>
                 )}
               </div>
-              <div className="w-full h-2 bg-[#2B3139] rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.min(progressToNext, 100)}%` }}
                   transition={{ duration: 1, ease: 'easeOut' }}
-                  className="h-full rounded-full bg-gradient-to-r from-[#F0B90B] to-[#0ECB81]"
+                  className="h-full rounded-full bg-gradient-to-r from-primary to-success"
                 />
               </div>
               <div className="flex items-center justify-between mt-1.5">
-                <span className="text-[9px] text-[#5E6673]">{totalInvited} {t('referral.referrals')}</span>
+                <span className="text-[10px] text-muted-foreground">{totalInvited} {t('referral.referrals')}</span>
                 {nextTier && (
-                  <span className="text-[9px] text-[#5E6673]">{nextTier.minRefs - 1} {t('referral.referrals')}</span>
+                  <span className="text-[10px] text-muted-foreground">{nextTier.minRefs - 1} {t('referral.referrals')}</span>
                 )}
               </div>
             </div>
@@ -253,28 +257,28 @@ export default function ReferralView() {
                     key={tier.nameKey}
                     className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                       isCurrentTier
-                        ? 'bg-[#F0B90B]/10 border border-[#F0B90B]/20'
-                        : 'bg-[#0B0E11]/30'
+                        ? 'bg-primary/10 border border-primary/20'
+                        : 'bg-background/30'
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
                       <span className="text-lg">{tier.icon}</span>
                       <div>
-                        <p className={`text-xs font-medium ${isCurrentTier ? 'text-[#F0B90B]' : 'text-[#848E9C]'}`}>
+                        <p className={`text-xs font-medium ${isCurrentTier ? 'text-primary' : 'text-muted-foreground'}`}>
                           {t(tier.nameKey)}
                           {isCurrentTier && (
-                            <Badge className="ms-2 bg-[#F0B90B]/20 text-[#F0B90B] border-0 text-[8px] px-1.5 py-0 h-3.5">
+                            <Badge className="ms-2 bg-primary/20 text-primary border-0 text-[10px] px-1.5 py-0 h-3.5">
                               {t('status.active')}
                             </Badge>
                           )}
                           {isPastTier && (
-                            <Check className="inline h-3 w-3 text-[#0ECB81] ms-1" />
+                            <Check className="inline h-3 w-3 text-success ms-1" />
                           )}
                         </p>
-                        <p className="text-[9px] text-[#5E6673]">{tier.minRefs}-{tier.maxRefs >= 999 ? '∞' : tier.maxRefs} {t('referral.referrals')}</p>
+                        <p className="text-[10px] text-muted-foreground">{tier.minRefs}-{tier.maxRefs >= 999 ? '∞' : tier.maxRefs} {t('referral.referrals')}</p>
                       </div>
                     </div>
-                    <span className={`text-sm font-bold ${isCurrentTier ? 'text-[#F0B90B]' : 'text-[#848E9C]'}`}>
+                    <span className={`text-sm font-bold ${isCurrentTier ? 'text-primary' : 'text-muted-foreground'}`}>
                       ${tier.reward} USDT
                     </span>
                   </div>
@@ -285,41 +289,41 @@ export default function ReferralView() {
         </Card>
 
         {/* Commission Rate */}
-        <Card className="bg-[#1E2329] border-[#2B3139] glass-card">
+        <Card className="bg-card border-border glass-card">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Star className="h-4 w-4 text-[#F0B90B]" />
-              <h3 className="text-sm font-medium text-[#EAECEF]">{t('referral.commissionRate')}</h3>
+              <Star className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-medium text-foreground">{t('referral.commissionRate')}</h3>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-[#0B0E11]/50 rounded-xl p-3 text-center">
-                <p className="text-2xl font-bold text-[#F0B90B]">20%</p>
-                <p className="text-[9px] text-[#5E6673]">{t('referral.tradingFee')}</p>
+              <div className="bg-background/50 rounded-xl p-3 text-center">
+                <p className="text-2xl font-bold text-primary">20%</p>
+                <p className="text-[10px] text-muted-foreground">{t('referral.tradingFee')}</p>
               </div>
-              <div className="bg-[#0B0E11]/50 rounded-xl p-3 text-center">
-                <p className="text-2xl font-bold text-[#0ECB81]">$10-40</p>
-                <p className="text-[9px] text-[#5E6673]">{t('referral.perReferral')}</p>
+              <div className="bg-background/50 rounded-xl p-3 text-center">
+                <p className="text-2xl font-bold text-success">$10-40</p>
+                <p className="text-[10px] text-muted-foreground">{t('referral.perReferral')}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* How It Works */}
-        <Card className="bg-[#1E2329] border-[#2B3139] glass-card">
+        <Card className="bg-card border-border glass-card">
           <CardContent className="p-4">
-            <h3 className="text-sm font-medium text-[#EAECEF] mb-3">{t('referral.howItWorks')}</h3>
+            <h3 className="text-sm font-medium text-foreground mb-3">{t('referral.howItWorks')}</h3>
             <div className="space-y-3">
               {howItWorksKeys.map((item, idx) => (
                 <div key={item.step} className="flex items-start gap-3">
-                  <div className="w-7 h-7 shrink-0 rounded-full bg-gradient-to-br from-[#F0B90B] to-[#F0B90B]/60 flex items-center justify-center">
-                    <span className="text-[10px] font-bold text-[#0B0E11]">{item.step}</span>
+                  <div className="w-7 h-7 shrink-0 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+                    <span className="text-[10px] font-bold text-background">{item.step}</span>
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs font-medium text-[#EAECEF]">{t(item.titleKey)}</p>
-                    <p className="text-[10px] text-[#5E6673]">{t(item.descKey)}</p>
+                    <p className="text-xs font-medium text-foreground">{t(item.titleKey)}</p>
+                    <p className="text-[10px] text-muted-foreground">{t(item.descKey)}</p>
                   </div>
                   {idx < howItWorksKeys.length - 1 && (
-                    <div className="absolute left-6 top-9 w-px h-4 bg-[#2B3139]" />
+                    <div className="absolute start-6 top-9 w-px h-4 bg-secondary" />
                   )}
                 </div>
               ))}
@@ -328,37 +332,37 @@ export default function ReferralView() {
         </Card>
 
         {/* Referral History */}
-        <Card className="bg-[#1E2329] border-[#2B3139] glass-card">
+        <Card className="bg-card border-border glass-card">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-[#EAECEF]">{t('referral.history')}</h3>
-              <span className="text-[10px] text-[#5E6673]">{totalInvited} {t('referral.total')}</span>
+              <h3 className="text-sm font-medium text-foreground">{t('referral.history')}</h3>
+              <span className="text-[10px] text-muted-foreground">{totalInvited} {t('referral.total')}</span>
             </div>
             <div className="space-y-1.5">
               {referralHistory.map((ref) => (
                 <div
                   key={ref.id}
-                  className="flex items-center justify-between py-2 px-3 rounded-lg bg-[#0B0E11]/30"
+                  className="flex items-center justify-between py-2 px-3 rounded-lg bg-background/30"
                 >
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-[#2B3139] flex items-center justify-center text-[10px] font-bold text-[#848E9C]">
+                    <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center text-[10px] font-bold text-muted-foreground">
                       {ref.name.charAt(0)}
                     </div>
                     <div>
-                      <p className="text-xs text-[#EAECEF]">{ref.name}</p>
-                      <p className="text-[9px] text-[#5E6673]">{ref.date}</p>
+                      <p className="text-xs text-foreground">{ref.name}</p>
+                      <p className="text-[10px] text-muted-foreground">{formatDate(ref.date)}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     {ref.status === 'active' ? (
                       <>
-                        <span className="text-xs text-[#0ECB81] font-medium">+${ref.reward}</span>
-                        <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[8px] px-1.5 py-0 h-4">
+                        <span className="text-xs text-success font-medium">+${ref.reward}</span>
+                        <Badge className="bg-success/10 text-success border-0 text-[10px] px-1.5 py-0 h-4">
                           {t('status.active')}
                         </Badge>
                       </>
                     ) : (
-                      <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-0 text-[8px] px-1.5 py-0 h-4">
+                      <Badge className="bg-primary/10 text-primary border-0 text-[10px] px-1.5 py-0 h-4">
                         {t('status.pending')}
                       </Badge>
                     )}

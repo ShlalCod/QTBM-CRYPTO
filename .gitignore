@@ -31,10 +31,12 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*.local
+.env*
+!.env.example
 
 # vercel
 .vercel
+
 
 # typescript
 *.tsbuildinfo
@@ -52,34 +54,22 @@ server.log
 # Skills directory
 /skills/
 
-# ============ Android / Capacitor (APK build) ============
-# Keep source-checked configs (android/), ignore build artifacts
-android/app/build/
-android/.gradle/
-android/build/
-android/local.properties
-android/captures/
-android/app/release/*.apk
-android/app/release/*.aab
-android/app/release/*.apks
-android/app/release/output-metadata.json
-android/app/release/output.json
-*.keystore
-!android/debug.keystore
-!android/release.keystore.example
-keystore.properties
-signing.properties
-
-# ============ Upload / temp / tool dirs ============
-/upload/
+# Audit/temp scaffolding (not part of production project)
+/src_scaffold_backup/
+/public_scaffold_backup/
+/audit-workspace/
 /tool-results/
-/download/
-/tmp/
+/agent-ctx/
 /.zscripts/
-/worklog.md
+/db/
+/upload/
+/examples/
+/mini-services/
 
-# ============ IDE ============
-.idea/
-*.iml
-.vscode/
-*.swp
+# Build artifacts
+/android/app/build/
+/functions/node_modules/
+/functions/lib/
+
+# PID files
+*.pid

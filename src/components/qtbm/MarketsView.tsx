@@ -24,7 +24,7 @@ function MiniAreaChart({ data, positive }: { data: number[]; positive: boolean }
   const points = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / range) * h}`).join(' ');
   const color = positive ? '#0ECB81' : '#F6465D';
   return (
-    <svg width={w} height={h} className="shrink-0">
+    <svg width={w} height={h} className="shrink-0" dir="ltr">
       <defs>
         <linearGradient id={`area-${positive ? 'g' : 'r'}-${data[0]}`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.2" />
@@ -51,7 +51,7 @@ function LivePriceCell({ symbol, fallbackPrice }: { symbol: string; fallbackPric
   return (
     <span
       key={price}
-      className={`text-sm font-medium text-[#EAECEF] tabular-nums price-transition ${flashClass}`}
+      className={`text-sm font-medium text-foreground tabular-nums price-transition ${flashClass}`}
     >
       {formatPrice(price)}
     </span>
@@ -72,8 +72,7 @@ const TABS = [
 
 export default function MarketsView() {
   const { t } = useTranslation();
-  const { navigateTo, favorites, toggleFavorite, setSelectedMarket, searchQuery, setSearchQuery, livePrices, priceDirection } = useAppStore();
-  const [tab, setTab] = useState('usdt');
+  const { navigateTo, favorites, toggleFavorite, setSelectedMarket, searchQuery, setSearchQuery, livePrices, priceDirection } = useAppStore();  const [tab, setTab] = useState('usdt');
   const [sortField, setSortField] = useState<SortField>('volume');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [heatmapFilter, setHeatmapFilter] = useState<'all' | 'gainers' | 'losers'>('all');
@@ -189,8 +188,8 @@ export default function MarketsView() {
   const renderHeatmap = () => {
     if (heatmapData.length === 0) {
       return (
-        <div className="flex flex-col items-center justify-center py-12 text-[#5E6673]">
-          <BarChart3 className="h-8 w-8 mb-2 text-[#2B3139]" />
+        <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+          <BarChart3 className="h-8 w-8 mb-2 text-secondary" />
           <p className="text-sm">{t('markets.noHeatmapData')}</p>
         </div>
       );
@@ -233,10 +232,10 @@ export default function MarketsView() {
               onClick={() => setHeatmapFilter(f)}
               className={`px-3 py-1 rounded-md text-[10px] font-semibold transition-all duration-200 ${
                 heatmapFilter === f
-                  ? f === 'gainers' ? 'bg-[#0ECB81]/15 text-[#0ECB81] border border-[#0ECB81]/30'
-                    : f === 'losers' ? 'bg-[#F6465D]/15 text-[#F6465D] border border-[#F6465D]/30'
-                    : 'bg-[#F0B90B]/15 text-[#F0B90B] border border-[#F0B90B]/30'
-                  : 'bg-[#1E2329] text-[#848E9C] border border-[#2B3139] hover:text-[#EAECEF]'
+                  ? f === 'gainers' ? 'bg-success/15 text-success border border-success/30'
+                    : f === 'losers' ? 'bg-destructive/15 text-destructive border border-destructive/30'
+                    : 'bg-primary/15 text-primary border border-primary/30'
+                  : 'bg-card text-muted-foreground border border-border hover:text-foreground'
               }`}
             >
               {f === 'all' ? t('markets.all') : f === 'gainers' ? `▲ ${t('markets.gainersShort')}` : `▼ ${t('markets.losersShort')}`}
@@ -245,7 +244,7 @@ export default function MarketsView() {
         </div>
 
         <div className="px-4 pb-4">
-          <svg width="100%" viewBox={`0 0 ${svgW} ${svgH}`} className="w-full" style={{ maxHeight: '300px' }}>
+          <svg width="100%" viewBox={`0 0 ${svgW} ${svgH}`} className="w-full" style={{ maxHeight: '300px' }} dir="ltr">
             {heatmapData.map((pair, idx) => {
               const col = idx % cols;
               const row = Math.floor(idx / cols);
@@ -304,42 +303,42 @@ export default function MarketsView() {
   return (
     <div className="flex flex-col h-full">
       {/* Stats Banner */}
-      <div className="px-4 pt-3 pb-2 border-b border-[#2B3139]">
+      <div className="px-4 pt-3 pb-2 border-b border-border">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md bg-[#F0B90B]/10 flex items-center justify-center shrink-0">
-              <Globe className="h-3.5 w-3.5 text-[#F0B90B]" />
+            <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+              <Globe className="h-3.5 w-3.5 text-primary" />
             </div>
             <div>
-              <p className="text-[10px] text-[#5E6673] leading-tight">{t('markets.marketCap')}</p>
-              <p className="text-xs text-[#EAECEF] font-semibold tabular-nums">{formatNumber(totalMarketCap, 1)}</p>
+              <p className="text-[10px] text-muted-foreground leading-tight">{t('markets.marketCap')}</p>
+              <p className="text-xs text-foreground font-semibold tabular-nums">{formatNumber(totalMarketCap, 1)}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md bg-[#0ECB81]/10 flex items-center justify-center shrink-0">
-              <BarChart3 className="h-3.5 w-3.5 text-[#0ECB81]" />
+            <div className="w-7 h-7 rounded-md bg-success/10 flex items-center justify-center shrink-0">
+              <BarChart3 className="h-3.5 w-3.5 text-success" />
             </div>
             <div>
-              <p className="text-[10px] text-[#5E6673] leading-tight">{t('markets.volume')}</p>
-              <p className="text-xs text-[#EAECEF] font-semibold tabular-nums">{formatNumber(totalVolume, 1)}</p>
+              <p className="text-[10px] text-muted-foreground leading-tight">{t('markets.volume')}</p>
+              <p className="text-xs text-foreground font-semibold tabular-nums">{formatNumber(totalVolume, 1)}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md bg-[#F0B90B]/10 flex items-center justify-center shrink-0">
-              <Coins className="h-3.5 w-3.5 text-[#F0B90B]" />
+            <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+              <Coins className="h-3.5 w-3.5 text-primary" />
             </div>
             <div>
-              <p className="text-[10px] text-[#5E6673] leading-tight">{t('markets.btcDominance')}</p>
-              <p className="text-xs text-[#EAECEF] font-semibold tabular-nums">{btcDominance.toFixed(1)}%</p>
+              <p className="text-[10px] text-muted-foreground leading-tight">{t('markets.btcDominance')}</p>
+              <p className="text-xs text-foreground font-semibold tabular-nums">{btcDominance.toFixed(1)}%</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md bg-[#0ECB81]/10 flex items-center justify-center shrink-0">
-              <Activity className="h-3.5 w-3.5 text-[#0ECB81]" />
+            <div className="w-7 h-7 rounded-md bg-success/10 flex items-center justify-center shrink-0">
+              <Activity className="h-3.5 w-3.5 text-success" />
             </div>
             <div>
-              <p className="text-[10px] text-[#5E6673] leading-tight">{t('markets.activeMarkets')}</p>
-              <p className="text-xs text-[#EAECEF] font-semibold tabular-nums">{mockMarketPairs.length}</p>
+              <p className="text-[10px] text-muted-foreground leading-tight">{t('markets.activeMarkets')}</p>
+              <p className="text-xs text-foreground font-semibold tabular-nums">{mockMarketPairs.length}</p>
             </div>
           </div>
         </div>
@@ -348,19 +347,20 @@ export default function MarketsView() {
       {/* Search */}
       <div className="px-4 pt-3 pb-1">
         <div className="relative">
-          <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#848E9C]" />
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t('markets.searchPlaceholder')}
+            aria-label={t('actions.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="ps-9 bg-[#1E2329] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
+            className="ps-9 bg-card border-border text-foreground placeholder:text-muted-foreground h-9 text-sm focus:border-primary focus:ring-primary/20"
           />
         </div>
       </div>
 
       {/* Tabs */}
       <div className="px-4 py-2">
-        <div className="flex gap-1 overflow-x-auto no-scrollbar">
+        <div className="flex gap-1 overflow-x-auto no-scrollbar touch-pan-x">
           {TABS.map((tabItem) => {
             const labelText =
               tabItem.id === 'heatmap' ? `${tabItem.label}${t('markets.heatmap')}` :
@@ -374,8 +374,8 @@ export default function MarketsView() {
                 onClick={() => setTab(tabItem.id)}
                 className={`shrink-0 px-3 py-1.5 rounded-md text-xs font-medium transition-colors card-depth ${
                   tab === tabItem.id
-                    ? 'bg-[#2B3139] gradient-text-gold'
-                    : 'text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#1E2329]'
+                    ? 'bg-secondary gradient-text-gold'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-card'
                 }`}
               >
                 {labelText}
@@ -386,23 +386,23 @@ export default function MarketsView() {
       </div>
 
       {/* Table Header */}
-      <div className="flex items-center px-4 py-1.5 text-[11px] text-[#5E6673] border-b border-[#2B3139]">
+      <div className="flex items-center px-4 py-1.5 text-[11px] text-muted-foreground border-b border-border">
         <div className="w-5 shrink-0 text-center">#</div>
         <div className="w-8 shrink-0" />
-        <button onClick={() => handleSort('symbol')} className="flex items-center gap-0.5 flex-1 text-start hover:text-[#848E9C] min-w-0">
+        <button onClick={() => handleSort('symbol')} className="flex items-center gap-0.5 flex-1 text-start hover:text-muted-foreground min-w-0">
           <span className="truncate">{t('markets.pair')}</span>
           <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
         </button>
-        <button onClick={() => handleSort('price')} className="flex items-center gap-0.5 w-24 text-end hover:text-[#848E9C] shrink-0">
+        <button onClick={() => handleSort('price')} className="flex items-center gap-0.5 w-24 text-end hover:text-muted-foreground shrink-0">
           <span>{t('markets.price')}</span>
           <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
         </button>
         <div className="w-20 shrink-0 hidden sm:block" /> {/* Sparkline placeholder */}
-        <button onClick={() => handleSort('change')} className="flex items-center gap-0.5 w-16 text-end hover:text-[#848E9C] shrink-0">
-          <span>24h</span>
+        <button onClick={() => handleSort('change')} className="flex items-center gap-0.5 w-16 text-end hover:text-muted-foreground shrink-0">
+          <span>{t('markets.24h')}</span>
           <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
         </button>
-        <button onClick={() => handleSort('volume')} className="flex items-center gap-0.5 w-20 text-end hover:text-[#848E9C] shrink-0">
+        <button onClick={() => handleSort('volume')} className="flex items-center gap-0.5 w-20 text-end hover:text-muted-foreground shrink-0">
           <span>{t('markets.volume')}</span>
           <ArrowUpDown className="h-2.5 w-2.5 shrink-0" />
         </button>
@@ -417,10 +417,10 @@ export default function MarketsView() {
       <ScrollArea className="flex-1">
         <div className="px-4">
           {filteredPairs.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 text-[#5E6673]">
+            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
               {tab === 'favorites' ? (
                 <>
-                  <Star className="h-8 w-8 mb-2 text-[#2B3139]" />
+                  <Star className="h-8 w-8 mb-2 text-secondary" />
                   <p className="text-sm">{t('markets.noFavorites')}</p>
                   <p className="text-xs mt-1">{t('markets.starToAdd')}</p>
                 </>
@@ -441,10 +441,10 @@ export default function MarketsView() {
                 role="button"
                 tabIndex={0}
                 onClick={() => handlePairClick(pair.symbol)}
-                className="w-full flex items-center py-2.5 border-b border-[#2B3139]/40 hover:bg-[#1E2329]/50 transition-colors group cursor-pointer"
+                className="w-full flex items-center py-2.5 border-b border-border/40 hover:bg-card/50 transition-colors group cursor-pointer"
               >
                 {/* Market cap rank number */}
-                <div className="w-5 shrink-0 text-center text-[10px] text-[#5E6673] tabular-nums">{rankIdx + 1}</div>
+                <div className="w-5 shrink-0 text-center text-[10px] text-muted-foreground tabular-nums">{rankIdx + 1}</div>
 
                 {/* Favorite */}
                 <button
@@ -452,7 +452,7 @@ export default function MarketsView() {
                     e.stopPropagation();
                     toggleFavorite(pair.baseAsset);
                   }}
-                  className={`w-8 shrink-0 transition-colors ${isFav ? 'text-[#F0B90B]' : 'text-[#3B4451] hover:text-[#848E9C]'}`}
+                  className={`w-8 shrink-0 transition-colors ${isFav ? 'text-primary' : 'text-muted-foreground/50 hover:text-muted-foreground'}`}
                 >
                   <Star className={`h-3.5 w-3.5 ${isFav ? 'fill-current' : ''}`} />
                 </button>
@@ -460,12 +460,12 @@ export default function MarketsView() {
                 {/* Pair name */}
                 <div className="flex-1 text-start min-w-0">
                   <div className="flex items-center gap-1">
-                    <span className="text-sm font-semibold text-[#EAECEF]">{pair.baseAsset}</span>
-                    <span className="text-[11px] text-[#5E6673]">/{pair.quoteAsset}</span>
+                    <span className="text-sm font-semibold text-foreground">{pair.baseAsset}</span>
+                    <span className="text-[11px] text-muted-foreground">/{pair.quoteAsset}</span>
                     {/* Hot badge */}
                     {isHot && (
-                      <Badge className="text-[8px] h-3.5 px-1 bg-[#F6465D]/15 text-[#F6465D] border-0 hot-badge badge-shimmer font-bold">
-                        HOT
+                      <Badge className="text-[10px] h-3.5 px-1 bg-destructive/15 text-destructive border-0 hot-badge badge-shimmer font-bold">
+                        {t('markets.hot')}
                       </Badge>
                     )}
                   </div>
@@ -483,14 +483,14 @@ export default function MarketsView() {
 
                 {/* 24h Change */}
                 <div className="w-16 text-end shrink-0">
-                  <span className={`text-xs font-semibold tabular-nums ${isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+                  <span className={`text-xs font-semibold tabular-nums ${isPositive ? 'text-success' : 'text-destructive'}`}>
                     {isPositive ? '+' : ''}{pair.changePercent.toFixed(2)}%
                   </span>
                 </div>
 
                 {/* Volume Bar */}
                 <div className="w-20 text-end shrink-0">
-                  <span className="text-[11px] text-[#848E9C] tabular-nums">{formatNumber(pair.quoteVolume)}</span>
+                  <span className="text-[11px] text-muted-foreground tabular-nums">{formatNumber(pair.quoteVolume)}</span>
                   <div className="volume-bar-bg mt-0.5">
                     <div
                       className="volume-bar-fill"

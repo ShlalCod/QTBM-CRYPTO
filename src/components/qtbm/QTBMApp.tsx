@@ -19,6 +19,7 @@ import {
   Sun,
 } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
+import { useTheme } from 'next-themes';
 import { useTranslation } from '@/lib/i18n';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -191,7 +192,8 @@ function ViewRenderer({ view }: { view: string }) {
 }
 
 export default function QTBMApp() {
-  const { currentView, navigateTo, searchQuery, setSearchQuery, user, unreadCount, setNotifications, isRTL, language, wsConnected, theme, setTheme } = useAppStore();
+  const { currentView, navigateTo, searchQuery, setSearchQuery, user, unreadCount, setNotifications, isRTL, language, wsConnected } = useAppStore();
+  const { theme, setTheme } = useTheme();
   const { t } = useTranslation();
   const [searchOpen, setSearchOpen] = React.useState(false);
 
@@ -209,10 +211,8 @@ export default function QTBMApp() {
     document.documentElement.lang = language;
   }, [isRTL, language]);
 
-  // Apply theme on mount and when it changes
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
+  // Theme is applied by next-themes via the .dark/.light class on <html>.
+  // No manual data-theme manipulation needed (THEME-001/002).
 
   const handleNavClick = (view: typeof currentView) => {
     navigateTo(view);
@@ -233,41 +233,41 @@ export default function QTBMApp() {
   const activeNavId = getActiveNavId();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0B0E11] text-[#EAECEF]" dir={isRTL ? 'rtl' : 'ltr'} data-theme={theme}>
+    <div className="min-h-screen flex flex-col bg-background text-foreground" dir={isRTL ? 'rtl' : 'ltr'} data-theme={theme}>
       {/* Header with glass effect */}
       <header className="sticky top-0 z-50 glass-header">
         <div className="flex items-center justify-between h-14 px-4">
           {/* Logo + LIVE Badge */}
           <div className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 gradient-gold rounded-md flex items-center justify-center shadow-lg shadow-[#F0B90B]/20">
+            <div className="w-8 h-8 gradient-gold rounded-md flex items-center justify-center shadow-lg shadow-primary/20">
               <span className="text-[#0B0E11] font-bold text-sm">Q</span>
             </div>
             <div className="hidden sm:flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="text-[#F0B90B] font-bold text-base leading-tight tracking-wide">QTBM BANK</span>
+                <span className="text-primary font-bold text-base leading-tight tracking-wide">QTBM BANK</span>
                 {/* LIVE Badge with WS connection indicator */}
-                <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full border ${wsConnected ? 'bg-[#0ECB81]/10 border-[#0ECB81]/20' : 'bg-[#F6465D]/10 border-[#F6465D]/20'}`}>
-                  <div className={`w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-[#0ECB81] pulse-green' : 'bg-[#F6465D] live-dot'}`} />
-                  <span className={`text-[9px] font-bold tracking-wider ${wsConnected ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>{wsConnected ? t('status.live') : 'OFF'}</span>
+                <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full border ${wsConnected ? 'bg-success/10 border-success/20' : 'bg-destructive/10 border-destructive/20'}`}>
+                  <div className={`w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-success pulse-green' : 'bg-destructive live-dot'}`} />
+                  <span className={`text-[10px] font-bold tracking-wider ${wsConnected ? 'text-success' : 'text-destructive'}`}>{wsConnected ? t('status.live') : 'OFF'}</span>
                 </div>
               </div>
-              <span className="text-[#848E9C] text-[10px] leading-tight">{t('common.digitalAssetExchange')}</span>
+              <span className="text-muted-foreground text-[10px] leading-tight">{t('common.digitalAssetExchange')}</span>
             </div>
             <div className="sm:hidden flex items-center gap-1.5">
-              <span className="text-[#F0B90B] font-bold text-sm">QTBM</span>
-              <div className={`w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-[#0ECB81] pulse-green' : 'bg-[#F6465D] live-dot'}`} />
+              <span className="text-primary font-bold text-sm">QTBM</span>
+              <div className={`w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-success pulse-green' : 'bg-destructive live-dot'}`} />
             </div>
           </div>
 
           {/* Search Bar - Desktop */}
           <div className="hidden md:flex flex-1 max-w-md mx-6">
             <div className="relative w-full group">
-              <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#848E9C] group-focus-within:text-[#F0B90B] transition-colors" />
+              <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input
                 placeholder={t('common.searchMarkets')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="ps-9 bg-[#2B3139]/60 border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 backdrop-blur-sm transition-all duration-200"
+                className="ps-9 bg-secondary/60 border-border text-foreground placeholder:text-muted-foreground h-9 text-sm focus:border-[#F0B90B] focus:ring-primary/20 backdrop-blur-sm transition-all duration-200"
               />
             </div>
           </div>
@@ -278,8 +278,9 @@ export default function QTBMApp() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-9 w-9"
+              className="md:hidden text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9"
               onClick={() => setSearchOpen(!searchOpen)}
+              aria-label={searchOpen ? t('actions.close') : t('actions.search')}
             >
               {searchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
             </Button>
@@ -288,12 +289,13 @@ export default function QTBMApp() {
             <Button
               variant="ghost"
               size="icon"
-              className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-9 w-9 relative"
+              className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9 relative"
               onClick={() => navigateTo('notifications')}
+              aria-label={t('nav.notifications')}
             >
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
-                <Badge className="absolute -top-0.5 -end-0.5 h-4 min-w-4 px-1 bg-[#F6465D] text-white text-[10px] flex items-center justify-center border-0 animate-fade-scale notif-dot-pulse">
+                <Badge className="absolute -top-0.5 -end-0.5 h-4 min-w-4 px-1 bg-destructive text-white text-[10px] flex items-center justify-center border-0 animate-fade-scale notif-dot-pulse">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </Badge>
               )}
@@ -303,9 +305,10 @@ export default function QTBMApp() {
             <Button
               variant="ghost"
               size="icon"
-              className="text-[#848E9C] hover:text-[#F0B90B] hover:bg-[#2B3139] h-9 w-9 transition-colors duration-200"
+              className="text-muted-foreground hover:text-primary hover:bg-secondary h-9 w-9 transition-colors duration-200"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               title={theme === 'dark' ? t('settings.lightMode') : t('settings.darkMode')}
+              aria-label={theme === 'dark' ? t('settings.lightMode') : t('settings.darkMode')}
             >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
@@ -314,10 +317,10 @@ export default function QTBMApp() {
             {user.isAuthenticated ? (
               <Button
                 variant="ghost"
-                className="text-[#EAECEF] hover:bg-[#2B3139] h-9 px-3 text-sm"
+                className="text-foreground hover:bg-secondary h-9 px-3 text-sm"
                 onClick={() => navigateTo('more')}
               >
-                <div className="w-6 h-6 gradient-gold rounded-full flex items-center justify-center me-2 shadow-sm shadow-[#F0B90B]/30">
+                <div className="w-6 h-6 gradient-gold rounded-full flex items-center justify-center me-2 shadow-sm shadow-primary/30">
                   <span className="text-[#0B0E11] text-xs font-bold">
                     {user.name?.[0]?.toUpperCase() || 'U'}
                   </span>
@@ -328,13 +331,13 @@ export default function QTBMApp() {
               <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"
-                  className="text-[#EAECEF] hover:bg-[#2B3139] h-9 px-3 text-sm hidden sm:inline-flex"
+                  className="text-foreground hover:bg-secondary h-9 px-3 text-sm hidden sm:inline-flex"
                   onClick={() => navigateTo('register')}
                 >
                   {t('auth.register')}
                 </Button>
                 <Button
-                  className="gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-9 px-4 text-sm shadow-md shadow-[#F0B90B]/20 transition-all duration-200 hover-lift"
+                  className="gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-9 px-4 text-sm shadow-md shadow-primary/20 transition-all duration-200 hover-lift"
                   onClick={() => navigateTo('login')}
                 >
                   <LogIn className="h-4 w-4 me-1.5" />
@@ -357,17 +360,17 @@ export default function QTBMApp() {
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="md:hidden overflow-hidden border-t border-[#2B3139]"
+              className="md:hidden overflow-hidden border-t border-border"
             >
               <div className="p-3">
                 <div className="relative group">
-                  <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#848E9C] group-focus-within:text-[#F0B90B] transition-colors" />
+                  <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                   <Input
                     placeholder={t('common.searchMarkets')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     autoFocus
-                    className="ps-9 bg-[#2B3139]/60 border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 backdrop-blur-sm"
+                    className="ps-9 bg-secondary/60 border-border text-foreground placeholder:text-muted-foreground h-9 text-sm focus:border-[#F0B90B] focus:ring-primary/20 backdrop-blur-sm"
                   />
                 </div>
               </div>
@@ -380,7 +383,7 @@ export default function QTBMApp() {
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop Sidebar - Hidden on auth views */}
         {!authViews.includes(currentView) && (
-        <aside className="hidden lg:flex flex-col w-56 bg-[#0B0E11]/80 backdrop-blur-sm border-r border-[#2B3139]/60 shrink-0">
+        <aside className="hidden lg:flex flex-col w-56 bg-background/80 backdrop-blur-sm border-r border-border/60 shrink-0">
           <ScrollArea className="flex-1">
             <nav className="py-4 px-3 space-y-0.5">
               {sidebarItems.map((item) => {
@@ -392,18 +395,18 @@ export default function QTBMApp() {
                     onClick={() => handleNavClick(item.id)}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 sidebar-item-hover ${
                       isActive
-                        ? 'bg-[#2B3139] text-[#F0B90B] sidebar-item-active'
-                        : 'text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139]/40'
+                        ? 'bg-secondary text-primary sidebar-item-active'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-secondary/40'
                     }`}
                   >
-                    <Icon className={`h-5 w-5 shrink-0 transition-colors duration-200 ${isActive ? 'text-[#F0B90B]' : ''}`} />
+                    <Icon className={`h-5 w-5 shrink-0 transition-colors duration-200 ${isActive ? 'text-primary' : ''}`} />
                     <span>{t(item.labelKey)}</span>
-                    {isActive && <div className="ms-auto w-1.5 h-1.5 rounded-full bg-[#F0B90B]" />}
+                    {isActive && <div className="ms-auto w-1.5 h-1.5 rounded-full bg-primary" />}
                   </button>
                 );
               })}
             </nav>
-            <Separator className="bg-[#2B3139]/60 mx-3" />
+            <Separator className="bg-secondary/60 mx-3" />
             <div className="p-3 space-y-0.5">
               {[
                 { id: 'notifications' as const, labelKey: 'nav.notifications', icon: Bell },
@@ -419,43 +422,43 @@ export default function QTBMApp() {
                     onClick={() => handleNavClick(item.id)}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 sidebar-item-hover ${
                       isActive
-                        ? 'bg-[#2B3139] text-[#F0B90B] sidebar-item-active'
-                        : 'text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139]/40'
+                        ? 'bg-secondary text-primary sidebar-item-active'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-secondary/40'
                     }`}
                   >
-                    <Icon className={`h-5 w-5 shrink-0 transition-colors duration-200 ${isActive ? 'text-[#F0B90B]' : ''}`} />
+                    <Icon className={`h-5 w-5 shrink-0 transition-colors duration-200 ${isActive ? 'text-primary' : ''}`} />
                     <span>{t(item.labelKey)}</span>
-                    {isActive && <div className="ms-auto w-1.5 h-1.5 rounded-full bg-[#F0B90B]" />}
+                    {isActive && <div className="ms-auto w-1.5 h-1.5 rounded-full bg-primary" />}
                   </button>
                 );
               })}
             </div>
-            <Separator className="bg-[#2B3139]/60 mx-3" />
+            <Separator className="bg-secondary/60 mx-3" />
             <div className="p-3">
               <button
                 onClick={() => handleNavClick('more')}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 sidebar-item-hover ${
                   currentView === 'more'
-                    ? 'bg-[#2B3139] text-[#F0B90B] sidebar-item-active'
-                    : 'text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139]/40'
+                    ? 'bg-secondary text-primary sidebar-item-active'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/40'
                 }`}
               >
-                <Menu className={`h-5 w-5 shrink-0 transition-colors duration-200 ${currentView === 'more' ? 'text-[#F0B90B]' : ''}`} />
+                <Menu className={`h-5 w-5 shrink-0 transition-colors duration-200 ${currentView === 'more' ? 'text-primary' : ''}`} />
                 <span>{t('nav.more')}</span>
-                {currentView === 'more' && <div className="ms-auto w-1.5 h-1.5 rounded-full bg-[#F0B90B]" />}
+                {currentView === 'more' && <div className="ms-auto w-1.5 h-1.5 rounded-full bg-primary" />}
               </button>
             </div>
           </ScrollArea>
 
           {/* Sidebar bottom promo with animated gradient */}
           <div className="p-3 mt-auto">
-            <div className="relative overflow-hidden rounded-lg border border-[#F0B90B]/10">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#F0B90B]/8 via-[#1E2329] to-[#0ECB81]/5 animate-gradient-shift" style={{ backgroundSize: '200% 200%' }} />
+            <div className="relative overflow-hidden rounded-lg border border-primary/10">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-[#1E2329] to-success/5 animate-gradient-shift" style={{ backgroundSize: '200% 200%' }} />
               <div className="absolute inset-0 shimmer-gradient" />
               <div className="relative p-4">
-                <p className="text-xs text-[#848E9C] mb-2">{t('common.tradeOnTheGo')}</p>
-                <p className="text-xs text-[#EAECEF] font-medium mb-3">{t('common.downloadApp')}</p>
-                <Button className="w-full gradient-yellow hover:opacity-90 text-[#0B0E11] text-xs h-8 font-semibold shadow-md shadow-[#F0B90B]/15 press-scale">
+                <p className="text-xs text-muted-foreground mb-2">{t('common.tradeOnTheGo')}</p>
+                <p className="text-xs text-foreground font-medium mb-3">{t('common.downloadApp')}</p>
+                <Button className="w-full gradient-yellow hover:opacity-90 text-[#0B0E11] text-xs h-8 font-semibold shadow-md shadow-primary/15 press-scale">
                   {t('common.getStarted')}
                 </Button>
               </div>
@@ -488,7 +491,7 @@ export default function QTBMApp() {
 
       {/* Mobile Bottom Navigation - Hidden on auth views */}
       {!authViews.includes(currentView) && (
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 glass-header border-t border-[#2B3139]/60 pb-safe">
+      <nav className="lg:hidden fixed bottom-0 start-0 end-0 z-50 glass-header border-t border-border/60 pb-safe">
         <div className="relative flex items-center justify-around h-14">
           {/* Sliding pill indicator behind nav items */}
           <motion.div
@@ -511,17 +514,17 @@ export default function QTBMApp() {
                 onClick={() => handleNavClick(item.id)}
                 className={`flex flex-col items-center justify-center gap-0.5 min-w-0 flex-1 h-full relative transition-all duration-200 touch-feedback ${
                   isActive
-                    ? 'text-[#F0B90B]'
-                    : 'text-[#5E6673] active:text-[#848E9C]'
+                    ? 'text-primary'
+                    : 'text-muted-foreground active:text-muted-foreground'
                 }`}
               >
                 {isTrade ? (
                   <div className={`flex items-center justify-center w-11 h-11 rounded-full -mt-5 transition-all duration-300 trade-btn-glow ${
                     isActive
-                      ? 'gradient-gold glow-yellow shadow-lg shadow-[#F0B90B]/30 active'
-                      : 'bg-[#2B3139] hover:bg-[#3B4451]'
+                      ? 'gradient-gold glow-yellow shadow-lg shadow-primary/30 active'
+                      : 'bg-secondary hover:bg-secondary'
                   }`}>
-                    <Icon className={`h-5 w-5 transition-transform duration-200 ${isActive ? 'text-[#0B0E11] scale-110' : 'text-[#848E9C]'}`} />
+                    <Icon className={`h-5 w-5 transition-transform duration-200 ${isActive ? 'text-[#0B0E11] scale-110' : 'text-muted-foreground'}`} />
                   </div>
                 ) : (
                   <div className="relative">
@@ -529,7 +532,7 @@ export default function QTBMApp() {
                     {isActive && (
                       <motion.div
                         layoutId="navIndicator"
-                        className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#F0B90B]"
+                        className="absolute -bottom-1 start-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary"
                         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                       />
                     )}

@@ -72,67 +72,67 @@ export default function MoreView() {
   const { t } = useTranslation();
 
   const featureItems: MenuItem[] = [
-    { icon: TrendingUp, labelKey: 'more.earn', view: 'earn', color: 'text-[#F0B90B]', badgeKey: 'more.badgeUpTo12APR', badgeColor: 'bg-[#0ECB81]/10 text-[#0ECB81]' },
-    { icon: Users, labelKey: 'more.p2pTrading', view: 'p2p', color: 'text-[#0ECB81]' },
-    { icon: Rocket, labelKey: 'more.launchpad', view: 'launchpad', color: 'text-[#F0B90B]' },
-    { icon: ArrowDownUp, labelKey: 'more.swap', view: 'swap', color: 'text-[#0ECB81]', badgeKey: 'more.badgeNew', badgeColor: 'bg-[#0ECB81]/10 text-[#0ECB81]' },
-    { icon: Sparkles, labelKey: 'more.aiAssistant', view: 'ai-chat', color: 'text-[#F0B90B]', badgeKey: 'more.badgeAI', badgeColor: 'bg-[#F0B90B]/10 text-[#F0B90B]' },
-    { icon: Share2, labelKey: 'more.referralProgram', view: 'referral', color: 'text-[#F0B90B]', badgeKey: 'more.badgeEarn10', badgeColor: 'bg-[#F0B90B]/10 text-[#F0B90B]' },
-    { icon: Coins, labelKey: 'more.staking', view: 'staking', color: 'text-[#0ECB81]', badgeKey: 'more.badgeUpTo21APY', badgeColor: 'bg-[#0ECB81]/10 text-[#0ECB81]' },
-    { icon: Flame, labelKey: 'more.futuresTrading', view: 'futures', color: 'text-[#F6465D]', badgeKey: 'more.badgeUpTo125x', badgeColor: 'bg-[#F6465D]/10 text-[#F6465D]' },
-    { icon: Landmark, labelKey: 'more.marginTrading', view: 'margin', color: 'text-[#F0B90B]', badgeKey: 'more.badge3x5x', badgeColor: 'bg-[#F0B90B]/10 text-[#F0B90B]' },
+    { icon: TrendingUp, labelKey: 'more.earn', view: 'earn', color: 'text-primary', badgeKey: 'more.badgeUpTo12APR', badgeColor: 'bg-success/10 text-success' },
+    { icon: Users, labelKey: 'more.p2pTrading', view: 'p2p', color: 'text-success' },
+    { icon: Rocket, labelKey: 'more.launchpad', view: 'launchpad', color: 'text-primary' },
+    { icon: ArrowDownUp, labelKey: 'more.swap', view: 'swap', color: 'text-success', badgeKey: 'more.badgeNew', badgeColor: 'bg-success/10 text-success' },
+    { icon: Sparkles, labelKey: 'more.aiAssistant', view: 'ai-chat', color: 'text-primary', badgeKey: 'more.badgeAI', badgeColor: 'bg-primary/10 text-primary' },
+    { icon: Share2, labelKey: 'more.referralProgram', view: 'referral', color: 'text-primary', badgeKey: 'more.badgeEarn10', badgeColor: 'bg-primary/10 text-primary' },
+    { icon: Coins, labelKey: 'more.staking', view: 'staking', color: 'text-success', badgeKey: 'more.badgeUpTo21APY', badgeColor: 'bg-success/10 text-success' },
+    { icon: Flame, labelKey: 'more.futuresTrading', view: 'futures', color: 'text-destructive', badgeKey: 'more.badgeUpTo125x', badgeColor: 'bg-destructive/10 text-destructive' },
+    { icon: Landmark, labelKey: 'more.marginTrading', view: 'margin', color: 'text-primary', badgeKey: 'more.badge3x5x', badgeColor: 'bg-primary/10 text-primary' },
     { icon: PieChart, labelKey: 'more.portfolioAnalytics', view: 'portfolio-analytics', color: 'text-[#627EEA]', badgeKey: 'more.badgePro', badgeColor: 'bg-[#627EEA]/10 text-[#627EEA]' },
-    { icon: Vote, labelKey: 'more.voting', view: 'voting', color: 'text-[#F0B90B]', badgeKey: 'more.badgeGovernance', badgeColor: 'bg-[#F0B90B]/10 text-[#F0B90B]' },
-    { icon: Copy, labelKey: 'more.copyTrading', view: 'copy-trading', color: 'text-[#0ECB81]', badgeKey: 'more.badgeBeta', badgeColor: 'bg-[#0ECB81]/10 text-[#0ECB81]' },
-    { icon: Bell, labelKey: 'more.priceAlerts', view: 'price-alerts', color: 'text-[#F0B90B]', badgeKey: 'more.badgeActive', badgeColor: 'bg-[#F0B90B]/10 text-[#F0B90B]' },
-    { icon: Trophy, labelKey: 'more.leaderboard', view: 'leaderboard', color: 'text-[#F0B90B]', badgeKey: 'more.badge100K', badgeColor: 'bg-[#F0B90B]/10 text-[#F0B90B]' },
-    { icon: Newspaper, labelKey: 'more.newsFeed', view: 'news-feed', color: 'text-[#0ECB81]', badgeKey: 'more.badgeLive', badgeColor: 'bg-[#0ECB81]/10 text-[#0ECB81]' },
-    { icon: Cpu, labelKey: 'more.strategyBot', view: 'strategy-bot', color: 'text-[#F0B90B]', badgeKey: 'more.badgeAuto', badgeColor: 'bg-[#0ECB81]/10 text-[#0ECB81]' },
-    { icon: PiggyBank, labelKey: 'more.savingsGoals', view: 'savings-goals', color: 'text-[#0ECB81]', badgeKey: 'more.badgeNew', badgeColor: 'bg-[#0ECB81]/10 text-[#0ECB81]' },
-    { icon: Repeat, labelKey: 'more.quickConvert', view: 'convert', color: 'text-[#F0B90B]', badgeKey: 'more.badgeFast', badgeColor: 'bg-[#F0B90B]/10 text-[#F0B90B]' },
-    { icon: CreditCard, labelKey: 'more.giftCards', view: 'gift-cards', color: 'text-[#0ECB81]', badgeKey: 'more.badgeNew', badgeColor: 'bg-[#0ECB81]/10 text-[#0ECB81]' },
+    { icon: Vote, labelKey: 'more.voting', view: 'voting', color: 'text-primary', badgeKey: 'more.badgeGovernance', badgeColor: 'bg-primary/10 text-primary' },
+    { icon: Copy, labelKey: 'more.copyTrading', view: 'copy-trading', color: 'text-success', badgeKey: 'more.badgeBeta', badgeColor: 'bg-success/10 text-success' },
+    { icon: Bell, labelKey: 'more.priceAlerts', view: 'price-alerts', color: 'text-primary', badgeKey: 'more.badgeActive', badgeColor: 'bg-primary/10 text-primary' },
+    { icon: Trophy, labelKey: 'more.leaderboard', view: 'leaderboard', color: 'text-primary', badgeKey: 'more.badge100K', badgeColor: 'bg-primary/10 text-primary' },
+    { icon: Newspaper, labelKey: 'more.newsFeed', view: 'news-feed', color: 'text-success', badgeKey: 'more.badgeLive', badgeColor: 'bg-success/10 text-success' },
+    { icon: Cpu, labelKey: 'more.strategyBot', view: 'strategy-bot', color: 'text-primary', badgeKey: 'more.badgeAuto', badgeColor: 'bg-success/10 text-success' },
+    { icon: PiggyBank, labelKey: 'more.savingsGoals', view: 'savings-goals', color: 'text-success', badgeKey: 'more.badgeNew', badgeColor: 'bg-success/10 text-success' },
+    { icon: Repeat, labelKey: 'more.quickConvert', view: 'convert', color: 'text-primary', badgeKey: 'more.badgeFast', badgeColor: 'bg-primary/10 text-primary' },
+    { icon: CreditCard, labelKey: 'more.giftCards', view: 'gift-cards', color: 'text-success', badgeKey: 'more.badgeNew', badgeColor: 'bg-success/10 text-success' },
     { icon: Receipt, labelKey: 'more.taxReport', view: 'tax-report', color: 'text-[#627EEA]', badgeKey: 'more.badge2024', badgeColor: 'bg-[#627EEA]/10 text-[#627EEA]' },
-    { icon: Swords, labelKey: 'more.tradeChallenge', view: 'trade-challenge', color: 'text-[#F6465D]', badgeKey: 'more.badgeLive', badgeColor: 'bg-[#F6465D]/10 text-[#F6465D]' },
-    { icon: Palette, labelKey: 'more.nftGallery', view: 'nft-gallery', color: 'text-[#F0B90B]', badgeKey: 'more.badgeBeta', badgeColor: 'bg-[#F0B90B]/10 text-[#F0B90B]' },
-    { icon: Layers, labelKey: 'more.defiDashboard', view: 'defi-dashboard', color: 'text-[#0ECB81]', badgeKey: 'more.badgeLive', badgeColor: 'bg-[#0ECB81]/10 text-[#0ECB81]' },
+    { icon: Swords, labelKey: 'more.tradeChallenge', view: 'trade-challenge', color: 'text-destructive', badgeKey: 'more.badgeLive', badgeColor: 'bg-destructive/10 text-destructive' },
+    { icon: Palette, labelKey: 'more.nftGallery', view: 'nft-gallery', color: 'text-primary', badgeKey: 'more.badgeBeta', badgeColor: 'bg-primary/10 text-primary' },
+    { icon: Layers, labelKey: 'more.defiDashboard', view: 'defi-dashboard', color: 'text-success', badgeKey: 'more.badgeLive', badgeColor: 'bg-success/10 text-success' },
     { icon: MessageCircle, labelKey: 'more.socialFeed', view: 'social-feed', color: 'text-[#627EEA]', badgeKey: 'more.badgeNew', badgeColor: 'bg-[#627EEA]/10 text-[#627EEA]' },
   ];
 
   const accountItems: MenuItem[] = [
-    { icon: Fingerprint, labelKey: 'more.kycVerification', view: 'kyc', color: 'text-[#F0B90B]', badgeKey: user.kycStatus === 'verified' ? 'more.badgeVerified' : 'more.badgeVerifyNow', badgeColor: user.kycStatus === 'verified' ? 'bg-[#0ECB81]/10 text-[#0ECB81]' : 'bg-[#F0B90B]/10 text-[#F0B90B]' },
-    { icon: Shield, labelKey: 'more.securityCenter', view: 'settings', color: 'text-[#0ECB81]' },
-    { icon: Key, labelKey: 'more.apiManagement', view: 'settings', color: 'text-[#848E9C]' },
+    { icon: Fingerprint, labelKey: 'more.kycVerification', view: 'kyc', color: 'text-primary', badgeKey: user.kycStatus === 'verified' ? 'more.badgeVerified' : 'more.badgeVerifyNow', badgeColor: user.kycStatus === 'verified' ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary' },
+    { icon: Shield, labelKey: 'more.securityCenter', view: 'settings', color: 'text-success' },
+    { icon: Key, labelKey: 'more.apiManagement', view: 'settings', color: 'text-muted-foreground' },
   ];
 
   const supportItems: MenuItem[] = [
-    { icon: HelpCircle, labelKey: 'more.helpCenter', view: 'support', color: 'text-[#848E9C]' },
-    { icon: MessageSquare, labelKey: 'more.supportTickets', view: 'support', color: 'text-[#0ECB81]' },
-    { icon: BookOpen, labelKey: 'more.announcements', view: 'support', color: 'text-[#F0B90B]' },
+    { icon: HelpCircle, labelKey: 'more.helpCenter', view: 'support', color: 'text-muted-foreground' },
+    { icon: MessageSquare, labelKey: 'more.supportTickets', view: 'support', color: 'text-success' },
+    { icon: BookOpen, labelKey: 'more.announcements', view: 'support', color: 'text-primary' },
   ];
 
   const settingsItems: MenuItem[] = [
-    { icon: Globe, labelKey: 'more.language', view: 'settings', color: 'text-[#848E9C]', badgeKey: 'EN', badgeColor: 'bg-[#2B3139] text-[#848E9C]' },
-    { icon: Wallet, labelKey: 'more.currency', view: 'settings', color: 'text-[#848E9C]', badgeKey: 'USD', badgeColor: 'bg-[#2B3139] text-[#848E9C]' },
-    { icon: Volume2, labelKey: 'more.notifications', view: 'notifications', color: 'text-[#848E9C]' },
-    { icon: Settings, labelKey: 'more.preferences', view: 'settings', color: 'text-[#848E9C]' },
+    { icon: Globe, labelKey: 'more.language', view: 'settings', color: 'text-muted-foreground', badgeKey: 'EN', badgeColor: 'bg-secondary text-muted-foreground' },
+    { icon: Wallet, labelKey: 'more.currency', view: 'settings', color: 'text-muted-foreground', badgeKey: 'USD', badgeColor: 'bg-secondary text-muted-foreground' },
+    { icon: Volume2, labelKey: 'more.notifications', view: 'notifications', color: 'text-muted-foreground' },
+    { icon: Settings, labelKey: 'more.preferences', view: 'settings', color: 'text-muted-foreground' },
   ];
 
   const aboutItems: MenuItem[] = [
-    { icon: Info, labelKey: 'more.aboutQtbm', view: 'support', color: 'text-[#848E9C]' },
-    { icon: FileText, labelKey: 'more.termsOfService', view: 'support', color: 'text-[#848E9C]' },
-    { icon: Shield, labelKey: 'more.privacyPolicy', view: 'support', color: 'text-[#848E9C]' },
+    { icon: Info, labelKey: 'more.aboutQtbm', view: 'support', color: 'text-muted-foreground' },
+    { icon: FileText, labelKey: 'more.termsOfService', view: 'support', color: 'text-muted-foreground' },
+    { icon: Shield, labelKey: 'more.privacyPolicy', view: 'support', color: 'text-muted-foreground' },
   ];
 
   const adminItems: MenuItem[] = [
-    { icon: ShieldCheck, labelKey: 'more.adminDashboard', view: 'admin', color: 'text-[#F6465D]', badgeKey: 'more.badgeAdmin', badgeColor: 'bg-[#F6465D]/10 text-[#F6465D]' },
+    { icon: ShieldCheck, labelKey: 'more.adminDashboard', view: 'admin', color: 'text-destructive', badgeKey: 'more.badgeAdmin', badgeColor: 'bg-destructive/10 text-destructive' },
   ];
 
   const renderSection = (title: string, items: MenuItem[]) => (
     <div className="mb-4">
-      <h3 className="text-[10px] font-semibold text-[#5E6673] uppercase tracking-wider px-1 mb-2">
+      <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-1 mb-2">
         {title}
       </h3>
-      <Card className="bg-[#1E2329] border-[#2B3139]">
+      <Card className="bg-card border-border rounded-xl">
         <CardContent className="p-0">
           {items.map((item, index) => {
             const Icon = item.icon;
@@ -145,26 +145,26 @@ export default function MoreView() {
               <React.Fragment key={item.labelKey}>
                 <button
                   onClick={() => navigateTo(item.view as any)}
-                  className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-[#2B3139]/50 transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-secondary/50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={`h-5 w-5 ${item.color || 'text-[#848E9C]'}`} />
-                    <span className="text-sm text-[#EAECEF]">{t(item.labelKey)}</span>
+                    <Icon className={`h-5 w-5 ${item.color || 'text-muted-foreground'}`} />
+                    <span className="text-sm text-foreground">{t(item.labelKey)}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     {badgeText && (
                       <span
                         className={`text-[10px] font-semibold px-2 py-0.5 rounded ${
-                          item.badgeColor || 'bg-[#F0B90B]/10 text-[#F0B90B]'
+                          item.badgeColor || 'bg-primary/10 text-primary'
                         }`}
                       >
                         {badgeText}
                       </span>
                     )}
-                    <ChevronRight className="h-4 w-4 text-[#5E6673]" />
+                    <ChevronRight className="rtl:scale-x-[-1] h-4 w-4 text-muted-foreground [dir=rtl]:rotate-180" />
                   </div>
                 </button>
-                {index < items.length - 1 && <Separator className="bg-[#2B3139] mx-4" />}
+                {index < items.length - 1 && <Separator className="bg-secondary mx-4" />}
               </React.Fragment>
             );
           })}
@@ -174,66 +174,66 @@ export default function MoreView() {
   );
 
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)] lg:h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-8rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="p-4 space-y-2 max-w-2xl mx-auto">
         {/* Profile Section */}
         {user.isAuthenticated ? (
-          <Card className="bg-gradient-to-r from-[#1E2329] to-[#2B3139] border-[#2B3139] mb-4 overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-[#F0B90B]/5 rounded-full -translate-y-1/3 translate-x-1/3" />
+          <Card className="bg-gradient-to-r from-card to-secondary border-border mb-4 overflow-hidden relative rounded-xl">
+            <div className="absolute top-0 end-0 w-24 h-24 bg-primary/5 rounded-full -translate-y-1/3 translate-x-1/3" />
             <CardContent className="p-4 relative z-10">
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 bg-[#F0B90B] rounded-full flex items-center justify-center ring-2 ring-[#F0B90B]/20 ring-offset-2 ring-offset-[#1E2329]">
-                  <span className="text-[#0B0E11] text-xl font-bold">
-                    {user.name?.[0]?.toUpperCase() || 'U'}
+                <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center ring-2 ring-primary/20 ring-offset-2 ring-offset-card">
+                  <span className="text-primary-foreground text-xl font-bold">
+                    {user.name?.[0] || 'U'}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-base font-semibold text-[#EAECEF]">
+                    <p className="text-base font-semibold text-foreground">
                       {user.name || t('more.user')}
                     </p>
-                    <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-0 text-[9px] px-1.5 py-0 h-4 font-semibold">
-                      VIP 1
+                    <Badge className="bg-primary/10 text-primary border-0 text-[10px] px-1.5 py-0 h-4 font-semibold">
+                      {t('settings.vipLevel1')}
                     </Badge>
                   </div>
-                  <p className="text-xs text-[#848E9C] mt-0.5">{user.email || 'user@qtbm.bank'}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{user.email || t('settings.placeholderEmail')}</p>
                   <div className="flex items-center gap-2 mt-1.5">
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#0ECB81]/10 text-[#0ECB81] font-medium flex items-center gap-1">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-success/10 text-success font-medium flex items-center gap-1">
                       <BadgeCheck className="h-3 w-3" />
                       {user.kycStatus === 'verified' ? t('more.kycVerified') : t('more.kycPending')}
                     </span>
                     {user.twoFactorEnabled && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#0ECB81]/10 text-[#0ECB81] font-medium flex items-center gap-1">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-success/10 text-success font-medium flex items-center gap-1">
                         <Shield className="h-3 w-3" />
                         {t('more.twoFactorOn')}
                       </span>
                     )}
                   </div>
                 </div>
-                <ChevronRight className="h-5 w-5 text-[#5E6673] shrink-0" />
+                <ChevronRight className="rtl:scale-x-[-1] h-5 w-5 text-muted-foreground shrink-0 [dir=rtl]:rotate-180" />
               </div>
             </CardContent>
           </Card>
         ) : (
-          <Card className="bg-[#1E2329] border-[#2B3139] mb-4">
+          <Card className="bg-card border-border mb-4 rounded-xl">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 bg-[#2B3139] rounded-full flex items-center justify-center">
-                  <User className="h-7 w-7 text-[#5E6673]" />
+                <div className="w-14 h-14 bg-secondary rounded-full flex items-center justify-center">
+                  <User className="h-7 w-7 text-muted-foreground" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-[#848E9C]">{t('more.loginToManage')}</p>
-                  <p className="text-[10px] text-[#5E6673] mt-0.5">{t('more.accessAllFeatures')}</p>
+                  <p className="text-sm text-muted-foreground">{t('more.loginToManage')}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{t('more.accessAllFeatures')}</p>
                   <div className="flex gap-2 mt-3">
                     <Button
-                      className="bg-[#F0B90B] hover:bg-[#F0B90B]/90 text-[#0B0E11] font-semibold h-9 text-sm px-5"
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-9 text-sm px-5"
                       onClick={() => navigateTo('login')}
                     >
                       {t('more.logIn')}
                     </Button>
                     <Button
                       variant="outline"
-                      className="border-[#F0B90B]/30 text-[#F0B90B] hover:bg-[#F0B90B]/10 h-9 text-sm px-5"
+                      className="border-primary/30 text-primary hover:bg-primary/10 h-9 text-sm px-5"
                       onClick={() => navigateTo('register')}
                     >
                       {t('more.register')}
@@ -257,25 +257,25 @@ export default function MoreView() {
             return (
               <Card
                 key={item.labelKey}
-                className="bg-[#1E2329] border-[#2B3139] hover:border-[#F0B90B]/20 cursor-pointer transition-all active:scale-[0.98]"
+                className="bg-card border-border hover:border-primary/20 cursor-pointer transition-all active:scale-[0.98] rounded-xl"
                 onClick={() => navigateTo(item.view as any)}
               >
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#2B3139] flex items-center justify-center">
-                      <Icon className={`h-4 w-4 ${item.color || 'text-[#848E9C]'}`} />
+                    <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
+                      <Icon className={`h-4 w-4 ${item.color || 'text-muted-foreground'}`} />
                     </div>
                     {badgeText && (
                       <span
-                        className={`text-[9px] font-semibold px-1.5 py-0.5 rounded ${
-                          item.badgeColor || 'bg-[#F0B90B]/10 text-[#F0B90B]'
+                        className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                          item.badgeColor || 'bg-primary/10 text-primary'
                         }`}
                       >
                         {badgeText}
                       </span>
                     )}
                   </div>
-                  <p className="text-sm font-medium text-[#EAECEF]">{t(item.labelKey)}</p>
+                  <p className="text-sm font-medium text-foreground">{t(item.labelKey)}</p>
                 </CardContent>
               </Card>
             );
@@ -293,7 +293,7 @@ export default function MoreView() {
         {user.isAuthenticated && (
           <Button
             variant="outline"
-            className="w-full border-[#F6465D]/20 text-[#F6465D] hover:bg-[#F6465D]/10 hover:border-[#F6465D]/30 h-10 mt-4"
+            className="w-full border-destructive/20 text-destructive hover:bg-destructive/10 hover:border-destructive/30 h-10 mt-4"
             onClick={() => useAppStore.getState().logout()}
           >
             <LogOut className="h-4 w-4 me-2" />
@@ -303,8 +303,8 @@ export default function MoreView() {
 
         {/* Version */}
         <div className="text-center py-4">
-          <p className="text-[10px] text-[#5E6673]">{t('more.version')}</p>
-          <p className="text-[9px] text-[#3E444D] mt-0.5">{t('more.copyright')}</p>
+          <p className="text-[10px] text-muted-foreground">{t('more.version')}</p>
+          <p className="text-[10px] text-muted-foreground mt-0.5">{t('more.copyright')}</p>
         </div>
       </div>
     </ScrollArea>

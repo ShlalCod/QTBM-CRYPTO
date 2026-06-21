@@ -151,11 +151,11 @@ function FearAndGreedGauge({ value = 72, t }: { value?: number; t: (key: string)
   };
 
   return (
-    <Card className="glass-card border-[#2B3139]/30 animate-fade-scale">
+    <Card className="glass-card border-border/30 animate-fade-scale">
       <CardContent className="p-4">
         <div className="flex items-center gap-2 mb-2">
-          <Gauge className="h-4 w-4 text-[#F0B90B]" />
-          <h3 className="text-sm font-semibold text-[#EAECEF]">{t('home.fearGreedIndex')}</h3>
+          <Gauge className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold text-foreground">{t('home.fearGreedIndex')}</h3>
         </div>
         <div className="flex items-center justify-center">
           <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} className="w-full max-w-[220px]">
@@ -189,7 +189,7 @@ function FearAndGreedGauge({ value = 72, t }: { value?: number; t: (key: string)
         </div>
         <div className="text-center mt-1">
           <span className="text-sm font-bold" style={{ color }}>{label}</span>
-          <p className="text-[10px] text-[#707785] mt-0.5">{t('home.marketSentimentIndicator')}</p>
+          <p className="text-[10px] text-muted-foreground mt-0.5">{t('home.marketSentimentIndicator')}</p>
         </div>
       </CardContent>
     </Card>
@@ -290,15 +290,15 @@ export default function HomeView() {
 
   // Announcements data - using i18n
   const announcements = [
-    { id: '1', type: 'listing' as const, title: t('home.ann1Title'), time: '2h ago', badge: t('home.ann1Badge'), badgeColor: 'bg-[#0ECB81]/10 text-[#0ECB81]' },
-    { id: '2', type: 'promotion' as const, title: t('home.ann2Title'), time: '5h ago', badge: t('home.ann2Badge'), badgeColor: 'bg-[#F0B90B]/10 text-[#F0B90B]' },
-    { id: '3', type: 'system' as const, title: t('home.ann3Title'), time: '1d ago', badge: t('home.ann3Badge'), badgeColor: 'bg-[#848E9C]/10 text-[#848E9C]' },
+    { id: '1', type: 'listing' as const, title: t('home.ann1Title'), time: '2h ago', badge: t('home.ann1Badge'), badgeColor: 'bg-success/10 text-success' },
+    { id: '2', type: 'promotion' as const, title: t('home.ann2Title'), time: '5h ago', badge: t('home.ann2Badge'), badgeColor: 'bg-primary/10 text-primary' },
+    { id: '3', type: 'system' as const, title: t('home.ann3Title'), time: '1d ago', badge: t('home.ann3Badge'), badgeColor: 'bg-[#848E9C]/10 text-muted-foreground' },
   ];
 
   const announcementIcons: Record<string, React.ReactNode> = {
-    listing: <Tag className="h-4 w-4 text-[#0ECB81]" />,
-    promotion: <Megaphone className="h-4 w-4 text-[#F0B90B]" />,
-    system: <AlertCircle className="h-4 w-4 text-[#848E9C]" />,
+    listing: <Tag className="h-4 w-4 text-success" />,
+    promotion: <Megaphone className="h-4 w-4 text-primary" />,
+    system: <AlertCircle className="h-4 w-4 text-muted-foreground" />,
   };
 
   if (isFirstLoad) {
@@ -308,39 +308,39 @@ export default function HomeView() {
   return (
     <div className="space-y-5 p-4 pb-6 wave-bg">
       {/* ============ Animated Stats Ticker Bar ============ */}
-      <div className="overflow-hidden bg-[#1E2329] rounded-lg border border-[#2B3139] py-1.5">
+      <div className="overflow-hidden bg-card rounded-lg border border-border py-1.5">
         <div className="ticker-scroll whitespace-nowrap inline-flex">
           {/* Duplicate content for seamless loop */}
           {[0, 1].map((dup) => (
-            <span key={dup} className="inline-flex items-center gap-6 text-[10px] text-[#848E9C] font-medium px-4">
+            <span key={dup} className="inline-flex items-center gap-6 text-[10px] text-muted-foreground font-medium px-4">
               <span className="flex items-center gap-1">
-                <span className="text-[#F0B90B]">{t('home.spotVolume')}:</span>
-                <span className="text-[#EAECEF] tabular-nums">$2.4B</span>
+                <span className="text-primary">{t('home.spotVolume')}:</span>
+                <span className="text-foreground tabular-nums">$2.4B</span>
               </span>
               <span className="text-[#2B3139]">|</span>
               <span className="flex items-center gap-1">
-                <span className="text-[#F0B90B]">{t('home.btcDominance')}:</span>
-                <span className="text-[#EAECEF] tabular-nums">52.3%</span>
+                <span className="text-primary">{t('home.btcDominance')}:</span>
+                <span className="text-foreground tabular-nums">52.3%</span>
               </span>
               <span className="text-[#2B3139]">|</span>
               <span className="flex items-center gap-1">
-                <span className="text-[#F0B90B]">{t('home.activeTraders')}:</span>
-                <span className="text-[#EAECEF] tabular-nums">1.2M</span>
+                <span className="text-primary">{t('home.activeTraders')}:</span>
+                <span className="text-foreground tabular-nums">1.2M</span>
               </span>
               <span className="text-[#2B3139]">|</span>
               <span className="flex items-center gap-1">
-                <span className="text-[#F0B90B]">{t('home.totalMarketCap')}:</span>
-                <span className="text-[#EAECEF] tabular-nums">$2.1T</span>
+                <span className="text-primary">{t('home.totalMarketCap')}:</span>
+                <span className="text-foreground tabular-nums">$2.1T</span>
               </span>
               <span className="text-[#2B3139]">|</span>
               <span className="flex items-center gap-1">
-                <span className="text-[#F0B90B]">{t('home.ethGas')}:</span>
-                <span className="text-[#EAECEF] tabular-nums">12 Gwei</span>
+                <span className="text-primary">{t('home.ethGas')}:</span>
+                <span className="text-foreground tabular-nums">12 Gwei</span>
               </span>
               <span className="text-[#2B3139]">|</span>
               <span className="flex items-center gap-1">
-                <span className="text-[#F0B90B]">{t('home.fearGreedIndex')}:</span>
-                <span className="text-[#0ECB81] tabular-nums">72 ({t('home.greed')})</span>
+                <span className="text-primary">{t('home.fearGreedIndex')}:</span>
+                <span className="text-success tabular-nums">72 ({t('home.greed')})</span>
               </span>
               <span className="text-[#2B3139]">|</span>
             </span>
@@ -349,10 +349,10 @@ export default function HomeView() {
       </div>
 
       {/* ============ Portfolio Summary Card with Glass Morphism ============ */}
-      <Card className="glass-card border-[#2B3139]/40 overflow-hidden relative animate-fade-scale">
+      <Card className="glass-card border-border/40 overflow-hidden relative animate-fade-scale">
         {/* Decorative gradient circles with floating animation */}
-        <div className="absolute -top-12 -right-12 w-40 h-40 bg-[#F0B90B]/5 rounded-full blur-2xl pointer-events-none animate-float" />
-        <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-[#0ECB81]/5 rounded-full blur-2xl pointer-events-none" style={{ animationDelay: '1s' }} />
+        <div className="absolute -top-12 -end-12 w-40 h-40 bg-primary/5 rounded-full blur-2xl pointer-events-none animate-float" />
+        <div className="absolute -bottom-8 -start-8 w-32 h-32 bg-success/10 rounded-full blur-2xl pointer-events-none" style={{ animationDelay: '1s' }} />
         {/* Shimmer overlay */}
         <div className="absolute inset-0 shimmer pointer-events-none rounded-xl" />
         {/* Particle/star background effect */}
@@ -364,12 +364,12 @@ export default function HomeView() {
         <div className="particle" style={{ top: '50%', left: '55%', animationDelay: '2.5s' }} />
         <CardContent className="p-5 relative">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-[#848E9C] font-medium">
+            <span className="text-xs text-muted-foreground font-medium">
               {user.isAuthenticated ? t('home.estimatedBalance') : t('home.portfolioValue')}
             </span>
             <button
               onClick={() => setShowBalance(!showBalance)}
-              className="text-[#5E6673] hover:text-[#848E9C] transition-colors p-1 rounded-md hover:bg-[#2B3139]/50"
+              className="text-muted-foreground hover:text-muted-foreground transition-colors p-1 rounded-md hover:bg-secondary/50"
             >
               {showBalance ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
             </button>
@@ -389,25 +389,25 @@ export default function HomeView() {
             {showBalance && (
               <Badge className={`text-[10px] h-5 px-1.5 border-0 mb-1 ${
                 changePercent >= 0
-                  ? 'bg-[#0ECB81]/15 text-[#0ECB81]'
-                  : 'bg-[#F6465D]/15 text-[#F6465D]'
+                  ? 'bg-success/15 text-success'
+                  : 'bg-destructive/15 text-destructive'
               }`}>
                 {changePercent >= 0 ? '+' : ''}{changePercent.toFixed(2)}%
               </Badge>
             )}
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-[#5E6673] floating-label">
+            <span className="text-xs text-muted-foreground floating-label">
               ≈ {showBalance ? totalBtc.toFixed(4) : '****'} BTC
             </span>
             {showBalance && (
               <div className="flex items-center gap-1">
                 {changePercent >= 0 ? (
-                  <TrendingUp className="h-3 w-3 text-[#0ECB81]" />
+                  <TrendingUp className="h-3 w-3 text-success" />
                 ) : (
-                  <TrendingDown className="h-3 w-3 text-[#F6465D]" />
+                  <TrendingDown className="h-3 w-3 text-destructive" />
                 )}
-                <span className={`text-xs font-medium ${changePercent >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+                <span className={`text-xs font-medium ${changePercent >= 0 ? 'text-success' : 'text-destructive'}`}>
                   {changePercent >= 0 ? '+' : ''}
                   <AnimatedNumber value={change24h} format={(v) => '$' + formatPrice(Math.abs(v))} />
                   ({changePercent >= 0 ? '+' : ''}{changePercent.toFixed(2)}%)
@@ -429,12 +429,12 @@ export default function HomeView() {
                 <button
                   key={action.label}
                   onClick={() => navigateTo(action.view)}
-                  className="flex flex-col items-center gap-2 py-2.5 px-1 rounded-xl transition-all duration-200 press-scale hover-lift gradient-border bg-[#2B3139]/40 hover:bg-[#2B3139]/70"
+                  className="flex flex-col items-center gap-2 py-2.5 px-1 rounded-xl transition-all duration-200 press-scale hover-lift gradient-border bg-secondary/40 hover:bg-secondary/70"
                 >
-                  <div className="w-9 h-9 rounded-full bg-[#F0B90B]/10 flex items-center justify-center">
-                    <Icon className="h-4 w-4 text-[#F0B90B]" />
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Icon className="h-4 w-4 text-primary" />
                   </div>
-                  <span className="text-[10px] text-[#848E9C] font-medium">{action.label}</span>
+                  <span className="text-[10px] text-muted-foreground font-medium">{action.label}</span>
                 </button>
               );
             })}
@@ -449,12 +449,12 @@ export default function HomeView() {
       <div>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-[#F0B90B]" />
-            <h3 className="text-sm font-semibold text-[#EAECEF]">{t('home.marketHighlights')}</h3>
+            <BarChart3 className="h-4 w-4 text-primary" />
+            <h3 className="text-sm font-semibold text-foreground">{t('home.marketHighlights')}</h3>
           </div>
           <button
             onClick={() => navigateTo('markets')}
-            className="text-xs text-[#F0B90B] hover:text-[#F0B90B]/80 flex items-center gap-1 transition-colors"
+            className="text-xs text-primary hover:text-primary/80 flex items-center gap-1 transition-colors"
           >
             {t('home.viewAll')} <ArrowRight className="h-3 w-3 rtl-flip" />
           </button>
@@ -464,25 +464,25 @@ export default function HomeView() {
             {trendingAssets.map((asset, index) => (
               <Card
                 key={asset.id}
-                className="glass-card card-depth border-[#2B3139]/30 shrink-0 w-[180px] cursor-pointer hover:border-[#F0B90B]/30 transition-all duration-300 perspective-card animate-slide-in-bottom"
+                className="glass-card card-depth border-border/30 shrink-0 w-[180px] cursor-pointer hover:border-[#F0B90B]/30 transition-all duration-300 perspective-card animate-slide-in-bottom"
                 style={{ animationDelay: `${index * 0.06}s` }}
                 onClick={() => handleAssetClick(asset.symbol)}
               >
                 <CardContent className="p-3.5">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-[#2B3139]/60 flex items-center justify-center text-xs font-bold backdrop-blur-sm">
+                      <div className="w-7 h-7 rounded-full bg-secondary/60 flex items-center justify-center text-xs font-bold backdrop-blur-sm">
                         {asset.icon}
                       </div>
                       <div>
-                        <span className="text-xs font-semibold text-[#EAECEF]">{asset.symbol}</span>
-                        <span className="text-[10px] text-[#5E6673] block">/USDT</span>
+                        <span className="text-xs font-semibold text-foreground">{asset.symbol}</span>
+                        <span className="text-[10px] text-muted-foreground block">/USDT</span>
                       </div>
                     </div>
                     <Badge className={`text-[10px] h-5 px-1.5 border-0 ${
                       asset.changePercent24h >= 0
-                        ? 'bg-[#0ECB81]/10 text-[#0ECB81]'
-                        : 'bg-[#F6465D]/10 text-[#F6465D]'
+                        ? 'bg-success/10 text-success'
+                        : 'bg-destructive/10 text-destructive'
                     }`}>
                       {asset.changePercent24h >= 0 ? '+' : ''}{asset.changePercent24h.toFixed(2)}%
                     </Badge>
@@ -491,17 +491,17 @@ export default function HomeView() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1">
                       {asset.changePercent24h >= 0 ? (
-                        <TrendingUp className="h-3.5 w-3.5 text-[#0ECB81] trending-bounce-up" />
+                        <TrendingUp className="h-3.5 w-3.5 text-success trending-bounce-up" />
                       ) : (
-                        <TrendingDown className="h-3.5 w-3.5 text-[#F6465D] trending-bounce-down" />
+                        <TrendingDown className="h-3.5 w-3.5 text-destructive trending-bounce-down" />
                       )}
-                      <span className="text-sm font-bold text-[#EAECEF] tabular-nums">
+                      <span className="text-sm font-bold text-foreground tabular-nums">
                         <LivePrice symbol={asset.symbol} fallbackPrice={asset.price} />
                       </span>
                     </div>
                     <MiniSparkline positive={asset.changePercent24h >= 0} width={52} height={24} seed={asset.id.charCodeAt(0)} />
                   </div>
-                  <div className="flex items-center gap-3 mt-1.5 text-[10px] text-[#5E6673]">
+                  <div className="flex items-center gap-3 mt-1.5 text-[10px] text-muted-foreground">
                     <span>{t('home.volume')} {formatNumber(asset.volume24h)}</span>
                   </div>
                 </CardContent>
@@ -513,19 +513,19 @@ export default function HomeView() {
       </div>
 
       {/* ============ Earn Promo Banner with Animated Shimmer Gradient ============ */}
-      <Card className="gradient-border bg-gradient-to-r from-[#1E2329] via-[#2B3139] to-[#1E2329] border-0 overflow-hidden relative cursor-pointer hover:shadow-lg hover:shadow-[#F0B90B]/10 transition-all duration-300 animate-fade-scale" onClick={() => navigateTo('earn')}>
-        <div className="absolute inset-0 bg-gradient-to-r from-[#F0B90B]/5 via-transparent to-[#F0B90B]/5 pointer-events-none" />
+      <Card className="gradient-border bg-gradient-to-r from-[#1E2329] via-[#2B3139] to-[#1E2329] border-0 overflow-hidden relative cursor-pointer hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 animate-fade-scale" onClick={() => navigateTo('earn')}>
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none" />
         <div className="absolute inset-0 shimmer-gradient pointer-events-none" />
         <CardContent className="p-4 flex items-center gap-3 relative">
-          <div className="w-12 h-12 bg-gradient-to-br from-[#F0B90B]/20 to-[#F0B90B]/5 rounded-2xl flex items-center justify-center shrink-0 animate-float">
-            <Percent className="h-6 w-6 text-[#F0B90B]" />
+          <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl flex items-center justify-center shrink-0 animate-float">
+            <Percent className="h-6 w-6 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-base font-bold text-[#EAECEF]">{t('home.earnUpTo')} 12% {t('home.apy')}</p>
-            <p className="text-xs text-[#848E9C] mt-0.5">{t('home.stakeAndEarn')}</p>
+            <p className="text-base font-bold text-foreground">{t('home.earnUpTo')} 12% {t('home.apy')}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{t('home.stakeAndEarn')}</p>
           </div>
           <Button
-            className="gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-8 px-4 text-xs shrink-0 shadow-md shadow-[#F0B90B]/20 press-scale"
+            className="gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-8 px-4 text-xs shrink-0 shadow-md shadow-primary/20 press-scale"
             onClick={(e) => { e.stopPropagation(); navigateTo('earn'); }}
           >
             {t('home.earnNow')}
@@ -533,20 +533,20 @@ export default function HomeView() {
         </CardContent>
       </Card>
 
-      <Separator className="bg-[#2B3139]/60" />
+      <Separator className="bg-secondary/60" />
 
       {/* ============ Watchlist ============ */}
       <div>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Star className="h-4 w-4 text-[#F0B90B]" />
-            <h3 className="text-sm font-semibold text-[#EAECEF]">{t('home.watchlist')}</h3>
+            <Star className="h-4 w-4 text-primary" />
+            <h3 className="text-sm font-semibold text-foreground">{t('home.watchlist')}</h3>
           </div>
           <button
             onClick={() => navigateTo('markets')}
-            className="text-xs text-[#F0B90B] hover:text-[#F0B90B]/80 flex items-center gap-1 transition-colors"
+            className="text-xs text-primary hover:text-primary/80 flex items-center gap-1 transition-colors"
           >
-            {t('home.edit')} <ChevronRight className="h-3 w-3" />
+            {t('home.edit')} <ChevronRight className="rtl:scale-x-[-1] h-3 w-3" />
           </button>
         </div>
 
@@ -564,7 +564,7 @@ export default function HomeView() {
                   transition={{ delay: index * 0.04 }}
                   onClick={() => handleAssetClick(asset.symbol)}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleAssetClick(asset.symbol); }}
-                  className="w-full flex items-center justify-between py-2.5 px-2 hover:bg-[#1E2329]/60 rounded-lg transition-all duration-200 group cursor-pointer"
+                  className="w-full flex items-center justify-between py-2.5 px-2 hover:bg-card/60 rounded-lg transition-all duration-200 group cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <button
@@ -572,26 +572,26 @@ export default function HomeView() {
                         e.stopPropagation();
                         toggleFavorite(asset.symbol);
                       }}
-                      className="text-[#F0B90B] hover:text-[#F0B90B]/80 transition-colors"
+                      className="text-primary hover:text-primary/80 transition-colors"
                     >
                       <Star className="h-4 w-4 fill-current" />
                     </button>
-                    <div className="w-8 h-8 rounded-full bg-[#2B3139]/60 flex items-center justify-center text-sm font-bold shrink-0 backdrop-blur-sm">
+                    <div className="w-8 h-8 rounded-full bg-secondary/60 flex items-center justify-center text-sm font-bold shrink-0 backdrop-blur-sm">
                       {asset.icon}
                     </div>
                     <div className={`text-${isRTL ? 'right' : 'left'}`}>
-                      <p className="text-sm font-semibold text-[#EAECEF]">{asset.symbol}</p>
-                      <p className="text-[10px] text-[#5E6673]">{asset.name}</p>
+                      <p className="text-sm font-semibold text-foreground">{asset.symbol}</p>
+                      <p className="text-[10px] text-muted-foreground">{asset.name}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <MiniSparkline positive={asset.changePercent24h >= 0} width={48} height={20} seed={asset.id.charCodeAt(0) + 100} />
                     <div className={`text-${isRTL ? 'left' : 'right'} min-w-[80px]`}>
-                      <p className="text-sm font-semibold text-[#EAECEF] tabular-nums">
+                      <p className="text-sm font-semibold text-foreground tabular-nums">
                         <LivePrice symbol={asset.symbol} fallbackPrice={asset.price} />
                       </p>
                       <p className={`text-xs font-medium ${
-                        asset.changePercent24h >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'
+                        asset.changePercent24h >= 0 ? 'text-success' : 'text-destructive'
                       }`}>
                         {asset.changePercent24h >= 0 ? '+' : ''}{asset.changePercent24h.toFixed(2)}%
                       </p>
@@ -602,13 +602,13 @@ export default function HomeView() {
             </AnimatePresence>
           </div>
         ) : (
-          <Card className="glass-card border-[#2B3139]/30">
+          <Card className="glass-card border-border/30">
             <CardContent className="p-6 text-center">
-              <Star className="h-8 w-8 text-[#5E6673] mx-auto mb-2" />
-              <p className="text-sm text-[#848E9C]">{t('home.noFavorites')}</p>
+              <Star className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">{t('home.noFavorites')}</p>
               <Button
                 variant="outline"
-                className="mt-3 border-[#2B3139] text-[#F0B90B] hover:bg-[#2B3139] text-xs h-8"
+                className="mt-3 border-border text-primary hover:bg-secondary text-xs h-8"
                 onClick={() => navigateTo('markets')}
               >
                 {t('home.addFavorites')}
@@ -621,10 +621,10 @@ export default function HomeView() {
       {/* ============ Top Movers ============ */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-[#EAECEF]">{t('home.topMovers')}</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t('home.topMovers')}</h3>
           <button
             onClick={() => navigateTo('markets')}
-            className="text-xs text-[#F0B90B] hover:text-[#F0B90B]/80 flex items-center gap-1 transition-colors"
+            className="text-xs text-primary hover:text-primary/80 flex items-center gap-1 transition-colors"
           >
             {t('home.viewAll')} <ArrowRight className="h-3 w-3 rtl-flip" />
           </button>
@@ -634,25 +634,25 @@ export default function HomeView() {
             {[...topGainers, ...topLosers].map((asset) => (
               <Card
                 key={asset.id}
-                className="glass-card border-[#2B3139]/30 shrink-0 w-36 cursor-pointer hover:border-[#F0B90B]/30 transition-all duration-300 press-scale hover-lift"
+                className="glass-card border-border/30 shrink-0 w-36 cursor-pointer hover:border-[#F0B90B]/30 transition-all duration-300 press-scale hover-lift"
                 onClick={() => handleAssetClick(asset.symbol)}
               >
                 <CardContent className="p-3">
                   <div className="flex items-center gap-1.5 mb-2">
                     <span className="text-sm">{asset.icon}</span>
-                    <span className="text-xs font-semibold text-[#EAECEF]">{asset.symbol}</span>
+                    <span className="text-xs font-semibold text-foreground">{asset.symbol}</span>
                   </div>
-                  <p className="text-sm font-bold text-[#EAECEF] tabular-nums">
+                  <p className="text-sm font-bold text-foreground tabular-nums">
                     <LivePrice symbol={asset.symbol} fallbackPrice={asset.price} />
                   </p>
                   <div className="flex items-center gap-1 mt-1">
                     {asset.changePercent24h >= 0 ? (
-                      <TrendingUp className="h-3 w-3 text-[#0ECB81]" />
+                      <TrendingUp className="h-3 w-3 text-success" />
                     ) : (
-                      <TrendingDown className="h-3 w-3 text-[#F6465D]" />
+                      <TrendingDown className="h-3 w-3 text-destructive" />
                     )}
                     <p className={`text-xs font-medium ${
-                      asset.changePercent24h >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'
+                      asset.changePercent24h >= 0 ? 'text-success' : 'text-destructive'
                     }`}>
                       {asset.changePercent24h >= 0 ? '+' : ''}{asset.changePercent24h.toFixed(2)}%
                     </p>
@@ -669,27 +669,27 @@ export default function HomeView() {
       <div>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-[#0ECB81] pulse-green" />
-            <h3 className="text-sm font-semibold text-[#EAECEF]">{t('home.announcements')}</h3>
+            <div className="w-2 h-2 rounded-full bg-success pulse-green" />
+            <h3 className="text-sm font-semibold text-foreground">{t('home.announcements')}</h3>
           </div>
-          <button className="text-xs text-[#F0B90B] hover:text-[#F0B90B]/80 flex items-center gap-1 transition-colors">
-            {t('home.more')} <ChevronRight className="h-3 w-3" />
+          <button className="text-xs text-primary hover:text-primary/80 flex items-center gap-1 transition-colors">
+            {t('home.more')} <ChevronRight className="rtl:scale-x-[-1] h-3 w-3" />
           </button>
         </div>
-        <Card className="glass-card border-[#2B3139]/30">
+        <Card className="glass-card border-border/30">
           <CardContent className="p-0">
             <div className="divide-y divide-[#2B3139]/40">
               {announcements.map((ann) => (
                 <button
                   key={ann.id}
-                  className="w-full flex items-center gap-3 p-3.5 hover:bg-[#2B3139]/30 transition-colors text-start"
+                  className="w-full flex items-center gap-3 p-3.5 hover:bg-secondary/30 transition-colors text-start"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-[#2B3139]/50 flex items-center justify-center shrink-0 backdrop-blur-sm">
+                  <div className="w-8 h-8 rounded-lg bg-secondary/50 flex items-center justify-center shrink-0 backdrop-blur-sm">
                     {announcementIcons[ann.type]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-[#EAECEF] truncate">{ann.title}</p>
-                    <p className="text-[10px] text-[#5E6673] mt-0.5">{ann.time}</p>
+                    <p className="text-sm text-foreground truncate">{ann.title}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{ann.time}</p>
                   </div>
                   <Badge className={`text-[10px] h-5 px-1.5 border-0 shrink-0 ${ann.badgeColor}`}>
                     {ann.badge}
@@ -703,27 +703,27 @@ export default function HomeView() {
 
       {/* ============ Quick Access - Feature Grid ============ */}
       <div>
-        <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">{t('home.quickAccess')}</h3>
+        <h3 className="text-sm font-semibold text-foreground mb-3">{t('home.quickAccess')}</h3>
         <div className="grid grid-cols-2 gap-3">
           {[
-            { icon: TrendingUp, label: t('nav.markets'), desc: t('home.explorePairs'), view: 'markets' as const, color: 'text-[#0ECB81]', bgColor: 'bg-[#0ECB81]/10' },
-            { icon: Shield, label: t('nav.earn'), desc: `${t('home.earnUpTo')} 12% ${t('home.apy')}`, view: 'earn' as const, color: 'text-[#F0B90B]', bgColor: 'bg-[#F0B90B]/10' },
-            { icon: Zap, label: t('nav.trade'), desc: t('home.spotAndMargin'), view: 'trade' as const, color: 'text-[#F0B90B]', bgColor: 'bg-[#F0B90B]/10' },
-            { icon: Gift, label: t('home.rewards'), desc: t('home.claimBonuses'), view: 'launchpad' as const, color: 'text-[#F6465D]', bgColor: 'bg-[#F6465D]/10' },
+            { icon: TrendingUp, label: t('nav.markets'), desc: t('home.explorePairs'), view: 'markets' as const, color: 'text-success', bgColor: 'bg-success/10' },
+            { icon: Shield, label: t('nav.earn'), desc: `${t('home.earnUpTo')} 12% ${t('home.apy')}`, view: 'earn' as const, color: 'text-primary', bgColor: 'bg-primary/10' },
+            { icon: Zap, label: t('nav.trade'), desc: t('home.spotAndMargin'), view: 'trade' as const, color: 'text-primary', bgColor: 'bg-primary/10' },
+            { icon: Gift, label: t('home.rewards'), desc: t('home.claimBonuses'), view: 'launchpad' as const, color: 'text-destructive', bgColor: 'bg-destructive/10' },
           ].map((item) => {
             const Icon = item.icon;
             return (
               <Card
                 key={item.label}
-                className="glass-card border-[#2B3139]/30 cursor-pointer hover:border-[#F0B90B]/20 transition-all duration-300 press-scale hover-lift"
+                className="glass-card border-border/30 cursor-pointer hover:border-primary/20 transition-all duration-300 press-scale hover-lift"
                 onClick={() => navigateTo(item.view)}
               >
                 <CardContent className="p-4">
                   <div className={`w-10 h-10 rounded-xl ${item.bgColor} flex items-center justify-center mb-2.5`}>
                     <Icon className={`h-5 w-5 ${item.color}`} />
                   </div>
-                  <p className="text-sm font-semibold text-[#EAECEF]">{item.label}</p>
-                  <p className="text-[10px] text-[#5E6673] mt-0.5">{item.desc}</p>
+                  <p className="text-sm font-semibold text-foreground">{item.label}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{item.desc}</p>
                 </CardContent>
               </Card>
             );

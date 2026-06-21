@@ -76,7 +76,7 @@ function TokenSelector({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
@@ -88,12 +88,12 @@ function TokenSelector({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="w-full max-w-sm mx-4 mb-4 sm:mb-0 bg-[#1E2329] border border-[#2B3139] rounded-2xl overflow-hidden glass-card"
+            className="w-full max-w-sm mx-4 mb-4 sm:mb-0 bg-card border border-border rounded-2xl overflow-hidden glass-card"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-4 border-b border-[#2B3139]">
-              <h3 className="text-sm font-semibold text-[#EAECEF]">{title}</h3>
-              <Button variant="ghost" size="icon" className="h-7 w-7 text-[#848E9C]" onClick={onClose}>
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+              <Button variant="ghost" size="icon" aria-label="Close" className="h-9 w-9 text-muted-foreground" onClick={onClose}>
                 ✕
               </Button>
             </div>
@@ -107,18 +107,18 @@ function TokenSelector({
                       onSelect(tk);
                       onClose();
                     }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#2B3139] transition-colors"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-secondary transition-colors"
                   >
-                    <div className="w-8 h-8 rounded-full bg-[#2B3139] flex items-center justify-center text-sm font-bold text-[#F0B90B]">
+                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-sm font-bold text-primary">
                       {tk.icon}
                     </div>
                     <div className="flex-1 text-start">
-                      <p className="text-sm font-medium text-[#EAECEF]">{tk.symbol}</p>
-                      <p className="text-[10px] text-[#5E6673]">{tk.name}</p>
+                      <p className="text-sm font-medium text-foreground">{tk.symbol}</p>
+                      <p className="text-[10px] text-muted-foreground">{tk.name}</p>
                     </div>
                     <div className="text-end">
-                      <p className="text-sm text-[#EAECEF]">{tk.balance.toFixed(4)}</p>
-                      <p className="text-[10px] text-[#5E6673]">${(tk.balance * tk.price).toFixed(2)}</p>
+                      <p className="text-sm text-foreground">{tk.balance.toFixed(4)}</p>
+                      <p className="text-[10px] text-muted-foreground">${(tk.balance * tk.price).toFixed(2)}</p>
                     </div>
                   </button>
                 ))}
@@ -131,7 +131,7 @@ function TokenSelector({
 }
 
 export default function SwapView() {
-  const { goBack } = useAppStore();
+  const { goBack, isRTL } = useAppStore();
   const { t } = useTranslation();
   const [fromToken, setFromToken] = useState<SwapToken>(tokens[0]);
   const [toToken, setToToken] = useState<SwapToken>(tokens[4]);
@@ -159,9 +159,9 @@ export default function SwapView() {
     : 0;
 
   const impactColor =
-    priceImpact < 1 ? 'text-[#0ECB81]' : priceImpact < 3 ? 'text-[#F0B90B]' : 'text-[#F6465D]';
+    priceImpact < 1 ? 'text-success' : priceImpact < 3 ? 'text-primary' : 'text-destructive';
   const impactBg =
-    priceImpact < 1 ? 'bg-[#0ECB81]/10' : priceImpact < 3 ? 'bg-[#F0B90B]/10' : 'bg-[#F6465D]/10';
+    priceImpact < 1 ? 'bg-success/10' : priceImpact < 3 ? 'bg-primary/10' : 'bg-destructive/10';
 
   const networkFee = 0.0005;
   const platformFee = fromAmount ? parseFloat(fromAmount) * 0.001 : 0;
@@ -199,7 +199,7 @@ export default function SwapView() {
   };
 
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)] lg:h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-8rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="p-4 max-w-lg mx-auto space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -207,17 +207,19 @@ export default function SwapView() {
             <Button
               variant="ghost"
               size="icon"
-              className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-8 w-8"
+              aria-label={t('actions.back')}
+              className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9"
               onClick={goBack}
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
             </Button>
-            <h1 className="text-lg font-semibold text-[#EAECEF]">{t('swap.title')}</h1>
+            <h1 className="text-lg font-semibold text-foreground">{t('swap.title')}</h1>
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className={`h-8 w-8 ${showSlippage ? 'text-[#F0B90B]' : 'text-[#848E9C]'} hover:text-[#F0B90B] hover:bg-[#F0B90B]/10`}
+            aria-label={t('actions.filter')}
+            className={`h-9 w-9 ${showSlippage ? 'text-primary' : 'text-muted-foreground'} hover:text-primary hover:bg-primary/10`}
             onClick={() => setShowSlippage(!showSlippage)}
           >
             <Settings2 className="h-4 w-4" />
@@ -233,9 +235,9 @@ export default function SwapView() {
               exit={{ height: 0, opacity: 0 }}
               className="overflow-hidden"
             >
-              <Card className="bg-[#1E2329] border-[#2B3139] glass-card">
+              <Card className="bg-card border-border glass-card">
                 <CardContent className="p-4 space-y-3">
-                  <p className="text-xs font-medium text-[#848E9C]">{t('swap.slippageTolerance')}</p>
+                  <p className="text-xs font-medium text-muted-foreground">{t('swap.slippageTolerance')}</p>
                   <div className="flex items-center gap-2">
                     {slippageOptions.map((opt) => (
                       <button
@@ -246,8 +248,8 @@ export default function SwapView() {
                         }}
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                           slippage === opt.value && !customSlippage
-                            ? 'bg-[#F0B90B] text-[#0B0E11]'
-                            : 'bg-[#2B3139] text-[#848E9C] hover:text-[#EAECEF]'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-secondary text-muted-foreground hover:text-foreground'
                         }`}
                       >
                         {opt.label}
@@ -264,9 +266,9 @@ export default function SwapView() {
                             setSlippage(val / 100);
                           }
                         }}
-                        className="bg-[#2B3139] border-[#3B4451] text-[#EAECEF] h-8 text-xs"
+                        className="bg-secondary border-border text-foreground h-9 text-xs"
                       />
-                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[#5E6673]">%</span>
+                      <span className="absolute end-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">%</span>
                     </div>
                   </div>
                 </CardContent>
@@ -276,16 +278,16 @@ export default function SwapView() {
         </AnimatePresence>
 
         {/* Swap Card */}
-        <Card className="bg-[#1E2329] border-[#2B3139] glass-card overflow-hidden relative">
+        <Card className="bg-card border-border glass-card overflow-hidden relative">
           {/* Decorative gradient */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#F0B90B] via-[#0ECB81] to-[#F0B90B]" />
+          <div className="absolute top-0 start-0 end-0 h-1 bg-gradient-to-r from-primary via-[#0ECB81] to-primary" />
           <CardContent className="p-4 space-y-3">
             {/* From Token */}
-            <div className="bg-[#0B0E11]/50 rounded-xl p-3 space-y-2">
+            <div className="bg-background/50 rounded-xl p-3 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium">{t('swap.from')}</span>
-                <span className="text-[10px] text-[#5E6673]">
-                  {t('swap.balance')}: <span className="text-[#848E9C]">{fromToken.balance.toFixed(4)} {fromToken.symbol}</span>
+                <span className="text-[10px] text-muted-foreground tracking-wider font-medium">{t('swap.from')}</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {t('swap.balance')}: <span className="text-muted-foreground">{fromToken.balance.toFixed(4)} {fromToken.symbol}</span>
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -297,26 +299,26 @@ export default function SwapView() {
                     setFromAmount(e.target.value);
                     setSwapComplete(false);
                   }}
-                  className="flex-1 bg-transparent border-0 text-xl font-semibold text-[#EAECEF] placeholder:text-[#3E444D] p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="flex-1 bg-transparent border-0 text-xl font-semibold text-foreground placeholder:text-muted-foreground/50 p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
                 <button
                   onClick={() => setShowFromSelector(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#2B3139] hover:bg-[#3B4451] transition-colors shrink-0"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-secondary hover:bg-muted transition-colors shrink-0"
                 >
-                  <div className="w-5 h-5 rounded-full bg-[#F0B90B]/20 flex items-center justify-center text-[10px] font-bold text-[#F0B90B]">
+                  <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">
                     {fromToken.icon}
                   </div>
-                  <span className="text-sm font-medium text-[#EAECEF]">{fromToken.symbol}</span>
-                  <ChevronDown className="h-3 w-3 text-[#848E9C]" />
+                  <span className="text-sm font-medium text-foreground">{fromToken.symbol}</span>
+                  <ChevronDown className="h-3 w-3 text-muted-foreground" />
                 </button>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[#5E6673]">
+                <span className="text-[10px] text-muted-foreground">
                   ≈ ${fromAmount ? (parseFloat(fromAmount) * fromToken.price).toFixed(2) : '0.00'}
                 </span>
                 <button
                   onClick={() => setFromAmount(fromToken.balance.toString())}
-                  className="text-[10px] text-[#F0B90B] font-medium hover:underline"
+                  className="text-[10px] text-primary font-medium hover:underline"
                 >
                   {t('trade.max')}
                 </button>
@@ -329,36 +331,36 @@ export default function SwapView() {
                 onClick={handleSwapDirection}
                 whileTap={{ rotate: 180 }}
                 transition={{ duration: 0.3 }}
-                className="w-9 h-9 rounded-full bg-[#2B3139] border border-[#3B4451] flex items-center justify-center hover:bg-[#3B4451] hover:border-[#F0B90B]/30 transition-all"
+                className="w-9 h-9 rounded-full bg-secondary border border-muted-foreground/40 flex items-center justify-center hover:bg-muted hover:border-primary/30 transition-all"
               >
-                <ArrowDownUp className="h-4 w-4 text-[#F0B90B]" />
+                <ArrowDownUp className="h-4 w-4 text-primary" />
               </motion.button>
             </div>
 
             {/* To Token */}
-            <div className="bg-[#0B0E11]/50 rounded-xl p-3 space-y-2">
+            <div className="bg-background/50 rounded-xl p-3 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium">{t('swap.to')}</span>
-                <span className="text-[10px] text-[#5E6673]">
-                  {t('swap.balance')}: <span className="text-[#848E9C]">{toToken.balance.toFixed(4)} {toToken.symbol}</span>
+                <span className="text-[10px] text-muted-foreground tracking-wider font-medium">{t('swap.to')}</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {t('swap.balance')}: <span className="text-muted-foreground">{toToken.balance.toFixed(4)} {toToken.symbol}</span>
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="flex-1 text-xl font-semibold text-[#EAECEF] placeholder:text-[#3E444D] p-0">
-                  {toAmount || <span className="text-[#3E444D]">0.0</span>}
+                <div className="flex-1 text-xl font-semibold text-foreground placeholder:text-muted-foreground/50 p-0">
+                  {toAmount || <span className="text-muted-foreground/50">0.0</span>}
                 </div>
                 <button
                   onClick={() => setShowToSelector(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#2B3139] hover:bg-[#3B4451] transition-colors shrink-0"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-secondary hover:bg-muted transition-colors shrink-0"
                 >
-                  <div className="w-5 h-5 rounded-full bg-[#0ECB81]/20 flex items-center justify-center text-[10px] font-bold text-[#0ECB81]">
+                  <div className="w-5 h-5 rounded-full bg-success/20 flex items-center justify-center text-[10px] font-bold text-success">
                     {toToken.icon}
                   </div>
-                  <span className="text-sm font-medium text-[#EAECEF]">{toToken.symbol}</span>
-                  <ChevronDown className="h-3 w-3 text-[#848E9C]" />
+                  <span className="text-sm font-medium text-foreground">{toToken.symbol}</span>
+                  <ChevronDown className="h-3 w-3 text-muted-foreground" />
                 </button>
               </div>
-              <span className="text-[10px] text-[#5E6673]">
+              <span className="text-[10px] text-muted-foreground">
                 ≈ ${toAmount ? (parseFloat(toAmount) * toToken.price).toFixed(2) : '0.00'}
               </span>
             </div>
@@ -370,45 +372,45 @@ export default function SwapView() {
               className="space-y-2 pt-2"
             >
               <div className="flex items-center justify-between">
-                <span className="text-[11px] text-[#5E6673]">{t('swap.exchangeRate')}</span>
-                <span className="text-[11px] text-[#848E9C]">1 {fromToken.symbol} = {exchangeRate} {toToken.symbol}</span>
+                <span className="text-[11px] text-muted-foreground">{t('swap.exchangeRate')}</span>
+                <span className="text-[11px] text-muted-foreground">1 {fromToken.symbol} = {exchangeRate} {toToken.symbol}</span>
               </div>
               {/* Additional swap details when amount is entered */}
               {fromAmount && parseFloat(fromAmount) > 0 && (
                 <>
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-[#5E6673]">{t('swap.priceImpact')}</span>
+                    <span className="text-[11px] text-muted-foreground">{t('swap.priceImpact')}</span>
                     <span className={`text-[11px] font-medium ${impactColor}`}>
                       {priceImpact.toFixed(2)}%
                     </span>
                   </div>
                   {priceImpact >= 3 && (
                     <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md ${impactBg}`}>
-                      <AlertTriangle className="h-3 w-3 text-[#F6465D]" />
-                      <span className="text-[10px] text-[#F6465D]">{t('swap.highImpact')}</span>
+                      <AlertTriangle className="h-3 w-3 text-destructive" />
+                      <span className="text-[10px] text-destructive">{t('swap.highImpact')}</span>
                     </div>
                   )}
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-[#5E6673]">{t('swap.minReceived')}</span>
-                    <span className="text-[11px] text-[#848E9C]">{minReceived} {toToken.symbol}</span>
+                    <span className="text-[11px] text-muted-foreground">{t('swap.minReceived')}</span>
+                    <span className="text-[11px] text-muted-foreground">{minReceived} {toToken.symbol}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-[#5E6673]">{t('swap.networkFee')}</span>
-                    <span className="text-[11px] text-[#848E9C]">~{networkFee} {fromToken.symbol}</span>
+                    <span className="text-[11px] text-muted-foreground">{t('swap.networkFee')}</span>
+                    <span className="text-[11px] text-muted-foreground">~{networkFee} {fromToken.symbol}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-[#5E6673]">{t('swap.platformFee')}</span>
-                    <span className="text-[11px] text-[#848E9C]">{platformFee.toFixed(6)} {fromToken.symbol} (0.1%)</span>
+                    <span className="text-[11px] text-muted-foreground">{t('swap.platformFee')}</span>
+                    <span className="text-[11px] text-muted-foreground">{platformFee.toFixed(6)} {fromToken.symbol} (0.1%)</span>
                   </div>
                   {/* Route */}
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-[#5E6673]">{t('swap.route')}</span>
+                    <span className="text-[11px] text-muted-foreground">{t('swap.route')}</span>
                     <div className="flex items-center gap-1">
-                      <Route className="h-3 w-3 text-[#F0B90B]" />
-                      <span className="text-[11px] text-[#848E9C]">
+                      <Route className="h-3 w-3 text-primary" />
+                      <span className="text-[11px] text-muted-foreground">
                         {fromToken.symbol === 'BTC' && toToken.symbol !== 'USDT'
-                          ? `${fromToken.symbol} → USDT → ${toToken.symbol}`
-                          : `${fromToken.symbol} → ${toToken.symbol}`}
+                          ? `${fromToken.symbol} ${isRTL ? '←' : '→'} USDT ${isRTL ? '←' : '→'} ${toToken.symbol}`
+                          : `${fromToken.symbol} ${isRTL ? '←' : '→'} ${toToken.symbol}`}
                       </span>
                     </div>
                   </div>
@@ -419,18 +421,18 @@ export default function SwapView() {
             {/* Action Button */}
             <div className="pt-2">
               {!fromAmount || parseFloat(fromAmount) <= 0 ? (
-                <Button className="w-full h-12 bg-[#2B3139] text-[#5E6673] cursor-not-allowed rounded-xl text-sm font-semibold" disabled>
+                <Button className="w-full h-12 bg-secondary text-muted-foreground cursor-not-allowed rounded-xl text-sm font-semibold" disabled>
                   {t('swap.enterAmount')}
                 </Button>
               ) : needsApproval ? (
                 <Button
-                  className="w-full h-12 gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold rounded-xl text-sm shadow-md shadow-[#F0B90B]/20 press-scale"
+                  className="w-full h-12 gradient-yellow hover:opacity-90 text-primary-foreground font-semibold rounded-xl text-sm shadow-md shadow-primary/20 press-scale"
                   onClick={handleApprove}
                   disabled={isApproving}
                 >
                   {isApproving ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-[#0B0E11]/30 border-t-[#0B0E11] rounded-full animate-spin me-2" />
+                      <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin me-2" />
                       {t('swap.approving')}
                     </>
                   ) : (
@@ -441,19 +443,19 @@ export default function SwapView() {
                   )}
                 </Button>
               ) : swapComplete ? (
-                <Button className="w-full h-12 bg-[#0ECB81] hover:bg-[#0ECB81]/90 text-white font-semibold rounded-xl text-sm" disabled>
+                <Button className="w-full h-12 bg-success hover:bg-success/90 text-white font-semibold rounded-xl text-sm" disabled>
                   <Check className="h-4 w-4 me-2" />
                   {t('swap.swapComplete')}
                 </Button>
               ) : (
                 <Button
-                  className="w-full h-12 gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold rounded-xl text-sm shadow-md shadow-[#F0B90B]/20 press-scale"
+                  className="w-full h-12 gradient-yellow hover:opacity-90 text-primary-foreground font-semibold rounded-xl text-sm shadow-md shadow-primary/20 press-scale"
                   onClick={handleSwap}
                   disabled={isSwapping}
                 >
                   {isSwapping ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-[#0B0E11]/30 border-t-[#0B0E11] rounded-full animate-spin me-2" />
+                      <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin me-2" />
                       {t('swap.swapping')}
                     </>
                   ) : (
@@ -466,32 +468,32 @@ export default function SwapView() {
         </Card>
 
         {/* Recent Swaps */}
-        <Card className="bg-[#1E2329] border-[#2B3139] glass-card">
+        <Card className="bg-card border-border glass-card">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Clock className="h-4 w-4 text-[#5E6673]" />
-              <h3 className="text-sm font-medium text-[#EAECEF]">{t('swap.recentSwaps')}</h3>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <h3 className="text-sm font-medium text-foreground">{t('swap.recentSwaps')}</h3>
             </div>
             <div className="space-y-2">
               {recentSwaps.map((swap) => (
                 <div
                   key={swap.id}
-                  className="flex items-center justify-between py-2 px-3 rounded-lg bg-[#0B0E11]/30"
+                  className="flex items-center justify-between py-2 px-3 rounded-lg bg-background/30"
                 >
                   <div className="flex items-center gap-2">
                     <div className="flex items-center text-xs">
-                      <span className="text-[#EAECEF] font-medium">{swap.fromAmt}</span>
-                      <span className="text-[#848E9C] ms-1">{swap.from}</span>
+                      <span className="text-foreground font-medium">{swap.fromAmt}</span>
+                      <span className="text-muted-foreground ms-1">{swap.from}</span>
                     </div>
-                    <ArrowDownUp className="h-3 w-3 text-[#5E6673]" />
+                    <ArrowDownUp className="h-3 w-3 text-muted-foreground" />
                     <div className="flex items-center text-xs">
-                      <span className="text-[#EAECEF] font-medium">{swap.toAmt}</span>
-                      <span className="text-[#848E9C] ms-1">{swap.to}</span>
+                      <span className="text-foreground font-medium">{swap.toAmt}</span>
+                      <span className="text-muted-foreground ms-1">{swap.to}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-[#5E6673]">{swap.time}</span>
-                    <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[9px] px-1.5 py-0 h-4">
+                    <span className="text-[10px] text-muted-foreground">{swap.time}</span>
+                    <Badge className="bg-success/10 text-success border-0 text-[10px] px-1.5 py-0 h-4">
                       {t('wallet.completed')}
                     </Badge>
                   </div>

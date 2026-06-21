@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
 import { useTranslation } from '@/lib/i18n';
+import { useLocaleFmt } from '@/hooks/use-locale-fmt';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -73,8 +74,9 @@ const rewardTiers = [
 ];
 
 export default function LeaderboardView() {
-  const { goBack } = useAppStore();
+  const { goBack, isRTL } = useAppStore();
   const { t } = useTranslation();
+  const { formatNum } = useLocaleFmt();
   const [activeTab, setActiveTab] = useState<'top' | 'myRank' | 'rewards'>('top');
   const [isJoined, setIsJoined] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
@@ -102,17 +104,17 @@ export default function LeaderboardView() {
   const nearbyTraders = mockTraders.filter(t => t.rank >= 15 && t.rank <= 21);
 
   const getPodiumBorder = (rank: number) => {
-    if (rank === 1) return 'border-2 border-[#FFD700]/50 podium-glow-gold';
+    if (rank === 1) return 'border-2 border-gold/50 podium-glow-gold';
     if (rank === 2) return 'border-2 border-[#C0C0C0]/50 podium-glow-silver';
     if (rank === 3) return 'border-2 border-[#CD7F32]/50 podium-glow-bronze';
-    return 'border-[#2B3139]';
+    return 'border-border';
   };
 
   const getRankBadge = (rank: number) => {
-    if (rank === 1) return <Crown className="h-5 w-5 text-[#FFD700]" />;
-    if (rank === 2) return <Medal className="h-5 w-5 text-[#C0C0C0]" />;
-    if (rank === 3) return <Medal className="h-5 w-5 text-[#CD7F32]" />;
-    return <span className="text-sm font-bold text-[#848E9C]">#{rank}</span>;
+    if (rank === 1) return <Crown className="h-5 w-5 text-gold" />;
+    if (rank === 2) return <Medal className="h-5 w-5 text-muted-foreground" />;
+    if (rank === 3) return <Medal className="h-5 w-5 text-orange-700" />;
+    return <span className="text-sm font-bold text-muted-foreground">#{rank}</span>;
   };
 
   const pad = (n: number) => n.toString().padStart(2, '0');
@@ -120,42 +122,43 @@ export default function LeaderboardView() {
   const totalPrizePool = rewardTiers.reduce((acc, tier) => acc + tier.reward, 0);
 
   return (
-    <ScrollArea className="h-[calc(100vh-4rem)] lg:h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="p-4 max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
           <Button
             variant="ghost"
             size="icon"
-            className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-9 w-9"
+            className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9"
             onClick={goBack}
+            aria-label={t('common.back')}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
           </Button>
           <div className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-[#F0B90B]" />
-            <h1 className="text-lg font-bold text-[#EAECEF]">{t('leaderboard.title')}</h1>
+            <Trophy className="h-5 w-5 text-primary" />
+            <h1 className="text-lg font-bold text-foreground">{t('leaderboard.title')}</h1>
           </div>
         </div>
 
         {/* Competition Banner */}
-        <Card className="bg-gradient-to-br from-[#1E2329] via-[#2B3139] to-[#1E2329] border-[#F0B90B]/20 mb-4 overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#F0B90B]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#0ECB81]/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+        <Card className="bg-gradient-to-br from-card via-secondary to-card border-primary/20 mb-4 overflow-hidden relative">
+          <div className="absolute top-0 end-0 w-32 h-32 bg-primary/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 start-0 w-24 h-24 bg-success/10 rounded-full translate-y-1/2 -translate-x-1/2" />
           <CardContent className="p-4 relative z-10">
             <div className="flex items-center gap-2 mb-2">
-              <Trophy className="h-4 w-4 text-[#F0B90B]" />
-              <span className="text-xs font-semibold text-[#F0B90B] uppercase tracking-wider">{t('leaderboard.competitionName')}</span>
+              <Trophy className="h-4 w-4 text-primary" />
+              <span className="text-xs font-semibold text-primary tracking-wider">{t('leaderboard.competitionName')}</span>
             </div>
-            <h2 className="text-xl font-bold text-[#EAECEF] mb-2">QTBM Trading Championship S1</h2>
+            <h2 className="text-xl font-bold text-foreground mb-2">QTBM Trading Championship S1</h2>
             
             {/* Prize Pool */}
             <div className="flex items-center gap-2 mb-3">
-              <DollarSign className="h-5 w-5 text-[#F0B90B]" />
+              <DollarSign className="h-5 w-5 text-primary" />
               <div>
-                <span className="text-[10px] text-[#848E9C]">{t('leaderboard.prizePool')}</span>
+                <span className="text-[10px] text-muted-foreground">{t('leaderboard.prizePool')}</span>
                 <motion.p
-                  className="text-2xl font-bold text-[#F0B90B]"
+                  className="text-2xl font-bold text-primary"
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ type: 'spring', delay: 0.2 }}
@@ -173,22 +176,22 @@ export default function LeaderboardView() {
                 { label: t('leaderboard.minutes'), value: countdown.minutes },
                 { label: t('leaderboard.seconds'), value: countdown.seconds },
               ].map(item => (
-                <div key={item.label} className="flex-1 bg-[#0B0E11]/60 rounded-lg p-2 text-center">
-                  <p className="text-lg font-bold text-[#EAECEF] font-mono">{pad(item.value)}</p>
-                  <p className="text-[9px] text-[#5E6673] uppercase">{item.label}</p>
+                <div key={item.label} className="flex-1 bg-background/60 rounded-lg p-2 text-center">
+                  <p className="text-lg font-bold text-foreground font-mono">{pad(item.value)}</p>
+                  <p className="text-[10px] text-muted-foreground">{item.label}</p>
                 </div>
               ))}
             </div>
 
             {/* Progress */}
             <div className="mb-3">
-              <div className="flex justify-between text-[10px] text-[#848E9C] mb-1">
+              <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
                 <span>{t('leaderboard.competitionProgress')}</span>
                 <span>67%</span>
               </div>
-              <div className="h-1.5 bg-[#0B0E11]/60 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-background/60 rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-[#F0B90B] to-[#0ECB81]"
+                  className="h-full rounded-full bg-gradient-to-r from-primary to-success"
                   initial={{ width: 0 }}
                   animate={{ width: '67%' }}
                   transition={{ duration: 1, ease: 'easeOut' }}
@@ -199,14 +202,14 @@ export default function LeaderboardView() {
             {/* Join Button */}
             {!isJoined ? (
               <Button
-                className="w-full gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-10 text-sm shadow-md shadow-[#F0B90B]/20"
+                className="w-full gradient-yellow hover:opacity-90 text-background font-semibold h-10 text-sm shadow-md shadow-primary/20"
                 onClick={() => setShowJoinModal(true)}
               >
                 <Zap className="h-4 w-4 me-1.5" />
                 {t('leaderboard.joinNow')}
               </Button>
             ) : (
-              <div className="flex items-center justify-center gap-2 text-sm text-[#0ECB81]">
+              <div className="flex items-center justify-center gap-2 text-sm text-success">
                 <CheckCircle2 className="h-4 w-4" />
                 <span className="font-medium">{t('leaderboard.joined')}</span>
               </div>
@@ -215,7 +218,7 @@ export default function LeaderboardView() {
         </Card>
 
         {/* Tab Selector */}
-        <div className="flex bg-[#1E2329] rounded-lg p-1 mb-4">
+        <div className="flex bg-card rounded-lg p-1 mb-4">
           {([
             { id: 'top' as const, label: t('leaderboard.topTraders'), icon: Trophy },
             { id: 'myRank' as const, label: t('leaderboard.myRanking'), icon: User },
@@ -225,8 +228,8 @@ export default function LeaderboardView() {
               key={tab.id}
               className={`flex-1 py-2 text-xs font-medium rounded-md flex items-center justify-center gap-1 transition-all ${
                 activeTab === tab.id
-                  ? 'bg-[#2B3139] text-[#F0B90B]'
-                  : 'text-[#848E9C] hover:text-[#EAECEF]'
+                  ? 'bg-secondary text-primary'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
               onClick={() => setActiveTab(tab.id)}
             >
@@ -252,37 +255,37 @@ export default function LeaderboardView() {
                 <div className="grid grid-cols-3 gap-2 mb-4">
                   {/* 2nd Place */}
                   <div className="flex flex-col items-center pt-6">
-                    <Card className={`bg-[#1E2329]/80 backdrop-blur ${getPodiumBorder(2)} shadow-lg w-full`}>
+                    <Card className={`bg-card/80 backdrop-blur ${getPodiumBorder(2)} shadow-lg w-full`}>
                       <CardContent className="p-3 text-center">
                         <div className="text-3xl mb-1">{mockTraders[1].avatar}</div>
                         {getRankBadge(2)}
-                        <p className="text-xs font-semibold text-[#EAECEF] mt-1 truncate">{mockTraders[1].username}</p>
-                        <p className="text-sm font-bold text-[#0ECB81]">+{mockTraders[1].pnlPercent}%</p>
-                        <span className="inline-flex items-center gap-0.5 text-[9px] text-[#0ECB81] rank-up-arrow"><TrendingUp className="h-2.5 w-2.5" />2</span>
+                        <p className="text-xs font-semibold text-foreground mt-1 truncate">{mockTraders[1].username}</p>
+                        <p className="text-sm font-bold text-success">+{mockTraders[1].pnlPercent}%</p>
+                        <span className="inline-flex items-center gap-0.5 text-[10px] text-success rank-up-arrow"><TrendingUp className="h-2.5 w-2.5" />2</span>
                       </CardContent>
                     </Card>
                   </div>
                   {/* 1st Place */}
                   <div className="flex flex-col items-center">
-                    <Card className={`bg-[#1E2329]/80 backdrop-blur ${getPodiumBorder(1)} shadow-lg shadow-[#FFD700]/20 w-full`}>
+                    <Card className={`bg-card/80 backdrop-blur ${getPodiumBorder(1)} shadow-lg shadow-[#FFD700]/20 w-full`}>
                       <CardContent className="p-3 text-center">
                         <div className="text-4xl mb-1">{mockTraders[0].avatar}</div>
                         {getRankBadge(1)}
-                        <p className="text-xs font-semibold text-[#EAECEF] mt-1 truncate">{mockTraders[0].username}</p>
-                        <p className="text-base font-bold text-[#0ECB81]">+{mockTraders[0].pnlPercent}%</p>
-                        <span className="inline-flex items-center gap-0.5 text-[9px] text-[#0ECB81] rank-up-arrow"><TrendingUp className="h-2.5 w-2.5" />1</span>
+                        <p className="text-xs font-semibold text-foreground mt-1 truncate">{mockTraders[0].username}</p>
+                        <p className="text-base font-bold text-success">+{mockTraders[0].pnlPercent}%</p>
+                        <span className="inline-flex items-center gap-0.5 text-[10px] text-success rank-up-arrow"><TrendingUp className="h-2.5 w-2.5" />1</span>
                       </CardContent>
                     </Card>
                   </div>
                   {/* 3rd Place */}
                   <div className="flex flex-col items-center pt-8">
-                    <Card className={`bg-[#1E2329]/80 backdrop-blur ${getPodiumBorder(3)} shadow-lg w-full`}>
+                    <Card className={`bg-card/80 backdrop-blur ${getPodiumBorder(3)} shadow-lg w-full`}>
                       <CardContent className="p-3 text-center">
                         <div className="text-3xl mb-1">{mockTraders[2].avatar}</div>
                         {getRankBadge(3)}
-                        <p className="text-xs font-semibold text-[#EAECEF] mt-1 truncate">{mockTraders[2].username}</p>
-                        <p className="text-sm font-bold text-[#0ECB81]">+{mockTraders[2].pnlPercent}%</p>
-                        <span className="inline-flex items-center gap-0.5 text-[9px] text-[#0ECB81] rank-up-arrow"><TrendingUp className="h-2.5 w-2.5" />3</span>
+                        <p className="text-xs font-semibold text-foreground mt-1 truncate">{mockTraders[2].username}</p>
+                        <p className="text-sm font-bold text-success">+{mockTraders[2].pnlPercent}%</p>
+                        <span className="inline-flex items-center gap-0.5 text-[10px] text-success rank-up-arrow"><TrendingUp className="h-2.5 w-2.5" />3</span>
                       </CardContent>
                     </Card>
                   </div>
@@ -293,16 +296,16 @@ export default function LeaderboardView() {
                   {mockTraders.slice(3).map((trader, index) => (
                     <motion.div
                       key={trader.rank}
-                      initial={{ opacity: 0, x: -12 }}
+                      initial={{ opacity: 0, x: isRTL ? 12 : -12 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.03 }}
                     >
-                      <Card className={`bg-[#1E2329]/80 backdrop-blur border-[#2B3139] ${trader.isYou ? 'border-[#F0B90B]/30 border-2' : ''}`}>
+                      <Card className={`bg-card/80 backdrop-blur border-border ${trader.isYou ? 'border-primary/30 border-2' : ''}`}>
                         <CardContent className="p-3">
                           <div className="flex items-center gap-3">
                             {/* Rank */}
                             <div className="w-7 text-center">
-                              <span className={`text-sm font-bold ${trader.rank <= 3 ? 'text-[#F0B90B]' : 'text-[#848E9C]'}`}>
+                              <span className={`text-sm font-bold ${trader.rank <= 3 ? 'text-primary' : 'text-muted-foreground'}`}>
                                 {trader.rank}
                               </span>
                             </div>
@@ -311,29 +314,29 @@ export default function LeaderboardView() {
                             {/* Info */}
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-1.5">
-                                <span className="text-sm font-semibold text-[#EAECEF] truncate">{trader.username}</span>
-                                {trader.verified && <CheckCircle2 className="h-3.5 w-3.5 text-[#0ECB81] shrink-0" />}
+                                <span className="text-sm font-semibold text-foreground truncate">{trader.username}</span>
+                                {trader.verified && <CheckCircle2 className="h-3.5 w-3.5 text-success shrink-0" />}
                                 {trader.isYou && (
-                                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-gradient-to-r from-[#F0B90B]/20 to-[#F0B90B]/10 text-[#F0B90B] font-semibold border border-[#F0B90B]/30">
+                                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-gradient-to-r from-primary/20 to-primary/10 text-primary font-semibold border border-primary/30">
                                     {t('leaderboard.you')}
                                   </span>
                                 )}
                               </div>
                               <div className="flex items-center gap-3 mt-0.5">
-                                <span className="text-[10px] text-[#5E6673]">{t('leaderboard.volume')}: ${(trader.totalVolume / 1000000).toFixed(1)}M</span>
-                                <span className="text-[10px] text-[#5E6673]">{t('leaderboard.winRate')}: {trader.winRate}%</span>
+                                <span className="text-[10px] text-muted-foreground">{t('leaderboard.volume')}: ${(trader.totalVolume / 1000000).toFixed(1)}M</span>
+                                <span className="text-[10px] text-muted-foreground">{t('leaderboard.winRate')}: {trader.winRate}%</span>
                               </div>
                             </div>
                             {/* PnL */}
                             <div className="text-end">
-                              <p className="text-sm font-bold text-[#0ECB81]">+{trader.pnlPercent}%</p>
-                              <p className="text-[10px] text-[#5E6673]">ROI: {trader.roi}%</p>
+                              <p className="text-sm font-bold text-success">+{trader.pnlPercent}%</p>
+                              <p className="text-[10px] text-muted-foreground">ROI: {trader.roi}%</p>
                             </div>
                           </div>
                           {/* PnL Progress Bar */}
-                          <div className="mt-2 h-1 bg-[#2B3139] rounded-full overflow-hidden">
+                          <div className="mt-2 h-1 bg-secondary rounded-full overflow-hidden">
                             <motion.div
-                              className="h-full rounded-full bg-gradient-to-r from-[#0ECB81]/60 to-[#0ECB81]"
+                              className="h-full rounded-full bg-gradient-to-r from-success/60 to-success"
                               initial={{ width: 0 }}
                               animate={{ width: `${Math.min(100, (trader.pnlPercent / 350) * 100)}%` }}
                               transition={{ duration: 0.8, delay: index * 0.03 }}
@@ -350,30 +353,30 @@ export default function LeaderboardView() {
             {activeTab === 'myRank' && yourRank && (
               <div>
                 {/* Your Rank Card */}
-                <Card className="bg-gradient-to-br from-[#1E2329] to-[#2B3139] border-[#F0B90B]/30 shadow-lg shadow-[#F0B90B]/5 mb-4 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-[#F0B90B]/3" />
+                <Card className="bg-gradient-to-br from-card to-secondary border-primary/30 shadow-lg shadow-primary/5 mb-4 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-primary/3" />
                   <CardContent className="p-5 relative z-10">
                     <div className="flex items-center gap-4">
                       <div className="text-5xl">{yourRank.avatar}</div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xl font-bold text-[#EAECEF]">{t('leaderboard.rank')} #{yourRank.rank}</span>
-                          <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-0 text-[10px]">{t('leaderboard.you')}</Badge>
+                          <span className="text-xl font-bold text-foreground">{t('leaderboard.rank')} #{yourRank.rank}</span>
+                          <Badge className="bg-primary/10 text-primary border-0 text-[10px]">{t('leaderboard.you')}</Badge>
                         </div>
-                        <p className="text-sm text-[#848E9C]">{yourRank.username}</p>
+                        <p className="text-sm text-muted-foreground">{yourRank.username}</p>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3 mt-4">
                       {[
-                        { label: t('leaderboard.pnl'), value: `+${yourRank.pnlPercent}%`, color: 'text-[#0ECB81]' },
-                        { label: t('leaderboard.volume'), value: `$${(yourRank.totalVolume / 1000).toFixed(0)}K`, color: 'text-[#EAECEF]' },
-                        { label: t('leaderboard.winRate'), value: `${yourRank.winRate}%`, color: 'text-[#F0B90B]' },
-                        { label: 'ROI', value: `${yourRank.roi}%`, color: 'text-[#0ECB81]' },
-                        { label: t('leaderboard.trades'), value: yourRank.trades.toString(), color: 'text-[#EAECEF]' },
-                        { label: t('leaderboard.estimatedReward'), value: '$2,000', color: 'text-[#F0B90B]' },
+                        { label: t('leaderboard.pnl'), value: `+${yourRank.pnlPercent}%`, color: 'text-success' },
+                        { label: t('leaderboard.volume'), value: `$${(yourRank.totalVolume / 1000).toFixed(0)}K`, color: 'text-foreground' },
+                        { label: t('leaderboard.winRate'), value: `${yourRank.winRate}%`, color: 'text-primary' },
+                        { label: 'ROI', value: `${yourRank.roi}%`, color: 'text-success' },
+                        { label: t('leaderboard.trades'), value: yourRank.trades.toString(), color: 'text-foreground' },
+                        { label: t('leaderboard.estimatedReward'), value: '$2,000', color: 'text-primary' },
                       ].map(stat => (
-                        <div key={stat.label} className="bg-[#0B0E11]/40 rounded-lg p-2.5">
-                          <p className="text-[10px] text-[#5E6673]">{stat.label}</p>
+                        <div key={stat.label} className="bg-background/40 rounded-lg p-2.5">
+                          <p className="text-[10px] text-muted-foreground">{stat.label}</p>
                           <p className={`text-base font-bold ${stat.color}`}>{stat.value}</p>
                         </div>
                       ))}
@@ -382,45 +385,45 @@ export default function LeaderboardView() {
                 </Card>
 
                 {/* Progress to Next Tier */}
-                <Card className="bg-[#1E2329]/80 backdrop-blur border-[#2B3139] mb-4">
+                <Card className="bg-card/80 backdrop-blur border-border mb-4">
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-xs text-[#848E9C]">{t('leaderboard.progressToNextTier')}</span>
-                      <span className="text-xs text-[#F0B90B]">#{yourRank.rank} → #{yourRank.rank - 1}</span>
+                      <span className="text-xs text-muted-foreground">{t('leaderboard.progressToNextTier')}</span>
+                      <span className="text-xs text-primary">#{yourRank.rank} → #{yourRank.rank - 1}</span>
                     </div>
-                    <div className="h-2 bg-[#2B3139] rounded-full overflow-hidden">
+                    <div className="h-2 bg-secondary rounded-full overflow-hidden">
                       <motion.div
-                        className="h-full rounded-full bg-gradient-to-r from-[#F0B90B] to-[#0ECB81]"
+                        className="h-full rounded-full bg-gradient-to-r from-primary to-success"
                         initial={{ width: 0 }}
                         animate={{ width: '73%' }}
                         transition={{ duration: 1 }}
                       />
                     </div>
-                    <p className="text-[10px] text-[#5E6673] mt-1.5">
+                    <p className="text-[10px] text-muted-foreground mt-1.5">
                       {t('leaderboard.needMorePnl')} +{(mockTraders[yourRank.rank - 2].pnlPercent - yourRank.pnlPercent).toFixed(1)}% {t('leaderboard.toReach')} #{yourRank.rank - 1}
                     </p>
                   </CardContent>
                 </Card>
 
                 {/* Nearby Competitors */}
-                <h3 className="text-xs font-semibold text-[#5E6673] uppercase tracking-wider mb-2">{t('leaderboard.nearbyCompetitors')}</h3>
+                <h3 className="text-xs font-semibold text-muted-foreground tracking-wider mb-2">{t('leaderboard.nearbyCompetitors')}</h3>
                 <div className="space-y-2">
                   {nearbyTraders.map(trader => (
                     <Card
                       key={trader.rank}
-                      className={`bg-[#1E2329]/80 backdrop-blur border-[#2B3139] ${trader.isYou ? 'border-[#F0B90B]/30' : ''}`}
+                      className={`bg-card/80 backdrop-blur border-border ${trader.isYou ? 'border-primary/30' : ''}`}
                     >
                       <CardContent className="p-3">
                         <div className="flex items-center gap-3">
-                          <span className="text-sm font-bold text-[#848E9C] w-7 text-center">#{trader.rank}</span>
+                          <span className="text-sm font-bold text-muted-foreground w-7 text-center">#{trader.rank}</span>
                           <span className="text-lg">{trader.avatar}</span>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5">
-                              <span className="text-sm font-semibold text-[#EAECEF] truncate">{trader.username}</span>
-                              {trader.isYou && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#F0B90B]/10 text-[#F0B90B]">{t('leaderboard.you')}</span>}
+                              <span className="text-sm font-semibold text-foreground truncate">{trader.username}</span>
+                              {trader.isYou && <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary">{t('leaderboard.you')}</span>}
                             </div>
                           </div>
-                          <span className="text-sm font-bold text-[#0ECB81]">+{trader.pnlPercent}%</span>
+                          <span className="text-sm font-bold text-success">+{trader.pnlPercent}%</span>
                         </div>
                       </CardContent>
                     </Card>
@@ -432,16 +435,16 @@ export default function LeaderboardView() {
             {activeTab === 'rewards' && (
               <div>
                 {/* Reward Distribution Visualization */}
-                <Card className="bg-[#1E2329]/80 backdrop-blur border-[#2B3139] mb-4">
+                <Card className="bg-card/80 backdrop-blur border-border mb-4">
                   <CardContent className="p-4">
-                    <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">{t('leaderboard.rewardDistribution')}</h3>
+                    <h3 className="text-sm font-semibold text-foreground mb-3">{t('leaderboard.rewardDistribution')}</h3>
                     <div className="flex items-end justify-center gap-3 h-40 mb-3">
                       {rewardTiers.map((tier, i) => {
                         const maxReward = 25000;
                         const heightPercent = (tier.reward / maxReward) * 100;
                         return (
                           <div key={tier.rank} className="flex flex-col items-center gap-1 flex-1">
-                            <span className="text-[9px] text-[#848E9C] font-mono">${(tier.reward / 1000).toFixed(0)}K</span>
+                            <span className="text-[10px] text-muted-foreground font-mono">${(tier.reward / 1000).toFixed(0)}K</span>
                             <motion.div
                               className="w-full rounded-t-md"
                               style={{ backgroundColor: tier.color + '40', borderBottom: `2px solid ${tier.color}` }}
@@ -449,7 +452,7 @@ export default function LeaderboardView() {
                               animate={{ height: `${heightPercent}%` }}
                               transition={{ duration: 0.6, delay: i * 0.1 }}
                             />
-                            <span className="text-[8px] text-[#5E6673] text-center leading-tight">{tier.rank}</span>
+                            <span className="text-[10px] text-muted-foreground text-center leading-tight">{tier.rank}</span>
                           </div>
                         );
                       })}
@@ -458,18 +461,18 @@ export default function LeaderboardView() {
                 </Card>
 
                 {/* Reward Tiers Table */}
-                <Card className="bg-[#1E2329]/80 backdrop-blur border-[#2B3139] mb-4">
+                <Card className="bg-card/80 backdrop-blur border-border mb-4">
                   <CardContent className="p-0">
-                    <div className="p-3 border-b border-[#2B3139]">
-                      <h3 className="text-sm font-semibold text-[#EAECEF]">{t('leaderboard.rewardTiers')}</h3>
+                    <div className="p-3 border-b border-border">
+                      <h3 className="text-sm font-semibold text-foreground">{t('leaderboard.rewardTiers')}</h3>
                     </div>
                     {rewardTiers.map((tier, i) => (
-                      <div key={tier.rank} className="flex items-center justify-between px-4 py-3 border-b border-[#2B3139]/50 last:border-0">
+                      <div key={tier.rank} className="flex items-center justify-between px-4 py-3 border-b border-border/50 last:border-0">
                         <div className="flex items-center gap-3">
                           <div className="w-3 h-3 rounded-full" style={{ backgroundColor: tier.color }} />
-                          <span className="text-sm text-[#EAECEF]">{tier.rank}</span>
+                          <span className="text-sm text-foreground">{tier.rank}</span>
                         </div>
-                        <span className="text-sm font-semibold text-[#F0B90B]">${tier.reward.toLocaleString()}</span>
+                        <span className="text-sm font-semibold text-primary">${formatNum(tier.reward)}</span>
                       </div>
                     ))}
                   </CardContent>
@@ -477,16 +480,16 @@ export default function LeaderboardView() {
 
                 {/* Your Estimated Reward */}
                 {yourRank && (
-                  <Card className="bg-gradient-to-r from-[#1E2329] to-[#2B3139] border-[#F0B90B]/20 mb-4">
+                  <Card className="bg-gradient-to-r from-card to-secondary border-primary/20 mb-4">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-xs text-[#848E9C]">{t('leaderboard.yourEstimatedReward')}</p>
-                          <p className="text-2xl font-bold text-[#F0B90B]">$2,000</p>
-                          <p className="text-[10px] text-[#5E6673]">{t('leaderboard.basedOnRank')} #{yourRank.rank}</p>
+                          <p className="text-xs text-muted-foreground">{t('leaderboard.yourEstimatedReward')}</p>
+                          <p className="text-2xl font-bold text-primary">$2,000</p>
+                          <p className="text-[10px] text-muted-foreground">{t('leaderboard.basedOnRank')} #{yourRank.rank}</p>
                         </div>
-                        <div className="w-12 h-12 rounded-full bg-[#F0B90B]/10 flex items-center justify-center">
-                          <Star className="h-6 w-6 text-[#F0B90B]" />
+                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Star className="h-6 w-6 text-primary" />
                         </div>
                       </div>
                     </CardContent>
@@ -501,7 +504,7 @@ export default function LeaderboardView() {
       <AnimatePresence>
         {showJoinModal && (
           <motion.div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -512,42 +515,42 @@ export default function LeaderboardView() {
               role="dialog"
               aria-modal="true"
               aria-label={t('leaderboard.joinCompetition')}
-              className="w-full max-w-sm bg-[#1E2329] border border-[#2B3139] rounded-2xl overflow-hidden gradient-border-modal"
+              className="w-full max-w-sm bg-card border border-border rounded-2xl overflow-hidden gradient-border-modal"
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-5 text-center space-y-4">
-                <div className="w-16 h-16 mx-auto rounded-full bg-[#F0B90B]/10 flex items-center justify-center">
-                  <Trophy className="h-8 w-8 text-[#F0B90B]" />
+                <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                  <Trophy className="h-8 w-8 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#EAECEF]">{t('leaderboard.joinCompetition')}</h3>
-                  <p className="text-xs text-[#848E9C] mt-1">{t('leaderboard.joinDesc')}</p>
+                  <h3 className="text-lg font-bold text-foreground">{t('leaderboard.joinCompetition')}</h3>
+                  <p className="text-xs text-muted-foreground mt-1">{t('leaderboard.joinDesc')}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-3 text-center">
-                  <div className="bg-[#0B0E11]/50 rounded-lg p-3">
-                    <DollarSign className="h-5 w-5 text-[#F0B90B] mx-auto mb-1" />
-                    <p className="text-sm font-bold text-[#F0B90B]">$100,000</p>
-                    <p className="text-[9px] text-[#5E6673]">{t('leaderboard.prizePool')}</p>
+                  <div className="bg-background/50 rounded-lg p-3">
+                    <DollarSign className="h-5 w-5 text-primary mx-auto mb-1" />
+                    <p className="text-sm font-bold text-primary">$100,000</p>
+                    <p className="text-[10px] text-muted-foreground">{t('leaderboard.prizePool')}</p>
                   </div>
-                  <div className="bg-[#0B0E11]/50 rounded-lg p-3">
-                    <Users className="h-5 w-5 text-[#0ECB81] mx-auto mb-1" />
-                    <p className="text-sm font-bold text-[#0ECB81]">1,247</p>
-                    <p className="text-[9px] text-[#5E6673]">{t('leaderboard.participants')}</p>
+                  <div className="bg-background/50 rounded-lg p-3">
+                    <Users className="h-5 w-5 text-success mx-auto mb-1" />
+                    <p className="text-sm font-bold text-success">1,247</p>
+                    <p className="text-[10px] text-muted-foreground">{t('leaderboard.participants')}</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
                   <Button
                     variant="outline"
-                    className="flex-1 border-[#2B3139] text-[#848E9C] hover:bg-[#2B3139] hover:text-[#EAECEF]"
+                    className="flex-1 border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
                     onClick={() => setShowJoinModal(false)}
                   >
                     {t('actions.cancel')}
                   </Button>
                   <Button
-                    className="flex-1 gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold shadow-md shadow-[#F0B90B]/20"
+                    className="flex-1 gradient-yellow hover:opacity-90 text-background font-semibold shadow-md shadow-primary/20"
                     onClick={() => {
                       setIsJoined(true);
                       setShowJoinModal(false);

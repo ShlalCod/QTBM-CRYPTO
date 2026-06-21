@@ -43,26 +43,26 @@ type WalletTab = 'spot' | 'funding' | 'earn' | 'futures';
 
 const walletTabs: { id: WalletTab; color: string; icon: React.ElementType }[] = [
   { id: 'spot', color: 'text-[#2B7DE9]', icon: Wallet },
-  { id: 'funding', color: 'text-[#0ECB81]', icon: Landmark },
-  { id: 'earn', color: 'text-[#F0B90B]', icon: PiggyBank },
-  { id: 'futures', color: 'text-[#F6465D]', icon: Flame },
+  { id: 'funding', color: 'text-success', icon: Landmark },
+  { id: 'earn', color: 'text-primary', icon: PiggyBank },
+  { id: 'futures', color: 'text-destructive', icon: Flame },
 ];
 
 const statusConfig: Record<string, { icon: React.ElementType; color: string }> = {
-  confirmed: { icon: CheckCircle2, color: 'text-[#0ECB81]' },
-  completed: { icon: CheckCircle2, color: 'text-[#0ECB81]' },
-  processing: { icon: Loader2, color: 'text-[#F0B90B]' },
-  pending: { icon: Clock, color: 'text-[#848E9C]' },
-  failed: { icon: XCircle, color: 'text-[#F6465D]' },
+  confirmed: { icon: CheckCircle2, color: 'text-success' },
+  completed: { icon: CheckCircle2, color: 'text-success' },
+  processing: { icon: Loader2, color: 'text-primary' },
+  pending: { icon: Clock, color: 'text-muted-foreground' },
+  failed: { icon: XCircle, color: 'text-destructive' },
 };
 
 const typeConfig: Record<string, { icon: React.ElementType; color: string; bgColor: string }> = {
-  deposit: { icon: ArrowDownRight, color: 'text-[#0ECB81]', bgColor: 'bg-[#0ECB81]/10' },
-  withdrawal: { icon: ArrowUpRight, color: 'text-[#F6465D]', bgColor: 'bg-[#F6465D]/10' },
-  trade: { icon: ShoppingCart, color: 'text-[#F0B90B]', bgColor: 'bg-[#F0B90B]/10' },
-  transfer: { icon: ArrowLeftRight, color: 'text-[#848E9C]', bgColor: 'bg-[#848E9C]/10' },
-  earn: { icon: TrendingUp, color: 'text-[#0ECB81]', bgColor: 'bg-[#0ECB81]/10' },
-  fee: { icon: CreditCard, color: 'text-[#F6465D]', bgColor: 'bg-[#F6465D]/10' },
+  deposit: { icon: ArrowDownRight, color: 'text-success', bgColor: 'bg-success/10' },
+  withdrawal: { icon: ArrowUpRight, color: 'text-destructive', bgColor: 'bg-destructive/10' },
+  trade: { icon: ShoppingCart, color: 'text-primary', bgColor: 'bg-primary/10' },
+  transfer: { icon: ArrowLeftRight, color: 'text-muted-foreground', bgColor: 'bg-muted-foreground/10' },
+  earn: { icon: TrendingUp, color: 'text-success', bgColor: 'bg-success/10' },
+  fee: { icon: CreditCard, color: 'text-destructive', bgColor: 'bg-destructive/10' },
 };
 
 // Animated counter component for total balance
@@ -96,53 +96,53 @@ function TransactionFlow() {
   const pendingWallet = 5;
 
   return (
-    <div className="bg-[#1E2329] rounded-xl p-4 border border-[#2B3139]">
-      <h4 className="text-xs font-semibold text-[#848E9C] mb-3">{t('wallet.transactionFlow')}</h4>
+    <div className="bg-card rounded-xl p-4 border border-border">
+      <h4 className="text-xs font-semibold text-muted-foreground mb-3">{t('wallet.transactionFlow')}</h4>
       <div className="flex items-center justify-between relative">
         {/* Deposit Node */}
         <div className="flex flex-col items-center z-10">
-          <div className="w-12 h-12 rounded-full bg-[#0ECB81]/10 border-2 border-[#0ECB81]/30 flex items-center justify-center relative">
-            <ArrowDownRight className="h-5 w-5 text-[#0ECB81]" />
-            <span className="absolute -top-1.5 -right-1.5 bg-[#0ECB81] text-[#0B0E11] text-[8px] font-bold rounded-full w-4 h-4 flex items-center justify-center pulse-badge">
+          <div className="w-12 h-12 rounded-full bg-success/10 border-2 border-success/30 flex items-center justify-center relative">
+            <ArrowDownRight className="h-5 w-5 text-success" />
+            <span className="absolute -top-1.5 -end-1.5 bg-success text-background text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center pulse-badge">
               {pendingDeposits}
             </span>
           </div>
-          <span className="text-[10px] text-[#848E9C] mt-1.5 font-medium">{t('wallet.deposit')}</span>
+          <span className="text-[10px] text-muted-foreground mt-1.5 font-medium">{t('wallet.deposit')}</span>
         </div>
 
         {/* Flow line 1: Deposit → Wallet */}
         <div className="flex-1 mx-2 relative h-0.5">
-          <div className="absolute inset-0 border-t-2 border-dashed border-[#2B3139]" />
-          <div className="flow-dot" style={{ top: -3, left: '10%', animationDelay: '0s' }} />
-          <div className="flow-dot" style={{ top: -3, left: '60%', animationDelay: '1s' }} />
+          <div className="absolute inset-0 border-t-2 border-dashed border-border" />
+          <div className="flow-dot" style={{ top: -3, insetInlineStart: '10%', animationDelay: '0s' }} />
+          <div className="flow-dot" style={{ top: -3, insetInlineStart: '60%', animationDelay: '1s' }} />
         </div>
 
         {/* Wallet Node */}
         <div className="flex flex-col items-center z-10">
-          <div className="w-14 h-14 rounded-full bg-[#F0B90B]/10 border-2 border-[#F0B90B]/30 flex items-center justify-center relative">
-            <Wallet className="h-6 w-6 text-[#F0B90B]" />
-            <span className="absolute -top-1.5 -right-1.5 bg-[#F0B90B] text-[#0B0E11] text-[8px] font-bold rounded-full w-5 h-5 flex items-center justify-center pulse-badge" style={{ animationDelay: '0.5s' }}>
+          <div className="w-14 h-14 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center relative">
+            <Wallet className="h-6 w-6 text-primary" />
+            <span className="absolute -top-1.5 -end-1.5 bg-primary text-background text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center pulse-badge" style={{ animationDelay: '0.5s' }}>
               {pendingWallet}
             </span>
           </div>
-          <span className="text-[10px] text-[#F0B90B] mt-1.5 font-semibold">{t('wallet.title')}</span>
+          <span className="text-[10px] text-primary mt-1.5 font-semibold">{t('wallet.title')}</span>
         </div>
 
         {/* Flow line 2: Wallet → Withdraw */}
         <div className="flex-1 mx-2 relative h-0.5">
-          <div className="absolute inset-0 border-t-2 border-dashed border-[#2B3139]" />
-          <div className="flow-dot" style={{ top: -3, left: '30%', animationDelay: '0.5s' }} />
+          <div className="absolute inset-0 border-t-2 border-dashed border-border" />
+          <div className="flow-dot" style={{ top: -3, insetInlineStart: '30%', animationDelay: '0.5s' }} />
         </div>
 
         {/* Withdraw Node */}
         <div className="flex flex-col items-center z-10">
-          <div className="w-12 h-12 rounded-full bg-[#F6465D]/10 border-2 border-[#F6465D]/30 flex items-center justify-center relative">
-            <ArrowUpRight className="h-5 w-5 text-[#F6465D]" />
-            <span className="absolute -top-1.5 -right-1.5 bg-[#F6465D] text-white text-[8px] font-bold rounded-full w-4 h-4 flex items-center justify-center pulse-badge" style={{ animationDelay: '1s' }}>
+          <div className="w-12 h-12 rounded-full bg-destructive/10 border-2 border-destructive/30 flex items-center justify-center relative">
+            <ArrowUpRight className="h-5 w-5 text-destructive" />
+            <span className="absolute -top-1.5 -end-1.5 bg-destructive text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center pulse-badge" style={{ animationDelay: '1s' }}>
               {pendingWithdrawals}
             </span>
           </div>
-          <span className="text-[10px] text-[#848E9C] mt-1.5 font-medium">{t('wallet.withdraw')}</span>
+          <span className="text-[10px] text-muted-foreground mt-1.5 font-medium">{t('wallet.withdraw')}</span>
         </div>
       </div>
     </div>
@@ -151,13 +151,18 @@ function TransactionFlow() {
 
 // ── Portfolio Performance 7-Day Area Chart ────────────────────────────────────
 function PortfolioPerformanceChart() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const data = useMemo(() => {
     // Simulated 7-day portfolio values
     const values = [42150, 42800, 41950, 43500, 43100, 44200, 44850];
-    const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const now = new Date();
+    const labels = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(now);
+      d.setDate(now.getDate() - 6 + i);
+      return new Intl.DateTimeFormat(language, { weekday: 'short' }).format(d);
+    });
     return { values, labels };
-  }, []);
+  }, [language]);
 
   const w = 300;
   const h = 80;
@@ -180,16 +185,16 @@ function PortfolioPerformanceChart() {
   const isPositive = change >= 0;
 
   return (
-    <div className="bg-[#1E2329] rounded-xl p-4 border border-[#2B3139]">
+    <div className="bg-card rounded-xl p-4 border border-border">
       <div className="flex items-center justify-between mb-2">
-        <h4 className="text-xs font-semibold text-[#848E9C]">{t('wallet.portfolioPerformance')}</h4>
+        <h4 className="text-xs font-semibold text-muted-foreground">{t('wallet.portfolioPerformance')}</h4>
         <div className="flex items-center gap-1">
           {isPositive ? (
-            <TrendingUp className="h-3 w-3 text-[#0ECB81]" />
+            <TrendingUp className="h-3 w-3 text-success" />
           ) : (
-            <TrendingDown className="h-3 w-3 text-[#F6465D]" />
+            <TrendingDown className="h-3 w-3 text-destructive" />
           )}
-          <span className={`text-[10px] font-semibold tabular-nums ${isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+          <span className={`text-[10px] font-semibold tabular-nums ${isPositive ? 'text-success' : 'text-destructive'}`}>
             {isPositive ? '+' : ''}{changePct}% (7d)
           </span>
         </div>
@@ -209,7 +214,7 @@ function PortfolioPerformanceChart() {
         <circle cx={toX(data.values.length - 1)} cy={toY(data.values[data.values.length - 1])} r="3" fill="#0ECB81" />
         {/* Day labels */}
         {data.labels.map((label, i) => (
-          <text key={i} x={toX(i)} y={h - 2} textAnchor="middle" fill="#5E6673" fontSize="7">{label}</text>
+          <text key={i} x={toX(i)} y={h - 2} textAnchor="middle" className="fill-muted-foreground" fontSize="7">{label}</text>
         ))}
       </svg>
     </div>
@@ -294,14 +299,14 @@ function AllocationRing({ allocations }: { allocations: { label: string; value: 
         ))}
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-[10px] text-[#848E9C] font-medium">{t('wallet.portfolio')}</span>
+        <span className="text-[10px] text-muted-foreground font-medium">{t('wallet.portfolio')}</span>
       </div>
     </div>
   );
 }
 
 export default function WalletView() {
-  const { t } = useTranslation();
+  const { t, isRTL, language } = useTranslation();
   const { navigateTo } = useAppStore();
   const [showBalance, setShowBalance] = useState(true);
   const [activeTab, setActiveTab] = useState<WalletTab>('spot');
@@ -324,29 +329,30 @@ export default function WalletView() {
   const TabIcon = activeTabConfig.icon;
 
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)] lg:h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-8rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="space-y-4 p-4 max-w-4xl mx-auto">
         {/* Transaction Flow Visualization */}
         <TransactionFlow />
 
         {/* Total Balance Card - Enhanced with gradient border animation */}
-        <Card className="bg-gradient-to-br from-[#1E2329] via-[#1E2329] to-[#2B3139] border-[#2B3139] overflow-hidden relative wave-bg gradient-border-animate card-shine">
+        <Card className="bg-gradient-to-br from-card via-card to-secondary border-border overflow-hidden relative wave-bg gradient-border-animate card-shine">
           {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-40 h-40 bg-[#F0B90B]/[0.04] rounded-full -translate-y-1/2 translate-x-1/3 blur-xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#0ECB81]/[0.03] rounded-full translate-y-1/2 -translate-x-1/4 blur-xl pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#F0B90B]/[0.02] via-transparent to-[#0ECB81]/[0.02] pointer-events-none" />
+          <div className="absolute top-0 end-0 w-40 h-40 bg-primary/[0.04] rounded-full -translate-y-1/2 translate-x-1/3 blur-xl pointer-events-none" />
+          <div className="absolute bottom-0 start-0 w-32 h-32 bg-success/[0.03] rounded-full translate-y-1/2 -translate-x-1/4 blur-xl pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/[0.02] via-transparent to-success/[0.02] pointer-events-none" />
           <CardContent className="p-5 relative z-10">
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-[#848E9C] floating-label">{t('wallet.estimatedBalance')}</span>
+                <span className="text-xs text-muted-foreground floating-label">{t('wallet.estimatedBalance')}</span>
                 <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded ${activeTabConfig.color} bg-current/10`}>
                   <TabIcon className={`h-2.5 w-2.5 ${activeTabConfig.color}`} />
-                  <span className={`text-[9px] font-medium ${activeTabConfig.color}`}>{t('wallet.' + activeTabConfig.id)}</span>
+                  <span className={`text-[10px] font-medium ${activeTabConfig.color}`}>{t('wallet.' + activeTabConfig.id)}</span>
                 </div>
               </div>
               <button
                 onClick={() => setShowBalance(!showBalance)}
-                className="text-[#5E6673] hover:text-[#848E9C] transition-colors"
+                aria-label={t('actions.toggle')}
+                className="h-9 w-9 flex items-center justify-center text-muted-foreground/70 hover:text-muted-foreground transition-colors rounded-md"
               >
                 {showBalance ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
               </button>
@@ -355,22 +361,22 @@ export default function WalletView() {
               <span className="text-3xl font-bold gradient-text-gold">
                 {showBalance ? <><span className="inline-flex items-center">$<AnimatedCounter value={totalBalance} /></span></> : '****'}
               </span>
-              <span className="text-sm text-[#848E9C] mb-1">USD</span>
+              <span className="text-sm text-muted-foreground mb-1">USD</span>
             </div>
-            <p className="text-xs text-[#5E6673] tabular-nums mb-2">
+            <p className="text-xs text-muted-foreground tabular-nums mb-2">
               ≈ {showBalance ? totalBtc.toFixed(4) : '****'} BTC
             </p>
             <div className="flex items-center gap-1.5">
               {showBalance ? (
                 <>
                   {pnl24h >= 0 ? (
-                    <TrendingUp className="h-3.5 w-3.5 text-[#0ECB81]" />
+                    <TrendingUp className="h-3.5 w-3.5 text-success" />
                   ) : (
-                    <TrendingDown className="h-3.5 w-3.5 text-[#F6465D]" />
+                    <TrendingDown className="h-3.5 w-3.5 text-destructive" />
                   )}
                   <span
                     className={`text-xs font-medium tabular-nums ${
-                      pnl24h >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'
+                      pnl24h >= 0 ? 'text-success' : 'text-destructive'
                     }`}
                   >
                     {pnl24h >= 0 ? '+' : ''}
@@ -379,9 +385,9 @@ export default function WalletView() {
                   </span>
                 </>
               ) : (
-                <span className="text-xs text-[#5E6673]">{t('wallet.pnl24h')}: ****</span>
+                <span className="text-xs text-muted-foreground">{t('wallet.pnl24h')}: ****</span>
               )}
-              <span className="text-[10px] text-[#5E6673] ms-1">{t('wallet.pnl24h')}</span>
+              <span className="text-[10px] text-muted-foreground ms-1">{t('wallet.pnl24h')}</span>
             </div>
             {/* Allocation ring chart */}
             <div className="flex items-center gap-4 mt-3">
@@ -396,10 +402,10 @@ export default function WalletView() {
                 {majorAssets.slice(0, 5).map((b) => (
                   <div key={b.asset} className="flex items-center gap-2">
                     <div className={`w-2 h-2 rounded-full ${
-                      b.asset === 'BTC' ? 'bg-[#F0B90B]' : b.asset === 'ETH' ? 'bg-[#627EEA]' : b.asset === 'BNB' ? 'bg-[#0ECB81]' : b.asset === 'SOL' ? 'bg-[#9945FF]' : 'bg-[#2B7DE9]'
+                      b.asset === 'BTC' ? 'bg-primary' : b.asset === 'ETH' ? 'bg-[#627EEA]' : b.asset === 'BNB' ? 'bg-success' : b.asset === 'SOL' ? 'bg-[#9945FF]' : 'bg-[#2B7DE9]'
                     }`} />
-                    <span className="text-[10px] text-[#848E9C]">{b.asset}</span>
-                    <span className="text-[10px] text-[#5E6673] tabular-nums">{((b.usdValue / totalBalance) * 100).toFixed(1)}%</span>
+                    <span className="text-[10px] text-muted-foreground">{b.asset}</span>
+                    <span className="text-[10px] text-muted-foreground tabular-nums">{((b.usdValue / totalBalance) * 100).toFixed(1)}%</span>
                   </div>
                 ))}
               </div>
@@ -408,7 +414,7 @@ export default function WalletView() {
         </Card>
 
         {/* Wallet Tabs - with colored indicators and micro-animations */}
-        <div className="flex gap-1 bg-[#1E2329] rounded-lg p-1">
+        <div className="flex gap-1 bg-card rounded-lg p-1">
           {walletTabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -418,8 +424,8 @@ export default function WalletView() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-medium rounded-md transition-all duration-200 touch-feedback ${
                   isActive
-                    ? `bg-[#2B3139] ${tab.color} shadow-sm wallet-tab-pop`
-                    : 'text-[#848E9C] hover:text-[#EAECEF]'
+                    ? `bg-secondary ${tab.color} shadow-sm wallet-tab-pop`
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <Icon className="h-3.5 w-3.5" />
@@ -432,22 +438,22 @@ export default function WalletView() {
         {/* Quick Actions */}
         <div className="grid grid-cols-4 gap-3">
           {[
-            { icon: ArrowDownRight, labelKey: 'wallet.deposit', view: 'deposit' as const, color: 'text-[#0ECB81]' },
-            { icon: ArrowUpRight, labelKey: 'wallet.withdraw', view: 'withdraw' as const, color: 'text-[#F6465D]' },
-            { icon: ArrowLeftRight, labelKey: 'wallet.transfer', view: 'transfer' as const, color: 'text-[#F0B90B]' },
-            { icon: CreditCard, labelKey: 'wallet.buyCrypto', view: 'trade' as const, color: 'text-[#848E9C]' },
+            { icon: ArrowDownRight, labelKey: 'wallet.deposit', view: 'deposit' as const, color: 'text-success' },
+            { icon: ArrowUpRight, labelKey: 'wallet.withdraw', view: 'withdraw' as const, color: 'text-destructive' },
+            { icon: ArrowLeftRight, labelKey: 'wallet.transfer', view: 'transfer' as const, color: 'text-primary' },
+            { icon: CreditCard, labelKey: 'wallet.buyCrypto', view: 'trade' as const, color: 'text-muted-foreground' },
           ].map((action) => {
             const Icon = action.icon;
             return (
               <button
                 key={action.labelKey}
                 onClick={() => navigateTo(action.view)}
-                className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-[#1E2329] hover:bg-[#2B3139] transition-colors active:scale-95"
+                className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-card hover:bg-secondary transition-colors active:scale-95"
               >
-                <div className="w-10 h-10 rounded-full bg-[#2B3139] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
                   <Icon className={`h-5 w-5 ${action.color}`} />
                 </div>
-                <span className="text-[10px] text-[#848E9C] font-medium">{t(action.labelKey)}</span>
+                <span className="text-[10px] text-muted-foreground font-medium">{t(action.labelKey)}</span>
               </button>
             );
           })}
@@ -455,27 +461,27 @@ export default function WalletView() {
 
         {/* Earn Banner */}
         <Card
-          className="bg-gradient-to-r from-[#1E2329] to-[#2B3139] border-[#2B3139] cursor-pointer hover:border-[#F0B90B]/30 transition-colors"
+          className="bg-gradient-to-r from-card to-secondary border-border cursor-pointer hover:border-primary/30 transition-colors"
           onClick={() => navigateTo('earn')}
         >
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#F0B90B]/10 rounded-full flex items-center justify-center shrink-0">
-              <Shield className="h-5 w-5 text-[#F0B90B]" />
+            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+              <Shield className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-[#EAECEF]">{t('wallet.earnUpToApy')}</p>
-              <p className="text-xs text-[#848E9C]">{t('wallet.stakeAndEarn')}</p>
+              <p className="text-sm font-semibold text-foreground">{t('wallet.earnUpToApy')}</p>
+              <p className="text-xs text-muted-foreground">{t('wallet.stakeAndEarn')}</p>
             </div>
             <Button
               variant="ghost"
               size="sm"
-              className="text-[#F0B90B] hover:text-[#F0B90B]/80 text-xs shrink-0"
+              className="text-primary hover:text-primary/80 text-xs shrink-0"
               onClick={(e) => {
                 e.stopPropagation();
                 navigateTo('earn');
               }}
             >
-              {t('wallet.go')} →
+              {t('wallet.go')} {isRTL ? '←' : '→'}
             </Button>
           </CardContent>
         </Card>
@@ -486,16 +492,16 @@ export default function WalletView() {
         {/* Asset List */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-[#EAECEF]">
+            <h3 className="text-sm font-semibold text-foreground">
               {activeTab === 'spot' ? t('wallet.spotAssets') : activeTab === 'funding' ? t('wallet.fundingAssets') : activeTab === 'earn' ? t('wallet.earnAssets') : t('wallet.futuresAssets')}
             </h3>
             <div className="flex items-center gap-2">
               {smallAssets.length > 0 && (
                 <button
                   onClick={() => setShowSmallAssets(!showSmallAssets)}
-                  className="text-[10px] text-[#F0B90B] hover:text-[#F0B90B]/80 flex items-center gap-1"
+                  className="text-[10px] text-primary hover:text-primary/80 flex items-center gap-1"
                 >
-                  {showSmallAssets ? t('wallet.hide') : t('wallet.show')} {t('wallet.smallAssets').toLowerCase()}
+                  {showSmallAssets ? t('wallet.hide') : t('wallet.show')} {t('wallet.smallAssets')}
                   {showSmallAssets ? (
                     <ChevronUp className="h-3 w-3" />
                   ) : (
@@ -507,7 +513,7 @@ export default function WalletView() {
           </div>
 
           {/* Asset Header */}
-          <div className="grid grid-cols-12 gap-2 px-3 py-1.5 text-[10px] text-[#5E6673] font-medium uppercase tracking-wider">
+          <div className="grid grid-cols-12 gap-2 px-3 py-1.5 text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
             <div className="col-span-4">{t('wallet.asset')}</div>
             <div className="col-span-2 text-end">{t('wallet.available')}</div>
             <div className="col-span-2 text-end">{t('wallet.value')}</div>
@@ -521,28 +527,28 @@ export default function WalletView() {
                 <div key={balance.asset}>
                   <button
                     onClick={() => setExpandedAsset(isExpanded ? null : balance.asset)}
-                    className="w-full grid grid-cols-12 gap-2 px-3 py-3 hover:bg-[#1E2329] rounded-lg transition-all duration-200 items-center card-depth touch-feedback asset-row-gradient"
+                    className="w-full grid grid-cols-12 gap-2 px-3 py-3 hover:bg-card rounded-lg transition-all duration-200 items-center card-depth touch-feedback asset-row-gradient"
                     style={{ '--asset-color': balance.asset === 'BTC' ? '#F0B90B' : balance.asset === 'ETH' ? '#627EEA' : balance.asset === 'BNB' ? '#0ECB81' : balance.asset === 'SOL' ? '#9945FF' : balance.asset === 'XRP' ? '#23292F' : balance.asset === 'ADA' ? '#0033AD' : balance.asset === 'DOGE' ? '#C3A634' : balance.asset === 'AVAX' ? '#E84142' : balance.asset === 'DOT' ? '#E6007A' : balance.asset === 'USDT' ? '#26A17B' : '#2B7DE9' } as React.CSSProperties}
                   >
                     <div className="col-span-4 flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#2B3139] flex items-center justify-center text-sm font-medium">
+                      <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-sm font-medium">
                         {balance.icon}
                       </div>
                       <div className="text-start">
-                        <p className="text-sm font-semibold text-[#EAECEF]">{balance.asset}</p>
-                        <p className="text-[10px] text-[#5E6673]">{balance.name}</p>
+                        <p className="text-sm font-semibold text-foreground">{balance.asset}</p>
+                        <p className="text-[10px] text-muted-foreground">{balance.name}</p>
                       </div>
                     </div>
                     <div className="col-span-2 text-end">
-                      <p className="text-xs text-[#EAECEF] tabular-nums">
-                        {showBalance ? balance.available.toLocaleString('en-US', { maximumFractionDigits: 4 }) : '****'}
+                      <p className="text-xs text-foreground tabular-nums">
+                        {showBalance ? balance.available.toLocaleString(language, { maximumFractionDigits: 4 }) : '****'}
                       </p>
-                      <p className="text-[10px] text-[#5E6673] tabular-nums">
-                        / {showBalance ? balance.total.toLocaleString('en-US', { maximumFractionDigits: 4 }) : '****'}
+                      <p className="text-[10px] text-muted-foreground tabular-nums">
+                        / {showBalance ? balance.total.toLocaleString(language, { maximumFractionDigits: 4 }) : '****'}
                       </p>
                     </div>
                     <div className="col-span-2 text-end">
-                      <p className="text-xs text-[#EAECEF] tabular-nums">
+                      <p className="text-xs text-foreground tabular-nums">
                         {showBalance ? `$${formatPrice(balance.usdValue)}` : '****'}
                       </p>
                     </div>
@@ -567,36 +573,36 @@ export default function WalletView() {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <div className="bg-[#1E2329] rounded-lg p-4 mx-2 mb-2 space-y-3 animate-slide-up">
+                        <div className="bg-card rounded-lg p-4 mx-2 mb-2 space-y-3 animate-slide-up">
                           <div className="grid grid-cols-2 gap-3 text-xs">
                             <div>
-                              <span className="text-[#5E6673]">{t('wallet.available')}</span>
-                              <p className="text-[#EAECEF] font-medium tabular-nums mt-0.5">
+                              <span className="text-muted-foreground">{t('wallet.available')}</span>
+                              <p className="text-foreground font-medium tabular-nums mt-0.5">
                                 {balance.available} {balance.asset}
                               </p>
                             </div>
                             <div>
-                              <span className="text-[#5E6673]">{t('wallet.inOrder')}</span>
-                              <p className="text-[#EAECEF] font-medium tabular-nums mt-0.5">
+                              <span className="text-muted-foreground">{t('wallet.inOrder')}</span>
+                              <p className="text-foreground font-medium tabular-nums mt-0.5">
                                 {balance.locked} {balance.asset}
                               </p>
                             </div>
                             <div>
-                              <span className="text-[#5E6673]">{t('wallet.usdValue')}</span>
-                              <p className="text-[#EAECEF] font-medium tabular-nums mt-0.5">
+                              <span className="text-muted-foreground">{t('wallet.usdValue')}</span>
+                              <p className="text-foreground font-medium tabular-nums mt-0.5">
                                 ${formatPrice(balance.usdValue)}
                               </p>
                             </div>
                             <div>
-                              <span className="text-[#5E6673]">{t('wallet.btcValue')}</span>
-                              <p className="text-[#EAECEF] font-medium tabular-nums mt-0.5">
+                              <span className="text-muted-foreground">{t('wallet.btcValue')}</span>
+                              <p className="text-foreground font-medium tabular-nums mt-0.5">
                                 {balance.btcValue.toFixed(6)} BTC
                               </p>
                             </div>
                           </div>
                           <div className="flex gap-2">
                             <Button
-                              className="flex-1 bg-[#0ECB81] hover:bg-[#0ECB81]/90 text-[#0B0E11] text-xs h-8 font-semibold"
+                              className="flex-1 bg-success hover:bg-success/90 text-background text-xs h-8 font-semibold"
                               onClick={() => {
                                 useAppStore.getState().setSelectedAsset(balance.asset);
                                 navigateTo('trade');
@@ -606,7 +612,7 @@ export default function WalletView() {
                             </Button>
                             <Button
                               variant="outline"
-                              className="flex-1 border-[#2B3139] text-[#EAECEF] hover:bg-[#2B3139] text-xs h-8"
+                              className="flex-1 border-border text-foreground hover:bg-secondary text-xs h-8"
                               onClick={() => {
                                 useAppStore.getState().setSelectedAsset(balance.asset);
                                 navigateTo('deposit');
@@ -616,7 +622,7 @@ export default function WalletView() {
                             </Button>
                             <Button
                               variant="outline"
-                              className="flex-1 border-[#2B3139] text-[#EAECEF] hover:bg-[#2B3139] text-xs h-8"
+                              className="flex-1 border-border text-foreground hover:bg-secondary text-xs h-8"
                               onClick={() => {
                                 useAppStore.getState().setSelectedAsset(balance.asset);
                                 navigateTo('withdraw');
@@ -641,11 +647,11 @@ export default function WalletView() {
             onClick={() => setShowHistory(!showHistory)}
             className="w-full flex items-center justify-between mb-3"
           >
-            <h3 className="text-sm font-semibold text-[#EAECEF]">{t('wallet.transactionHistory')}</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t('wallet.transactionHistory')}</h3>
             {showHistory ? (
-              <ChevronUp className="h-4 w-4 text-[#5E6673]" />
+              <ChevronUp className="h-4 w-4 text-muted-foreground" />
             ) : (
-              <ChevronDown className="h-4 w-4 text-[#5E6673]" />
+              <ChevronDown className="h-4 w-4 text-muted-foreground" />
             )}
           </button>
 
@@ -658,33 +664,33 @@ export default function WalletView() {
                 transition={{ duration: 0.2 }}
                 className="overflow-hidden"
               >
-                <Card className="bg-[#1E2329] border-[#2B3139]">
+                <Card className="bg-card border-border">
                   <CardContent className="p-0">
-                    <div className="divide-y divide-[#2B3139]">
+                    <div className="divide-y divide-border">
                       {mockTransactions.map((tx) => {
                         const TypeIcon = typeConfig[tx.type]?.icon || CreditCard;
-                        const typeColor = typeConfig[tx.type]?.color || 'text-[#848E9C]';
-                        const typeBg = typeConfig[tx.type]?.bgColor || 'bg-[#848E9C]/10';
+                        const typeColor = typeConfig[tx.type]?.color || 'text-muted-foreground';
+                        const typeBg = typeConfig[tx.type]?.bgColor || 'bg-muted-foreground/10';
                         const StatusIcon = statusConfig[tx.status]?.icon || Clock;
-                        const statusColor = statusConfig[tx.status]?.color || 'text-[#848E9C]';
+                        const statusColor = statusConfig[tx.status]?.color || 'text-muted-foreground';
                         const statusLabel = t('wallet.' + tx.status);
                         const isIncoming = tx.amount >= 0;
 
                         return (
-                          <div key={tx.id} className="flex items-center justify-between px-4 py-3 hover:bg-[#2B3139]/30 transition-colors">
+                          <div key={tx.id} className="flex items-center justify-between px-4 py-3 hover:bg-secondary/30 transition-colors">
                             <div className="flex items-center gap-3">
                               <div className={`w-9 h-9 rounded-full ${typeBg} flex items-center justify-center`}>
                                 <TypeIcon className={`h-4 w-4 ${typeColor}`} />
                               </div>
                               <div>
-                                <p className="text-sm text-[#EAECEF] font-medium">{tx.description}</p>
+                                <p className="text-sm text-foreground font-medium">{tx.description}</p>
                                 <div className="flex items-center gap-2 mt-0.5">
-                                  <span className="text-[10px] text-[#5E6673]">
+                                  <span className="text-[10px] text-muted-foreground">
                                     {getTimeAgo(tx.createdAt)}
                                   </span>
                                   <Badge
                                     variant="outline"
-                                    className={`h-4 px-1.5 text-[9px] border-0 ${statusColor} bg-current/10`}
+                                    className={`h-4 px-1.5 text-[10px] border-0 ${statusColor} bg-current/10`}
                                   >
                                     <StatusIcon className={`h-2.5 w-2.5 me-0.5 ${statusColor}`} />
                                     {statusLabel}
@@ -695,14 +701,14 @@ export default function WalletView() {
                             <div className="text-end">
                               <p
                                 className={`text-sm font-semibold tabular-nums ${
-                                  isIncoming ? 'text-[#0ECB81]' : 'text-[#F6465D]'
+                                  isIncoming ? 'text-success' : 'text-destructive'
                                 }`}
                               >
                                 {isIncoming ? '+' : ''}
                                 {tx.amount} {tx.asset}
                               </p>
                               <p className={`text-[10px] tabular-nums ${
-                                isIncoming ? 'text-[#0ECB81]/60' : 'text-[#F6465D]/60'
+                                isIncoming ? 'text-success/60' : 'text-destructive/60'
                               }`}>
                                 {isIncoming ? '+' : '-'}${formatPrice(Math.abs(tx.usdValue))}
                               </p>

@@ -55,9 +55,7 @@ interface AppState {
   setLanguage: (lang: Language) => void;
   isRTL: boolean;
 
-  // Theme
-  theme: 'dark' | 'light';
-  setTheme: (theme: 'dark' | 'light') => void;
+  // Theme is managed by next-themes — not in app-store (THEME-001).
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -184,15 +182,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     return normalized !== 'en'; // RTL unless explicitly English
   })(),
 
-  // Theme
-  theme: ((typeof window !== 'undefined' && localStorage.getItem('qtbm-theme') === 'light') ? 'light' : 'dark') as 'dark' | 'light',
-  setTheme: (theme) => {
-    try {
-      localStorage.setItem('qtbm-theme', theme);
-    } catch {}
-    if (typeof document !== 'undefined') {
-      document.documentElement.setAttribute('data-theme', theme);
-    }
-    set({ theme });
-  },
+  // Theme is managed EXCLUSIVELY by next-themes (THEME-001).
+  // app-store no longer holds theme state or setTheme — components use useTheme() from next-themes.
 }));

@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
 import { useTranslation } from '@/lib/i18n';
+import { useLocaleFmt } from '@/hooks/use-locale-fmt';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -86,8 +87,9 @@ const mockTriggeredAlerts: TriggeredAlert[] = [
 ];
 
 export default function PriceAlertsView() {
-  const { goBack } = useAppStore();
+  const { goBack, isRTL } = useAppStore();
   const { t } = useTranslation();
+  const { formatNum, formatDateTime } = useLocaleFmt();
   const [activeTab, setActiveTab] = useState<'active' | 'triggered' | 'expired'>('active');
   const [alerts, setAlerts] = useState<PriceAlert[]>(mockActiveAlerts);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -188,9 +190,14 @@ export default function PriceAlertsView() {
   };
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return formatDateTime(dateStr, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   };
+
+  const notifLabel = (n: string) =>
+    n === 'push' ? t('priceAlerts.notifPush')
+    : n === 'email' ? t('priceAlerts.notifEmail')
+    : n === 'sms' ? t('priceAlerts.notifSms')
+    : n;
 
   const NotifIcon = ({ type }: { type: string }) => {
     switch (type) {
@@ -202,7 +209,7 @@ export default function PriceAlertsView() {
   };
 
   return (
-    <ScrollArea className="h-[calc(100vh-4rem)] lg:h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="p-4 max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -210,22 +217,23 @@ export default function PriceAlertsView() {
             <Button
               variant="ghost"
               size="icon"
-              className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-9 w-9"
+              className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9"
               onClick={goBack}
+              aria-label={t('common.back')}
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
             </Button>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold text-[#EAECEF]">{t('priceAlerts.title')}</h1>
-                <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-0 text-[10px] px-2 py-0 h-5 font-semibold">
+                <h1 className="text-lg font-bold text-foreground">{t('priceAlerts.title')}</h1>
+                <Badge className="bg-primary/10 text-primary border-0 text-[10px] px-2 py-0 h-5 font-semibold">
                   {activeCount} {t('priceAlerts.active')}
                 </Badge>
               </div>
             </div>
           </div>
           <Button
-            className="gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-9 px-4 text-sm shadow-md shadow-[#F0B90B]/20"
+            className="gradient-yellow hover:opacity-90 text-background font-semibold h-9 px-4 text-sm shadow-md shadow-primary/20"
             onClick={() => { resetForm(); setShowCreateModal(true); }}
           >
             <Plus className="h-4 w-4 me-1.5" />
@@ -234,20 +242,20 @@ export default function PriceAlertsView() {
         </div>
 
         {/* Tab Selector with animated underline indicator */}
-        <div className="flex bg-[#1E2329] rounded-lg p-1 mb-4 relative">
+        <div className="flex bg-card rounded-lg p-1 mb-4 relative">
           {(['active', 'triggered', 'expired'] as const).map(tab => (
             <button
               key={tab}
               className="flex-1 py-2 text-sm font-medium rounded-md transition-all duration-200 relative"
               onClick={() => setActiveTab(tab)}
             >
-              <span className={activeTab === tab ? 'text-[#F0B90B]' : 'text-[#848E9C] hover:text-[#EAECEF]'}>
+              <span className={activeTab === tab ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}>
                 {tab === 'active' ? t('priceAlerts.activeAlerts') : tab === 'triggered' ? t('priceAlerts.triggeredHistory') : t('priceAlerts.expired')}
               </span>
               {activeTab === tab && (
                 <motion.div
                   layoutId="alert-tab-indicator"
-                  className="absolute bottom-0 left-2 right-2 h-[2px] bg-[#F0B90B] rounded-full"
+                  className="absolute bottom-0 start-2 end-2 h-[2px] bg-primary rounded-full"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
@@ -277,8 +285,8 @@ export default function PriceAlertsView() {
                         <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite" />
                       </circle>
                     </svg>
-                    <p className="text-[#848E9C] text-sm">{t('priceAlerts.noAlerts')}</p>
-                    <p className="text-[#5E6673] text-xs mt-1">{t('priceAlerts.createFirst')}</p>
+                    <p className="text-muted-foreground text-sm">{t('priceAlerts.noAlerts')}</p>
+                    <p className="text-muted-foreground text-xs mt-1">{t('priceAlerts.createFirst')}</p>
                   </div>
                 ) : (
                   alerts.map((alert, index) => (
@@ -290,32 +298,33 @@ export default function PriceAlertsView() {
                       transition={{ delay: index * 0.05 }}
                       layout
                     >
-                      <Card className={`bg-[#1E2329]/80 backdrop-blur border-[#2B3139] alert-stripe-${alert.type} ${alert.enabled ? '' : 'opacity-60'}`}>
+                      <Card className={`bg-card/80 backdrop-blur border-border alert-stripe-${alert.type} ${alert.enabled ? '' : 'opacity-60'}`}>
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex items-center gap-2.5">
-                              <div className="w-9 h-9 rounded-lg bg-[#2B3139] flex items-center justify-center text-lg font-bold">
+                              <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center text-lg font-bold">
                                 {alert.assetIcon}
                               </div>
                               <div>
                                 <div className="flex items-center gap-2">
-                                  <span className="font-semibold text-[#EAECEF] text-sm">{alert.asset}/USDT</span>
+                                  <span className="font-semibold text-foreground text-sm">{alert.asset}/USDT</span>
                                   <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium flex items-center gap-1 ${
                                     alert.type === 'above'
-                                      ? 'bg-[#0ECB81]/10 text-[#0ECB81]'
-                                      : 'bg-[#F6465D]/10 text-[#F6465D]'
+                                      ? 'bg-success/10 text-success'
+                                      : 'bg-destructive/10 text-destructive'
                                   }`}>
                                     {alert.type === 'above' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
                                     {alert.type === 'above' ? t('priceAlerts.priceAbove') : t('priceAlerts.priceBelow')}
                                   </span>
                                 </div>
-                                <span className="text-[10px] text-[#5E6673]">{formatDate(alert.createdAt)}</span>
+                                <span className="text-[10px] text-muted-foreground">{formatDate(alert.createdAt)}</span>
                               </div>
                             </div>
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => handleEdit(alert)}
-                                className="p-1.5 text-[#5E6673] hover:text-[#F0B90B] transition-colors"
+                                className="p-1.5 text-muted-foreground hover:text-primary transition-colors rounded-md hover:bg-primary/10 h-9 w-9 flex items-center justify-center"
+                                aria-label={t('common.edit')}
                               >
                                 <Edit3 className="h-3.5 w-3.5" />
                               </button>
@@ -323,13 +332,15 @@ export default function PriceAlertsView() {
                                 <div className="flex items-center gap-1">
                                   <button
                                     onClick={() => handleDelete(alert.id)}
-                                    className="p-1.5 text-[#0ECB81] hover:bg-[#0ECB81]/10 rounded transition-colors"
+                                    className="p-1.5 text-success hover:bg-success/10 rounded transition-colors h-9 w-9 flex items-center justify-center"
+                                    aria-label={t('common.confirm')}
                                   >
                                     <Check className="h-3.5 w-3.5" />
                                   </button>
                                   <button
                                     onClick={() => setDeleteConfirm(null)}
-                                    className="p-1.5 text-[#F6465D] hover:bg-[#F6465D]/10 rounded transition-colors"
+                                    className="p-1.5 text-destructive hover:bg-destructive/10 rounded transition-colors h-9 w-9 flex items-center justify-center"
+                                    aria-label={t('common.cancel')}
                                   >
                                     <X className="h-3.5 w-3.5" />
                                   </button>
@@ -337,7 +348,8 @@ export default function PriceAlertsView() {
                               ) : (
                                 <button
                                   onClick={() => setDeleteConfirm(alert.id)}
-                                  className="p-1.5 text-[#5E6673] hover:text-[#F6465D] transition-colors"
+                                  className="p-1.5 text-muted-foreground hover:text-destructive transition-colors rounded-md hover:bg-destructive/10 h-9 w-9 flex items-center justify-center"
+                                  aria-label={t('common.delete')}
                                 >
                                   <Trash2 className="h-3.5 w-3.5" />
                                 </button>
@@ -348,26 +360,26 @@ export default function PriceAlertsView() {
                           {/* Price Info */}
                           <div className="grid grid-cols-2 gap-3 mb-3">
                             <div>
-                              <span className="text-[10px] text-[#5E6673]">{t('priceAlerts.targetPrice')}</span>
-                              <p className="text-sm font-semibold text-[#F0B90B]">${alert.targetPrice.toLocaleString()}</p>
+                              <span className="text-[10px] text-muted-foreground">{t('priceAlerts.targetPrice')}</span>
+                              <p className="text-sm font-semibold text-primary">${formatNum(alert.targetPrice)}</p>
                             </div>
                             <div>
-                              <span className="text-[10px] text-[#5E6673]">{t('priceAlerts.currentPrice')}</span>
-                              <p className="text-sm font-semibold text-[#EAECEF]">${alert.currentPrice.toLocaleString()}</p>
+                              <span className="text-[10px] text-muted-foreground">{t('priceAlerts.currentPrice')}</span>
+                              <p className="text-sm font-semibold text-foreground">${formatNum(alert.currentPrice)}</p>
                             </div>
                           </div>
 
                           {/* Progress Bar */}
                           <div className="mb-3">
                             <div className="flex justify-between items-center mb-1">
-                              <span className="text-[10px] text-[#5E6673]">{t('priceAlerts.distance')}</span>
-                              <span className={`text-[10px] font-medium ${alert.type === 'above' ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+                              <span className="text-[10px] text-muted-foreground">{t('priceAlerts.distance')}</span>
+                              <span className={`text-[10px] font-medium ${alert.type === 'above' ? 'text-success' : 'text-destructive'}`}>
                                 {getDistancePercent(alert)}%
                               </span>
                             </div>
-                            <div className="h-1.5 bg-[#2B3139] rounded-full overflow-hidden">
+                            <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
                               <motion.div
-                                className={`h-full rounded-full ${alert.type === 'above' ? 'bg-[#0ECB81]' : 'bg-[#F6465D]'}`}
+                                className={`h-full rounded-full ${alert.type === 'above' ? 'bg-success' : 'bg-destructive'}`}
                                 initial={{ width: 0 }}
                                 animate={{ width: `${getProgressPercent(alert)}%` }}
                                 transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -378,27 +390,28 @@ export default function PriceAlertsView() {
                           {/* Bottom Row */}
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#2B3139] text-[#848E9C] flex items-center gap-1">
+                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground flex items-center gap-1">
                                 <NotifIcon type={alert.notification} />
-                                {alert.notification.toUpperCase()}
+                                {notifLabel(alert.notification)}
                               </span>
                               {alert.recurring && (
-                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#F0B90B]/10 text-[#F0B90B]">
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary">
                                   {t('priceAlerts.recurring')}
                                 </span>
                               )}
                               {alert.note && (
-                                <span className="text-[10px] text-[#5E6673] truncate max-w-[120px]">{alert.note}</span>
+                                <span className="text-[10px] text-muted-foreground truncate max-w-[120px]">{alert.note}</span>
                               )}
                             </div>
                             <button
                               onClick={() => toggleAlert(alert.id)}
-                              className="transition-colors"
+                              className="transition-colors h-9 w-9 flex items-center justify-center"
+                              aria-label={t('priceAlerts.toggleAlert')}
                             >
                               {alert.enabled ? (
-                                <ToggleRight className="h-6 w-6 text-[#0ECB81]" />
+                                <ToggleRight className="h-6 w-6 text-success" />
                               ) : (
-                                <ToggleLeft className="h-6 w-6 text-[#5E6673]" />
+                                <ToggleLeft className="h-6 w-6 text-muted-foreground" />
                               )}
                             </button>
                           </div>
@@ -417,36 +430,36 @@ export default function PriceAlertsView() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.04 }}
                   >
-                    <Card className="bg-[#1E2329]/80 backdrop-blur border-[#2B3139]">
+                    <Card className="bg-card/80 backdrop-blur border-border">
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-9 h-9 rounded-lg bg-[#2B3139] flex items-center justify-center text-lg font-bold">
+                            <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center text-lg font-bold">
                               {alert.assetIcon}
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
-                                <span className="font-semibold text-[#EAECEF] text-sm">{alert.asset}/USDT</span>
+                                <span className="font-semibold text-foreground text-sm">{alert.asset}/USDT</span>
                                 <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium flex items-center gap-1 ${
                                   alert.type === 'above'
-                                    ? 'bg-[#0ECB81]/10 text-[#0ECB81]'
-                                    : 'bg-[#F6465D]/10 text-[#F6465D]'
+                                    ? 'bg-success/10 text-success'
+                                    : 'bg-destructive/10 text-destructive'
                                 }`}>
                                   {alert.type === 'above' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
                                   {alert.type === 'above' ? t('priceAlerts.priceAbove') : t('priceAlerts.priceBelow')}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2 mt-0.5">
-                                <Clock className="h-3 w-3 text-[#5E6673]" />
-                                <span className="text-[10px] text-[#5E6673]">{formatDate(alert.triggeredAt)}</span>
+                                <Clock className="h-3 w-3 text-muted-foreground" />
+                                <span className="text-[10px] text-muted-foreground">{formatDate(alert.triggeredAt)}</span>
                               </div>
                             </div>
                           </div>
                           <div className="text-end">
-                            <p className="text-[10px] text-[#5E6673]">{t('priceAlerts.triggeredAt')}</p>
-                            <p className="text-sm font-semibold text-[#F0B90B]">${alert.triggeredPrice.toLocaleString()}</p>
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#2B3139] text-[#848E9C]">
-                              {alert.notification}
+                            <p className="text-[10px] text-muted-foreground">{t('priceAlerts.triggeredAt')}</p>
+                            <p className="text-sm font-semibold text-primary">${formatNum(alert.triggeredPrice)}</p>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">
+                              {notifLabel(alert.notification)}
                             </span>
                           </div>
                         </div>
@@ -466,7 +479,7 @@ export default function PriceAlertsView() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
               onClick={() => { setShowCreateModal(false); resetForm(); }}
             >
               <motion.div
@@ -478,19 +491,20 @@ export default function PriceAlertsView() {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 100, opacity: 0 }}
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="bg-[#1E2329] rounded-t-xl sm:rounded-xl border border-[#2B3139] w-full max-w-md max-h-[85vh] overflow-y-auto"
+                className="bg-card rounded-t-xl sm:rounded-xl border border-border w-full max-w-md max-h-[85vh] overflow-y-auto"
                 onClick={e => e.stopPropagation()}
               >
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-base font-bold text-[#EAECEF]">
+                    <h2 className="text-base font-bold text-foreground">
                       {editingAlert ? t('priceAlerts.editAlert') : t('priceAlerts.createAlert')}
                     </h2>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="text-[#848E9C] hover:text-[#EAECEF] h-8 w-8"
+                      className="text-muted-foreground hover:text-foreground h-9 w-9"
                       onClick={() => { setShowCreateModal(false); resetForm(); }}
+                      aria-label={t('common.close')}
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -498,20 +512,20 @@ export default function PriceAlertsView() {
 
                   {/* Asset Selector */}
                   <div className="mb-4">
-                    <label className="text-xs text-[#848E9C] mb-1.5 block">{t('priceAlerts.selectAsset')}</label>
+                    <label className="text-xs text-muted-foreground mb-1.5 block">{t('priceAlerts.selectAsset')}</label>
                     <div className="grid grid-cols-4 gap-2">
                       {ASSETS.map(asset => (
                         <button
                           key={asset.symbol}
                           className={`flex flex-col items-center p-2 rounded-lg transition-all ${
                             formAsset.symbol === asset.symbol
-                              ? 'bg-[#F0B90B]/10 border border-[#F0B90B]/30'
-                              : 'bg-[#2B3139] border border-transparent hover:border-[#2B3139]'
+                              ? 'bg-primary/10 border border-primary/30'
+                              : 'bg-secondary border border-transparent hover:border-border'
                           }`}
                           onClick={() => setFormAsset(asset)}
                         >
                           <span className="text-lg mb-0.5">{asset.icon}</span>
-                          <span className="text-[10px] font-medium text-[#EAECEF]">{asset.symbol}</span>
+                          <span className="text-[10px] font-medium text-foreground">{asset.symbol}</span>
                         </button>
                       ))}
                     </div>
@@ -519,11 +533,11 @@ export default function PriceAlertsView() {
 
                   {/* Alert Type */}
                   <div className="mb-4">
-                    <label className="text-xs text-[#848E9C] mb-1.5 block">{t('priceAlerts.alertType')}</label>
-                    <div className="flex bg-[#2B3139] rounded-lg p-1">
+                    <label className="text-xs text-muted-foreground mb-1.5 block">{t('priceAlerts.alertType')}</label>
+                    <div className="flex bg-secondary rounded-lg p-1">
                       <button
                         className={`flex-1 py-2 text-sm font-medium rounded-md flex items-center justify-center gap-1 transition-all ${
-                          formType === 'above' ? 'bg-[#0ECB81]/10 text-[#0ECB81]' : 'text-[#848E9C]'
+                          formType === 'above' ? 'bg-success/10 text-success' : 'text-muted-foreground'
                         }`}
                         onClick={() => setFormType('above')}
                       >
@@ -532,7 +546,7 @@ export default function PriceAlertsView() {
                       </button>
                       <button
                         className={`flex-1 py-2 text-sm font-medium rounded-md flex items-center justify-center gap-1 transition-all ${
-                          formType === 'below' ? 'bg-[#F6465D]/10 text-[#F6465D]' : 'text-[#848E9C]'
+                          formType === 'below' ? 'bg-destructive/10 text-destructive' : 'text-muted-foreground'
                         }`}
                         onClick={() => setFormType('below')}
                       >
@@ -545,9 +559,9 @@ export default function PriceAlertsView() {
                   {/* Target Price */}
                   <div className="mb-4">
                     <div className="flex items-center justify-between mb-1.5">
-                      <label className="text-xs text-[#848E9C]">{t('priceAlerts.targetPrice')}</label>
-                      <span className="text-[10px] text-[#5E6673]">
-                        {t('priceAlerts.current')}: ${formAsset.price.toLocaleString()}
+                      <label className="text-xs text-muted-foreground">{t('priceAlerts.targetPrice')}</label>
+                      <span className="text-[10px] text-muted-foreground">
+                        {t('priceAlerts.current')}: ${formatNum(formAsset.price)}
                       </span>
                     </div>
                     <Input
@@ -555,26 +569,26 @@ export default function PriceAlertsView() {
                       placeholder="0.00"
                       value={formPrice}
                       onChange={e => setFormPrice(e.target.value)}
-                      className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-11 text-lg font-semibold focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
+                      className="bg-secondary border-border text-foreground placeholder:text-muted-foreground h-11 text-lg font-semibold focus:border-primary focus:ring-primary/20"
                     />
                   </div>
 
                   {/* Notification Method */}
                   <div className="mb-4">
-                    <label className="text-xs text-[#848E9C] mb-1.5 block">{t('priceAlerts.notificationMethod')}</label>
-                    <div className="flex bg-[#2B3139] rounded-lg p-1">
+                    <label className="text-xs text-muted-foreground mb-1.5 block">{t('priceAlerts.notificationMethod')}</label>
+                    <div className="flex bg-secondary rounded-lg p-1">
                       {(['push', 'email', 'sms'] as const).map(method => (
                         <button
                           key={method}
                           className={`flex-1 py-2 text-xs font-medium rounded-md flex items-center justify-center gap-1 transition-all ${
                             formNotification === method
-                              ? 'bg-[#F0B90B]/10 text-[#F0B90B]'
-                              : 'text-[#848E9C]'
+                              ? 'bg-primary/10 text-primary'
+                              : 'text-muted-foreground'
                           }`}
                           onClick={() => setFormNotification(method)}
                         >
                           <NotifIcon type={method} />
-                          {method.toUpperCase()}
+                          {notifLabel(method)}
                         </button>
                       ))}
                     </div>
@@ -582,11 +596,11 @@ export default function PriceAlertsView() {
 
                   {/* One-time / Recurring */}
                   <div className="mb-4">
-                    <label className="text-xs text-[#848E9C] mb-1.5 block">{t('priceAlerts.frequency')}</label>
-                    <div className="flex bg-[#2B3139] rounded-lg p-1">
+                    <label className="text-xs text-muted-foreground mb-1.5 block">{t('priceAlerts.frequency')}</label>
+                    <div className="flex bg-secondary rounded-lg p-1">
                       <button
                         className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
-                          !formRecurring ? 'bg-[#F0B90B]/10 text-[#F0B90B]' : 'text-[#848E9C]'
+                          !formRecurring ? 'bg-primary/10 text-primary' : 'text-muted-foreground'
                         }`}
                         onClick={() => setFormRecurring(false)}
                       >
@@ -594,7 +608,7 @@ export default function PriceAlertsView() {
                       </button>
                       <button
                         className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
-                          formRecurring ? 'bg-[#F0B90B]/10 text-[#F0B90B]' : 'text-[#848E9C]'
+                          formRecurring ? 'bg-primary/10 text-primary' : 'text-muted-foreground'
                         }`}
                         onClick={() => setFormRecurring(true)}
                       >
@@ -605,18 +619,18 @@ export default function PriceAlertsView() {
 
                   {/* Note */}
                   <div className="mb-4">
-                    <label className="text-xs text-[#848E9C] mb-1.5 block">{t('priceAlerts.note')}</label>
+                    <label className="text-xs text-muted-foreground mb-1.5 block">{t('priceAlerts.note')}</label>
                     <Input
                       placeholder={t('priceAlerts.notePlaceholder')}
                       value={formNote}
                       onChange={e => setFormNote(e.target.value)}
-                      className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-10 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
+                      className="bg-secondary border-border text-foreground placeholder:text-muted-foreground h-10 text-sm focus:border-primary focus:ring-primary/20"
                     />
                   </div>
 
                   {/* Submit */}
                   <Button
-                    className="w-full gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-11 text-sm shadow-md shadow-[#F0B90B]/20"
+                    className="w-full gradient-yellow hover:opacity-90 text-background font-semibold h-11 text-sm shadow-md shadow-primary/20"
                     onClick={handleCreate}
                     disabled={!formPrice || parseFloat(formPrice) <= 0}
                   >

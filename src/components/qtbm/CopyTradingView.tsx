@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
 import { useTranslation } from '@/lib/i18n';
+import { useLocaleFmt } from '@/hooks/use-locale-fmt';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -195,20 +196,20 @@ function PnlOverviewChart() {
 function getRiskBadge(risk: Trader['risk']) {
   switch (risk) {
     case 'Low':
-      return { bg: 'bg-[#0ECB81]/10', text: 'text-[#0ECB81]', border: 'border-[#0ECB81]/20' };
+      return { bg: 'bg-success/10', text: 'text-success', border: 'border-success/20' };
     case 'Medium':
-      return { bg: 'bg-[#F0B90B]/10', text: 'text-[#F0B90B]', border: 'border-[#F0B90B]/20' };
+      return { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' };
     case 'High':
-      return { bg: 'bg-[#F6465D]/10', text: 'text-[#F6465D]', border: 'border-[#F6465D]/20' };
+      return { bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20' };
     case 'Very High':
-      return { bg: 'bg-[#F6465D]/15', text: 'text-[#F6465D]', border: 'border-[#F6465D]/30' };
+      return { bg: 'bg-destructive/15', text: 'text-destructive', border: 'border-destructive/30' };
   }
 }
 
 // ===== Main Component =====
 
 export default function CopyTradingView() {
-  const { goBack } = useAppStore();
+  const { goBack, isRTL } = useAppStore();
   const { t } = useTranslation();
 
   const [activeTab, setActiveTab] = useState<'topTraders' | 'myCopies' | 'leaderboard'>('topTraders');
@@ -238,20 +239,21 @@ export default function CopyTradingView() {
 
   // ===== Render =====
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)] lg:h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-8rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="p-4 max-w-2xl mx-auto space-y-4">
         {/* Header */}
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
-            className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-8 w-8"
+            className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9"
             onClick={goBack}
+            aria-label={t('common.back')}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
           </Button>
-          <h1 className="text-lg font-semibold text-[#EAECEF]">{t('copyTrading.title')}</h1>
-          <Badge className="bg-gradient-to-r from-[#0ECB81] to-[#0ECB81]/70 text-white border-0 text-[9px] px-2 py-0.5 font-bold">
+          <h1 className="text-lg font-semibold text-foreground">{t('copyTrading.title')}</h1>
+          <Badge className="bg-gradient-to-r from-success to-success/70 text-white border-0 text-[10px] px-2 py-0.5 font-bold">
             {t('copyTrading.beta')}
           </Badge>
         </div>
@@ -263,49 +265,49 @@ export default function CopyTradingView() {
           transition={{ duration: 0.4, ease: 'easeOut' }}
           className="relative"
         >
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#0ECB81]/40 via-[#F0B90B]/30 to-[#0ECB81]/40 p-[1px]">
-            <div className="w-full h-full rounded-xl bg-[#1E2329]" />
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-success/40 via-primary/30 to-success/40 p-[1px]">
+            <div className="w-full h-full rounded-xl bg-card" />
           </div>
-          <Card className="bg-[#1E2329]/80 backdrop-blur-xl border-0 relative overflow-hidden glass-card">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#0ECB81]/8 via-transparent to-[#F0B90B]/5" />
+          <Card className="bg-card/80 backdrop-blur-xl border-0 relative overflow-hidden glass-card">
+            <div className="absolute inset-0 bg-gradient-to-br from-success/8 via-transparent to-primary/5" />
             <CardContent className="p-5 relative z-10">
               <div className="flex items-center gap-2 mb-3">
-                <BarChart3 className="h-5 w-5 text-[#F0B90B]" />
-                <h2 className="text-sm font-semibold text-[#EAECEF]">{t('copyTrading.overview')}</h2>
+                <BarChart3 className="h-5 w-5 text-primary" />
+                <h2 className="text-sm font-semibold text-foreground">{t('copyTrading.overview')}</h2>
               </div>
 
               <div className="grid grid-cols-2 gap-3 mb-4">
                 {/* Total PnL */}
-                <div className="bg-[#0B0E11]/50 rounded-xl p-3">
-                  <p className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1">{t('copyTrading.pnl')}</p>
-                  <p className="text-lg font-bold text-[#0ECB81] neon-glow-green">+$1,234.50</p>
-                  <p className="text-[10px] text-[#0ECB81]">+18.5%</p>
+                <div className="bg-background/50 rounded-xl p-3">
+                  <p className="text-[10px] text-muted-foreground tracking-wider font-medium mb-1">{t('copyTrading.pnl')}</p>
+                  <p className="text-lg font-bold text-success neon-glow-green">+$1,234.50</p>
+                  <p className="text-[10px] text-success">+18.5%</p>
                 </div>
                 {/* Active Copies */}
-                <div className="bg-[#0B0E11]/50 rounded-xl p-3">
-                  <p className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1">{t('copyTrading.activeCopies')}</p>
-                  <p className="text-lg font-bold text-[#EAECEF]">3</p>
-                  <p className="text-[10px] text-[#848E9C]">{t('copyTrading.traders')}</p>
+                <div className="bg-background/50 rounded-xl p-3">
+                  <p className="text-[10px] text-muted-foreground tracking-wider font-medium mb-1">{t('copyTrading.activeCopies')}</p>
+                  <p className="text-lg font-bold text-foreground">3</p>
+                  <p className="text-[10px] text-muted-foreground">{t('copyTrading.traders')}</p>
                 </div>
                 {/* Total Invested */}
-                <div className="bg-[#0B0E11]/50 rounded-xl p-3">
-                  <p className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1">{t('copyTrading.invested')}</p>
-                  <p className="text-lg font-bold text-[#F0B90B]">$8,500.00</p>
-                  <p className="text-[10px] text-[#848E9C]">{t('copyTrading.total')}</p>
+                <div className="bg-background/50 rounded-xl p-3">
+                  <p className="text-[10px] text-muted-foreground tracking-wider font-medium mb-1">{t('copyTrading.invested')}</p>
+                  <p className="text-lg font-bold text-primary">$8,500.00</p>
+                  <p className="text-[10px] text-muted-foreground">{t('copyTrading.total')}</p>
                 </div>
                 {/* Avg ROI */}
-                <div className="bg-[#0B0E11]/50 rounded-xl p-3">
-                  <p className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1">{t('copyTrading.avgRoi')}</p>
-                  <p className="text-lg font-bold text-[#0ECB81]">+12.3%</p>
-                  <p className="text-[10px] text-[#0ECB81]">{t('copyTrading.last30d')}</p>
+                <div className="bg-background/50 rounded-xl p-3">
+                  <p className="text-[10px] text-muted-foreground tracking-wider font-medium mb-1">{t('copyTrading.avgRoi')}</p>
+                  <p className="text-lg font-bold text-success">+12.3%</p>
+                  <p className="text-[10px] text-success">{t('copyTrading.last30d')}</p>
                 </div>
               </div>
 
               {/* Mini PnL Chart */}
-              <div className="bg-[#0B0E11]/30 rounded-xl p-3">
+              <div className="bg-background/30 rounded-xl p-3">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium">{t('copyTrading.cumulativePnl')}</p>
-                  <TrendingUp className="h-3.5 w-3.5 text-[#0ECB81]" />
+                  <p className="text-[10px] text-muted-foreground tracking-wider font-medium">{t('copyTrading.cumulativePnl')}</p>
+                  <TrendingUp className="h-3.5 w-3.5 text-success" />
                 </div>
                 <PnlOverviewChart />
               </div>
@@ -314,7 +316,7 @@ export default function CopyTradingView() {
         </motion.div>
 
         {/* Tabs */}
-        <div className="flex gap-1 bg-[#1E2329] rounded-lg p-1">
+        <div className="flex gap-1 bg-card rounded-lg p-1">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -322,8 +324,8 @@ export default function CopyTradingView() {
               className={cn(
                 'flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all duration-200',
                 activeTab === tab.id
-                  ? 'bg-[#F0B90B] text-[#0B0E11] shadow-md shadow-[#F0B90B]/20'
-                  : 'text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139]/50'
+                  ? 'bg-primary text-background shadow-md shadow-primary/20'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
               )}
             >
               {tab.label}
@@ -366,8 +368,8 @@ export default function CopyTradingView() {
               {/* Active Copies */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <Zap className="h-4 w-4 text-[#0ECB81]" />
-                  <h3 className="text-sm font-medium text-[#EAECEF]">{t('copyTrading.activeCopies')}</h3>
+                  <Zap className="h-4 w-4 text-success" />
+                  <h3 className="text-sm font-medium text-foreground">{t('copyTrading.activeCopies')}</h3>
                 </div>
                 {activeCopies.map((copy, idx) => (
                   <ActiveCopyCard key={copy.id} copy={copy} index={idx} t={t} />
@@ -377,8 +379,8 @@ export default function CopyTradingView() {
               {/* Closed Copies */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <StopCircle className="h-4 w-4 text-[#5E6673]" />
-                  <h3 className="text-sm font-medium text-[#848E9C]">{t('copyTrading.closedCopies')}</h3>
+                  <StopCircle className="h-4 w-4 text-muted-foreground" />
+                  <h3 className="text-sm font-medium text-muted-foreground">{t('copyTrading.closedCopies')}</h3>
                 </div>
                 {closedCopies.map((copy, idx) => (
                   <ClosedCopyCard key={copy.id} copy={copy} index={idx} t={t} />
@@ -436,6 +438,7 @@ function TraderCard({ trader, index, onCopy, t }: { trader: Trader; index: numbe
   const isVerified = trader.winRate >= 85;
   const isTopTrader = trader.roi > 100;
   const riskDotColor = trader.risk === 'Low' ? '#0ECB81' : trader.risk === 'Medium' ? '#F0B90B' : '#F6465D';
+  const { isRTL } = useAppStore();
 
   return (
     <motion.div
@@ -445,15 +448,15 @@ function TraderCard({ trader, index, onCopy, t }: { trader: Trader; index: numbe
       className="group"
     >
       <Card className={cn(
-        "bg-[#1E2329] border-[#2B3139] transition-all duration-300 glass-card relative overflow-hidden",
+        "bg-card border-border transition-all duration-300 glass-card relative overflow-hidden",
         "hover:border-transparent hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:translate-y-[-2px]",
         isTopTrader && 'trader-card-glow'
       )}>
         {/* Animated Gradient Left Border */}
         <div className={cn(
-          'absolute left-0 top-0 bottom-0 w-[3px] rounded-l-xl',
+          'absolute start-0 top-0 bottom-0 w-[3px] rounded-s-xl',
           isTopTrader
-            ? 'bg-gradient-to-b from-[#FFD700] via-[#F0B90B] to-[#FFD700] animate-gradient-shift bg-[length:100%_200%]'
+            ? 'bg-gradient-to-b from-gold via-primary to-gold animate-gradient-shift bg-[length:100%_200%]'
             : 'bg-gradient-to-b from-[#C0C0C0] via-[#A0A0A0] to-[#C0C0C0]'
         )} />
         <CardContent className="p-4 ps-5">
@@ -464,36 +467,36 @@ function TraderCard({ trader, index, onCopy, t }: { trader: Trader; index: numbe
                 className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 relative"
                 style={{ backgroundColor: trader.color + '20' }}
               >
-                <span className="text-sm font-bold" style={{ color: trader.color }}>
-                  {trader.name.slice(0, 2).toUpperCase()}
+                <span className="text-sm font-bold" style={{ color: trader.color }} dir="ltr">
+                  {trader.name.slice(0, 2)}
                 </span>
                 {/* Risk Dot */}
                 <div
-                  className="absolute -bottom-0.5 -end-0.5 w-3 h-3 rounded-full border-2 border-[#1E2329]"
+                  className="absolute -bottom-0.5 -end-0.5 w-3 h-3 rounded-full border-2 border-border"
                   style={{ backgroundColor: riskDotColor }}
                   title={`Risk: ${trader.risk}`}
                 />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-semibold text-[#EAECEF]">{trader.name}</span>
+                  <span className="text-sm font-semibold text-foreground">{trader.name}</span>
                   {isVerified && (
-                    <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[8px] px-1.5 py-0 h-4 gap-0.5">
+                    <Badge className="bg-success/10 text-success border-0 text-[10px] px-1.5 py-0 h-4 gap-0.5">
                       <Check className="h-2.5 w-2.5" />
                       {t('copyTrading.verified')}
                     </Badge>
                   )}
                   {/* Top Trader Badge with Shimmer */}
                   {isTopTrader && (
-                    <Badge className="bg-gradient-to-r from-[#FFD700]/20 to-[#F0B90B]/20 text-[#FFD700] border-[#FFD700]/30 text-[8px] px-1.5 py-0 h-4 gap-0.5 shimmer relative overflow-hidden">
+                    <Badge className="bg-gradient-to-r from-gold/20 to-primary/20 text-gold border-gold/30 text-[10px] px-1.5 py-0 h-4 gap-0.5 shimmer relative overflow-hidden">
                       <Crown className="h-2.5 w-2.5" />
                       {t('copyTrading.top')}
                     </Badge>
                   )}
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <Users className="h-3 w-3 text-[#5E6673]" />
-                  <span className="text-[10px] text-[#5E6673]">
+                  <Users className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-[10px] text-muted-foreground">
                     <AnimatedCounter target={trader.copiers} /> {t('copyTrading.copiers')}
                   </span>
                 </div>
@@ -504,7 +507,7 @@ function TraderCard({ trader, index, onCopy, t }: { trader: Trader; index: numbe
             <Badge
               className={cn(
                 'text-[10px] font-bold px-2 py-0.5 border-0',
-                trader.roi > 0 ? 'bg-[#0ECB81]/10 text-[#0ECB81]' : 'bg-[#F6465D]/10 text-[#F6465D]'
+                trader.roi > 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
               )}
             >
               {trader.roi > 0 ? '+' : ''}{trader.roi}% ROI
@@ -514,19 +517,19 @@ function TraderCard({ trader, index, onCopy, t }: { trader: Trader; index: numbe
           {/* Win Rate Progress */}
           <div className="mb-3">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] text-[#5E6673]">{t('copyTrading.winRate')}</span>
-              <span className={cn('text-[10px] font-semibold', trader.winRate >= 70 ? 'text-[#0ECB81]' : 'text-[#F0B90B]')}>
+              <span className="text-[10px] text-muted-foreground">{t('copyTrading.winRate')}</span>
+              <span className={cn('text-[10px] font-semibold', trader.winRate >= 70 ? 'text-success' : 'text-primary')}>
                 {trader.winRate}%
               </span>
             </div>
-            <div className="w-full h-1.5 bg-[#2B3139] rounded-full overflow-hidden">
+            <div className="w-full h-1.5 bg-secondary rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${trader.winRate}%` }}
                 transition={{ duration: 0.8, delay: index * 0.06 + 0.2, ease: 'easeOut' }}
                 className={cn(
                   'h-full rounded-full',
-                  trader.winRate >= 80 ? 'bg-gradient-to-r from-[#0ECB81]/70 to-[#0ECB81]' : trader.winRate >= 60 ? 'bg-gradient-to-r from-[#F0B90B]/70 to-[#F0B90B]' : 'bg-gradient-to-r from-[#F6465D]/70 to-[#F6465D]'
+                  trader.winRate >= 80 ? 'bg-gradient-to-r from-success/70 to-success' : trader.winRate >= 60 ? 'bg-gradient-to-r from-primary/70 to-primary' : 'bg-gradient-to-r from-destructive/70 to-destructive'
                 )}
               />
             </div>
@@ -535,7 +538,7 @@ function TraderCard({ trader, index, onCopy, t }: { trader: Trader; index: numbe
           {/* Sparkline + Risk + Assets */}
           <div className="flex items-center gap-3 mb-3">
             <MiniSparkline up={trader.sparklineUp} color={trader.roi > 0 ? '#0ECB81' : '#F6465D'} width={60} height={22} />
-            <Badge className={cn('text-[9px] font-semibold px-2 py-0.5 border', riskStyle.bg, riskStyle.text, riskStyle.border)}>
+            <Badge className={cn('text-[10px] font-semibold px-2 py-0.5 border', riskStyle.bg, riskStyle.text, riskStyle.border)}>
               {trader.risk === 'Very High' && (
                 <span className="inline-block animate-pulse me-0.5">&#9679;</span>
               )}
@@ -548,7 +551,7 @@ function TraderCard({ trader, index, onCopy, t }: { trader: Trader; index: numbe
             {trader.assets.map((asset) => (
               <span
                 key={asset}
-                className="text-[9px] font-medium px-2 py-0.5 rounded-full bg-[#2B3139] text-[#848E9C]"
+                className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground"
               >
                 {asset}
               </span>
@@ -557,7 +560,7 @@ function TraderCard({ trader, index, onCopy, t }: { trader: Trader; index: numbe
 
           {/* Follow Button with gradient and press-scale */}
           <Button
-            className="w-full gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-9 text-sm press-scale shadow-md shadow-[#F0B90B]/20 hover:shadow-lg hover:shadow-[#F0B90B]/30"
+            className="w-full gradient-yellow hover:opacity-90 text-background font-semibold h-9 text-sm press-scale shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30"
             onClick={onCopy}
           >
             <Copy className="h-4 w-4 me-1.5" />
@@ -571,6 +574,7 @@ function TraderCard({ trader, index, onCopy, t }: { trader: Trader; index: numbe
 
 function ActiveCopyCard({ copy, index, t }: { copy: ActiveCopy; index: number; t: (key: string) => string }) {
   const isPositive = copy.pnl >= 0;
+  const { formatNum } = useLocaleFmt();
 
   return (
     <motion.div
@@ -579,7 +583,7 @@ function ActiveCopyCard({ copy, index, t }: { copy: ActiveCopy; index: number; t
       transition={{ duration: 0.35, delay: index * 0.06, ease: 'easeOut' }}
       className="mb-3"
     >
-      <Card className="bg-[#1E2329] border-[#2B3139] hover:border-[#F0B90B]/15 transition-all glass-card">
+      <Card className="bg-card border-border hover:border-primary/15 transition-all glass-card">
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2.5">
@@ -587,42 +591,42 @@ function ActiveCopyCard({ copy, index, t }: { copy: ActiveCopy; index: number; t
                 className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
                 style={{ backgroundColor: copy.color + '20' }}
               >
-                <span className="text-xs font-bold" style={{ color: copy.color }}>
-                  {copy.traderName.slice(0, 2).toUpperCase()}
+                <span className="text-xs font-bold" style={{ color: copy.color }} dir="ltr">
+                  {copy.traderName.slice(0, 2)}
                 </span>
               </div>
               <div>
-                <p className="text-sm font-semibold text-[#EAECEF]">{t('copyTrading.copyTrader')}: {copy.traderName}</p>
-                <p className="text-[10px] text-[#5E6673]">{copy.daysActive} {t('copyTrading.daysActive')} &bull; {copy.openPositions} {t('copyTrading.openPositions')}</p>
+                <p className="text-sm font-semibold text-foreground">{t('copyTrading.copyTrader')}: {copy.traderName}</p>
+                <p className="text-[10px] text-muted-foreground">{copy.daysActive} {t('copyTrading.daysActive')} &bull; {copy.openPositions} {t('copyTrading.openPositions')}</p>
               </div>
             </div>
             <div className="text-end">
-              <p className={cn('text-sm font-bold', isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]')}>
-                {isPositive ? '+' : ''}${copy.pnl.toLocaleString()}
+              <p className={cn('text-sm font-bold', isPositive ? 'text-success' : 'text-destructive')}>
+                {isPositive ? '+' : ''}${formatNum(copy.pnl)}
               </p>
-              <p className={cn('text-[10px] font-medium', isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]')}>
+              <p className={cn('text-[10px] font-medium', isPositive ? 'text-success' : 'text-destructive')}>
                 {isPositive ? '+' : ''}{copy.pnlPercent}%
               </p>
             </div>
           </div>
 
           {/* PnL Bar */}
-          <div className="w-full h-1.5 bg-[#2B3139] rounded-full overflow-hidden mb-3">
+          <div className="w-full h-1.5 bg-secondary rounded-full overflow-hidden mb-3">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${Math.min(Math.abs(copy.pnlPercent), 100)}%` }}
               transition={{ duration: 0.6, delay: index * 0.06 + 0.2, ease: 'easeOut' }}
-              className={cn('h-full rounded-full', isPositive ? 'bg-[#0ECB81]' : 'bg-[#F6465D]')}
+              className={cn('h-full rounded-full', isPositive ? 'bg-success' : 'bg-destructive')}
             />
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-[#5E6673]">{t('copyTrading.invested')}: ${copy.invested.toLocaleString()}</span>
+            <span className="text-[10px] text-muted-foreground">{t('copyTrading.invested')}: ${formatNum(copy.invested)}</span>
             <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                className="h-7 text-[10px] border-[#2B3139] text-[#848E9C] hover:bg-[#2B3139] hover:text-[#EAECEF] px-3"
+                className="h-7 text-[10px] border-border text-muted-foreground hover:bg-secondary hover:text-foreground px-3"
               >
                 <Settings2 className="h-3 w-3 me-1" />
                 {t('copyTrading.details')}
@@ -630,7 +634,7 @@ function ActiveCopyCard({ copy, index, t }: { copy: ActiveCopy; index: number; t
               <Button
                 variant="outline"
                 size="sm"
-                className="h-7 text-[10px] border-[#F6465D]/30 text-[#F6465D] hover:bg-[#F6465D]/10 hover:border-[#F6465D]/50 px-3"
+                className="h-7 text-[10px] border-destructive/30 text-destructive hover:bg-destructive/10 hover:border-destructive/50 px-3"
               >
                 <StopCircle className="h-3 w-3 me-1" />
                 {t('copyTrading.stopCopy')}
@@ -653,7 +657,7 @@ function ClosedCopyCard({ copy, index, t }: { copy: ClosedCopy; index: number; t
       transition={{ duration: 0.3, delay: index * 0.06, ease: 'easeOut' }}
       className="mb-2"
     >
-      <Card className="bg-[#1E2329]/60 border-[#2B3139]/70 glass-card">
+      <Card className="bg-card/60 border-border/70 glass-card">
         <CardContent className="p-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -661,20 +665,20 @@ function ClosedCopyCard({ copy, index, t }: { copy: ClosedCopy; index: number; t
                 className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 opacity-60"
                 style={{ backgroundColor: copy.color + '15' }}
               >
-                <span className="text-[10px] font-bold opacity-60" style={{ color: copy.color }}>
-                  {copy.traderName.slice(0, 2).toUpperCase()}
+                <span className="text-[10px] font-bold opacity-60" style={{ color: copy.color }} dir="ltr">
+                  {copy.traderName.slice(0, 2)}
                 </span>
               </div>
               <div>
-                <p className="text-xs font-medium text-[#848E9C]">{copy.traderName}</p>
-                <p className="text-[9px] text-[#5E6673]">{copy.duration} &bull; {copy.reason === 'manual' ? t('copyTrading.manualClose') : t('copyTrading.stopLossClose')}</p>
+                <p className="text-xs font-medium text-muted-foreground">{copy.traderName}</p>
+                <p className="text-[10px] text-muted-foreground">{copy.duration} &bull; {copy.reason === 'manual' ? t('copyTrading.manualClose') : t('copyTrading.stopLossClose')}</p>
               </div>
             </div>
             <div className="text-end">
-              <p className={cn('text-xs font-semibold', isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]')}>
+              <p className={cn('text-xs font-semibold', isPositive ? 'text-success' : 'text-destructive')}>
                 {isPositive ? '+' : ''}${copy.finalPnl} {t('copyTrading.pnl')}
               </p>
-              <p className="text-[9px] text-[#5E6673]">{t('copyTrading.invested')}: ${copy.invested}</p>
+              <p className="text-[10px] text-muted-foreground">{t('copyTrading.invested')}: ${copy.invested}</p>
             </div>
           </div>
         </CardContent>
@@ -684,17 +688,18 @@ function ClosedCopyCard({ copy, index, t }: { copy: ClosedCopy; index: number; t
 }
 
 function LeaderboardTab({ t, onCopy }: { t: (key: string) => string; onCopy: (name: string) => void }) {
+  const { isRTL } = useAppStore();
   return (
-    <Card className="bg-[#1E2329] border-[#2B3139] glass-card overflow-hidden">
+    <Card className="bg-card border-border glass-card overflow-hidden">
       <CardContent className="p-0">
         {/* Table Header */}
-        <div className="grid grid-cols-12 gap-1 px-4 py-2.5 border-b border-[#2B3139] bg-[#0B0E11]/30">
-          <span className="col-span-1 text-[9px] text-[#5E6673] font-semibold uppercase">#</span>
-          <span className="col-span-3 text-[9px] text-[#5E6673] font-semibold uppercase">{t('copyTrading.trader')}</span>
-          <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-end">{t('copyTrading.roi')}</span>
-          <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-end">{t('copyTrading.winRate')}</span>
-          <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-end">{t('copyTrading.copiers')}</span>
-          <span className="col-span-2 text-[9px] text-[#5E6673] font-semibold uppercase text-end">{t('copyTrading.chart')}</span>
+        <div className="grid grid-cols-12 gap-1 px-4 py-2.5 border-b border-border bg-background/30">
+          <span className="col-span-1 text-[10px] text-muted-foreground font-semibold">#</span>
+          <span className="col-span-3 text-[10px] text-muted-foreground font-semibold">{t('copyTrading.trader')}</span>
+          <span className="col-span-2 text-[10px] text-muted-foreground font-semibold text-end">{t('copyTrading.roi')}</span>
+          <span className="col-span-2 text-[10px] text-muted-foreground font-semibold text-end">{t('copyTrading.winRate')}</span>
+          <span className="col-span-2 text-[10px] text-muted-foreground font-semibold text-end">{t('copyTrading.copiers')}</span>
+          <span className="col-span-2 text-[10px] text-muted-foreground font-semibold text-end">{t('copyTrading.chart')}</span>
         </div>
 
         {/* Table Body */}
@@ -703,25 +708,25 @@ function LeaderboardTab({ t, onCopy }: { t: (key: string) => string; onCopy: (na
           return (
             <motion.div
               key={entry.rank}
-              initial={{ opacity: 0, x: -8 }}
+              initial={{ opacity: 0, x: isRTL ? 8 : -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: idx * 0.04, ease: 'easeOut' }}
-              className="grid grid-cols-12 gap-1 px-4 py-2.5 border-b border-[#2B3139]/50 hover:bg-[#2B3139]/30 transition-colors cursor-pointer items-center"
+              className="grid grid-cols-12 gap-1 px-4 py-2.5 border-b border-border/50 hover:bg-secondary/30 transition-colors cursor-pointer items-center"
               onClick={() => onCopy(entry.name)}
             >
               <span className="col-span-1">
                 {entry.rank <= 3 ? (
-                  <Crown className={cn('h-4 w-4', entry.rank === 1 ? 'text-[#F0B90B]' : entry.rank === 2 ? 'text-[#C0C0C0]' : 'text-[#CD7F32]')} />
+                  <Crown className={cn('h-4 w-4', entry.rank === 1 ? 'text-primary' : entry.rank === 2 ? 'text-muted-foreground' : 'text-orange-700')} />
                 ) : (
-                  <span className="text-[10px] text-[#5E6673] font-medium">{entry.rank}</span>
+                  <span className="text-[10px] text-muted-foreground font-medium">{entry.rank}</span>
                 )}
               </span>
-              <span className="col-span-3 text-[11px] font-medium text-[#EAECEF] truncate">{entry.name}</span>
-              <span className={cn('col-span-2 text-[11px] font-semibold text-end', entry.roi > 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]')}>
+              <span className="col-span-3 text-[11px] font-medium text-foreground truncate">{entry.name}</span>
+              <span className={cn('col-span-2 text-[11px] font-semibold text-end', entry.roi > 0 ? 'text-success' : 'text-destructive')}>
                 +{entry.roi}%
               </span>
-              <span className="col-span-2 text-[10px] text-[#848E9C] text-end">{entry.winRate}%</span>
-              <span className="col-span-2 text-[10px] text-[#848E9C] text-end">{entry.copiers >= 1000 ? (entry.copiers / 1000).toFixed(1) + 'K' : entry.copiers}</span>
+              <span className="col-span-2 text-[10px] text-muted-foreground text-end">{entry.winRate}%</span>
+              <span className="col-span-2 text-[10px] text-muted-foreground text-end">{entry.copiers >= 1000 ? (entry.copiers / 1000).toFixed(1) + 'K' : entry.copiers}</span>
               <span className="col-span-2 flex justify-end">
                 <MiniSparkline up={entry.sparklineUp} color={entry.roi > 0 ? '#0ECB81' : '#F6465D'} width={40} height={16} />
               </span>
@@ -730,15 +735,15 @@ function LeaderboardTab({ t, onCopy }: { t: (key: string) => string; onCopy: (na
         })}
 
         {/* Current User Rank */}
-        <div className="px-4 py-3 bg-[#F0B90B]/5 border-t border-[#F0B90B]/20">
+        <div className="px-4 py-3 bg-primary/10 border-t border-primary/20">
           <div className="grid grid-cols-12 gap-1 items-center">
-            <span className="col-span-1 text-[10px] text-[#F0B90B] font-bold">#156</span>
-            <span className="col-span-3 text-[11px] font-medium text-[#F0B90B]">{t('copyTrading.you')}</span>
-            <span className="col-span-2 text-[11px] font-semibold text-[#0ECB81] text-end">+12.3%</span>
-            <span className="col-span-2 text-[10px] text-[#848E9C] text-end">—</span>
-            <span className="col-span-2 text-[10px] text-[#848E9C] text-end">—</span>
+            <span className="col-span-1 text-[10px] text-primary font-bold">#156</span>
+            <span className="col-span-3 text-[11px] font-medium text-primary">{t('copyTrading.you')}</span>
+            <span className="col-span-2 text-[11px] font-semibold text-success text-end">+12.3%</span>
+            <span className="col-span-2 text-[10px] text-muted-foreground text-end">—</span>
+            <span className="col-span-2 text-[10px] text-muted-foreground text-end">—</span>
             <span className="col-span-2 flex justify-end">
-              <ChevronRight className="h-3.5 w-3.5 text-[#F0B90B]" />
+              <ChevronRight className={`h-3.5 w-3.5 text-primary ${isRTL ? 'rotate-180' : ''}`} />
             </span>
           </div>
         </div>
@@ -789,7 +794,7 @@ function CopyTraderDialog({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div
@@ -801,27 +806,27 @@ function CopyTraderDialog({
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 60, opacity: 0 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="w-full max-w-md bg-[#1E2329] border border-[#2B3139] rounded-t-2xl sm:rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto"
+        className="w-full max-w-md bg-card border border-border rounded-t-2xl sm:rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Dialog Header */}
-        <div className="sticky top-0 bg-[#1E2329] border-b border-[#2B3139] px-5 py-4 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-card border-b border-border px-5 py-4 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center"
               style={{ backgroundColor: trader.color + '20' }}
             >
-              <span className="text-sm font-bold" style={{ color: trader.color }}>
-                {trader.name.slice(0, 2).toUpperCase()}
+              <span className="text-sm font-bold" style={{ color: trader.color }} dir="ltr">
+                {trader.name.slice(0, 2)}
               </span>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-[#EAECEF]">{trader.name}</h3>
+              <h3 className="text-sm font-semibold text-foreground">{trader.name}</h3>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className={cn('text-[10px] font-semibold', trader.roi > 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]')}>
+                <span className={cn('text-[10px] font-semibold', trader.roi > 0 ? 'text-success' : 'text-destructive')}>
                   {t('copyTrading.roi')} +{trader.roi}%
                 </span>
-                <Badge className={cn('text-[8px] px-1.5 py-0 border', riskStyle.bg, riskStyle.text, riskStyle.border)}>
+                <Badge className={cn('text-[10px] px-1.5 py-0 border', riskStyle.bg, riskStyle.text, riskStyle.border)}>
                   {trader.risk === 'Low' ? t('copyTrading.riskLow') : trader.risk === 'Medium' ? t('copyTrading.riskMedium') : trader.risk === 'High' ? t('copyTrading.riskHigh') : t('copyTrading.riskVeryHigh')}
                 </Badge>
               </div>
@@ -830,8 +835,9 @@ function CopyTraderDialog({
           <Button
             variant="ghost"
             size="icon"
-            className="text-[#5E6673] hover:text-[#EAECEF] hover:bg-[#2B3139] h-8 w-8"
+            className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9"
             onClick={onClose}
+            aria-label={t('common.close')}
           >
             <X className="h-4 w-4" />
           </Button>
@@ -840,30 +846,30 @@ function CopyTraderDialog({
         <div className="p-5 space-y-4">
           {/* Investment Amount */}
           <div>
-            <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1.5 block">
+            <label className="text-[10px] text-muted-foreground tracking-wider font-medium mb-1.5 block">
               {t('copyTrading.investmentAmount')}
             </label>
             <div className="relative">
-              <span className="absolute start-3 top-1/2 -translate-y-1/2 text-[#5E6673] text-sm">$</span>
+              <span className="absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
               <Input
                 type="number"
                 value={investmentAmount}
                 onChange={(e) => setInvestmentAmount(e.target.value)}
                 className={cn(
-                  'ps-7 bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] h-10 text-sm',
-                  !isValidAmount && investmentAmount ? 'border-[#F6465D]/50 focus:border-[#F6465D]' : 'focus:border-[#F0B90B]'
+                  'ps-7 bg-background/50 border-border text-foreground h-10 text-sm',
+                  !isValidAmount && investmentAmount ? 'border-destructive/50 focus:border-destructive' : 'focus:border-primary'
                 )}
                 placeholder={t('copyTrading.enterAmount')}
               />
             </div>
             {!isValidAmount && investmentAmount && (
-              <p className="text-[10px] text-[#F6465D] mt-1">{t('copyTrading.amountMustBe')}</p>
+              <p className="text-[10px] text-destructive mt-1">{t('copyTrading.amountMustBe')}</p>
             )}
           </div>
 
           {/* Copy Mode */}
           <div>
-            <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1.5 block">
+            <label className="text-[10px] text-muted-foreground tracking-wider font-medium mb-1.5 block">
               {t('copyTrading.copyMode')}
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -872,8 +878,8 @@ function CopyTraderDialog({
                 className={cn(
                   'py-2 px-3 rounded-lg text-xs font-medium transition-all border',
                   copyMode === 'fixed'
-                    ? 'bg-[#F0B90B]/10 border-[#F0B90B]/30 text-[#F0B90B]'
-                    : 'bg-[#0B0E11]/30 border-[#2B3139] text-[#848E9C] hover:bg-[#2B3139]/50'
+                    ? 'bg-primary/10 border-primary/30 text-primary'
+                    : 'bg-background/30 border-border text-muted-foreground hover:bg-secondary/50'
                 )}
               >
                 <SlidersHorizontal className="h-3.5 w-3.5 mx-auto mb-1" />
@@ -884,8 +890,8 @@ function CopyTraderDialog({
                 className={cn(
                   'py-2 px-3 rounded-lg text-xs font-medium transition-all border',
                   copyMode === 'proportional'
-                    ? 'bg-[#F0B90B]/10 border-[#F0B90B]/30 text-[#F0B90B]'
-                    : 'bg-[#0B0E11]/30 border-[#2B3139] text-[#848E9C] hover:bg-[#2B3139]/50'
+                    ? 'bg-primary/10 border-primary/30 text-primary'
+                    : 'bg-background/30 border-border text-muted-foreground hover:bg-secondary/50'
                 )}
               >
                 <BarChart3 className="h-3.5 w-3.5 mx-auto mb-1" />
@@ -897,10 +903,10 @@ function CopyTraderDialog({
           {/* Max Position Size */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium">
+              <label className="text-[10px] text-muted-foreground tracking-wider font-medium">
                 {t('copyTrading.maxPositionSize')}
               </label>
-              <span className="text-[11px] font-semibold text-[#F0B90B]">{maxPositionSize[0]}%</span>
+              <span className="text-[11px] font-semibold text-primary">{maxPositionSize[0]}%</span>
             </div>
             <Slider
               value={maxPositionSize}
@@ -911,50 +917,50 @@ function CopyTraderDialog({
               className="w-full"
             />
             <div className="flex justify-between mt-1">
-              <span className="text-[9px] text-[#5E6673]">10%</span>
-              <span className="text-[9px] text-[#5E6673]">100%</span>
+              <span className="text-[10px] text-muted-foreground">10%</span>
+              <span className="text-[10px] text-muted-foreground">100%</span>
             </div>
           </div>
 
           {/* Stop Loss & Take Profit */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1.5 block">
+              <label className="text-[10px] text-muted-foreground tracking-wider font-medium mb-1.5 block">
                 {t('copyTrading.stopLoss')}
               </label>
               <Input
                 type="number"
                 value={stopLoss}
                 onChange={(e) => setStopLoss(e.target.value)}
-                className="bg-[#0B0E11]/50 border-[#2B3139] text-[#F6465D] h-9 text-sm focus:border-[#F6465D]"
+                className="bg-background/50 border-border text-destructive h-9 text-sm focus:border-destructive"
                 placeholder="20"
               />
             </div>
             <div>
-              <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1.5 block">
+              <label className="text-[10px] text-muted-foreground tracking-wider font-medium mb-1.5 block">
                 {t('copyTrading.takeProfit')}
               </label>
               <Input
                 type="number"
                 value={takeProfit}
                 onChange={(e) => setTakeProfit(e.target.value)}
-                className="bg-[#0B0E11]/50 border-[#2B3139] text-[#0ECB81] h-9 text-sm focus:border-[#0ECB81]"
+                className="bg-background/50 border-border text-success h-9 text-sm focus:border-success"
                 placeholder="50"
               />
             </div>
           </div>
 
           {/* Risk Warning */}
-          <div className="bg-[#F6465D]/5 border border-[#F6465D]/15 rounded-lg p-3 flex gap-2.5">
-            <AlertTriangle className="h-4 w-4 text-[#F6465D] shrink-0 mt-0.5" />
-            <p className="text-[10px] text-[#848E9C] leading-relaxed">
+          <div className="bg-destructive/10 border border-destructive/15 rounded-lg p-3 flex gap-2.5">
+            <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+            <p className="text-[10px] text-muted-foreground leading-relaxed">
               {t('copyTrading.riskWarning')}
             </p>
           </div>
 
           {/* Start Copying Button */}
           <Button
-            className="w-full gradient-yellow hover:opacity-90 text-[#0B0E11] font-bold h-11 text-sm press-scale shadow-lg shadow-[#F0B90B]/20"
+            className="w-full gradient-yellow hover:opacity-90 text-background font-bold h-11 text-sm press-scale shadow-lg shadow-primary/20"
             onClick={onStart}
             disabled={!isValidAmount}
           >

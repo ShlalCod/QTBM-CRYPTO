@@ -9,9 +9,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   // Configure image domains (not strictly needed for the WebView build,
   // but useful if the app loads remote images).
   images: {

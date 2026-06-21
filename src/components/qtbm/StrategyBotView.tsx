@@ -36,7 +36,10 @@ interface ActiveBot {
   status: 'running';
   profit: number;
   profitPercent: number;
-  params: string;
+  // Translation key for the human-readable param summary.
+  paramKey: string;
+  // Numeric / display fragments interpolated into the translated string.
+  paramArgs?: Record<string, string | number>;
   icon: React.ElementType;
   iconColor: string;
 }
@@ -53,7 +56,8 @@ interface BotTemplate {
 interface BotHistoryEntry {
   id: string;
   pair: string;
-  type: string;
+  /** Translation key for the bot type label (e.g. strategyBot.gridTrading). */
+  typeKey: string;
   profit: number;
   profitPercent: number;
   duration: string;
@@ -68,9 +72,10 @@ const activeBots: ActiveBot[] = [
     status: 'running',
     profit: 245.6,
     profitPercent: 3.2,
-    params: 'Upper: $70,000 / Lower: $65,000 / 15 grids',
+    paramKey: 'strategyBot.paramsGridSummary',
+    paramArgs: { upper: '$70,000', lower: '$65,000', grids: 15 },
     icon: Grid3x3,
-    iconColor: 'text-[#F0B90B]',
+    iconColor: 'text-primary',
   },
   {
     id: '2',
@@ -79,27 +84,28 @@ const activeBots: ActiveBot[] = [
     status: 'running',
     profit: 89.3,
     profitPercent: 1.8,
-    params: '$500/week • Next buy: in 2d 14h',
+    paramKey: 'strategyBot.paramsDcaSummary',
+    paramArgs: { weekly: '$500', nextBuy: '2d 14h' },
     icon: TrendingDown,
-    iconColor: 'text-[#0ECB81]',
+    iconColor: 'text-success',
   },
 ];
 
 const botTemplates: BotTemplate[] = [
-  { id: 'grid', nameKey: 'strategyBot.gridTrading', descriptionKey: 'strategyBot.gridTradingDesc', icon: Grid3x3, iconColor: 'text-[#F0B90B]', iconBg: 'bg-[#F0B90B]/10' },
-  { id: 'dca', nameKey: 'strategyBot.dca', descriptionKey: 'strategyBot.dcaDesc', icon: TrendingDown, iconColor: 'text-[#0ECB81]', iconBg: 'bg-[#0ECB81]/10' },
+  { id: 'grid', nameKey: 'strategyBot.gridTrading', descriptionKey: 'strategyBot.gridTradingDesc', icon: Grid3x3, iconColor: 'text-primary', iconBg: 'bg-primary/10' },
+  { id: 'dca', nameKey: 'strategyBot.dca', descriptionKey: 'strategyBot.dcaDesc', icon: TrendingDown, iconColor: 'text-success', iconBg: 'bg-success/10' },
   { id: 'arbitrage', nameKey: 'strategyBot.arbitrage', descriptionKey: 'strategyBot.arbitrageDesc', icon: ArrowLeftRight, iconColor: 'text-[#627EEA]', iconBg: 'bg-[#627EEA]/10' },
-  { id: 'rebalancing', nameKey: 'strategyBot.rebalancing', descriptionKey: 'strategyBot.rebalancingDesc', icon: PieChart, iconColor: 'text-[#F0B90B]', iconBg: 'bg-[#F0B90B]/10' },
-  { id: 'signal', nameKey: 'strategyBot.signalBot', descriptionKey: 'strategyBot.signalBotDesc', icon: Radio, iconColor: 'text-[#0ECB81]', iconBg: 'bg-[#0ECB81]/10' },
-  { id: 'martingale', nameKey: 'strategyBot.martingale', descriptionKey: 'strategyBot.martingaleDesc', icon: Dices, iconColor: 'text-[#F6465D]', iconBg: 'bg-[#F6465D]/10' },
+  { id: 'rebalancing', nameKey: 'strategyBot.rebalancing', descriptionKey: 'strategyBot.rebalancingDesc', icon: PieChart, iconColor: 'text-primary', iconBg: 'bg-primary/10' },
+  { id: 'signal', nameKey: 'strategyBot.signalBot', descriptionKey: 'strategyBot.signalBotDesc', icon: Radio, iconColor: 'text-success', iconBg: 'bg-success/10' },
+  { id: 'martingale', nameKey: 'strategyBot.martingale', descriptionKey: 'strategyBot.martingaleDesc', icon: Dices, iconColor: 'text-destructive', iconBg: 'bg-destructive/10' },
 ];
 
 const botHistory: BotHistoryEntry[] = [
-  { id: '1', pair: 'SOL/USDT', type: 'Grid', profit: 32.5, profitPercent: 1.2, duration: '7d 12h', status: 'completed' },
-  { id: '2', pair: 'BNB/USDT', type: 'DCA', profit: -15.8, profitPercent: -0.6, duration: '14d', status: 'stopped' },
-  { id: '3', pair: 'ETH/USDT', type: 'Grid', profit: 189.2, profitPercent: 4.1, duration: '21d 6h', status: 'completed' },
-  { id: '4', pair: 'BTC/USDT', type: 'Martingale', profit: -42.1, profitPercent: -2.3, duration: '3d 18h', status: 'error' },
-  { id: '5', pair: 'ADA/USDT', type: 'Signal Bot', profit: 67.3, profitPercent: 2.8, duration: '10d', status: 'completed' },
+  { id: '1', pair: 'SOL/USDT', typeKey: 'strategyBot.gridTrading', profit: 32.5, profitPercent: 1.2, duration: '7d 12h', status: 'completed' },
+  { id: '2', pair: 'BNB/USDT', typeKey: 'strategyBot.dca', profit: -15.8, profitPercent: -0.6, duration: '14d', status: 'stopped' },
+  { id: '3', pair: 'ETH/USDT', typeKey: 'strategyBot.gridTrading', profit: 189.2, profitPercent: 4.1, duration: '21d 6h', status: 'completed' },
+  { id: '4', pair: 'BTC/USDT', typeKey: 'strategyBot.martingale', profit: -42.1, profitPercent: -2.3, duration: '3d 18h', status: 'error' },
+  { id: '5', pair: 'ADA/USDT', typeKey: 'strategyBot.signalBot', profit: 67.3, profitPercent: 2.8, duration: '10d', status: 'completed' },
 ];
 
 const pairs = ['BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'SOL/USDT', 'XRP/USDT', 'ADA/USDT', 'DOGE/USDT'];
@@ -142,20 +148,21 @@ export default function StrategyBotView() {
     : null;
 
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)] lg:h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-8rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="p-4 max-w-2xl mx-auto space-y-4">
         {/* Header */}
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
-            className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-8 w-8"
+            aria-label={t('actions.back')}
+            className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9"
             onClick={goBack}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="rtl:scale-x-[-1] h-5 w-5 [dir=rtl]:rotate-180" />
           </Button>
-          <h1 className="text-lg font-semibold text-[#EAECEF]">{t('strategyBot.title')}</h1>
-          <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[9px] px-1.5 py-0 h-5 font-semibold">
+          <h1 className="text-lg font-semibold text-foreground">{t('strategyBot.title')}</h1>
+          <Badge className="bg-success/10 text-success border-0 text-[10px] px-1.5 py-0 h-5 font-semibold">
             {t('strategyBot.auto')}
           </Badge>
         </div>
@@ -163,10 +170,10 @@ export default function StrategyBotView() {
         {/* Active Bots */}
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <Bot className="h-4 w-4 text-[#F0B90B]" />
-            <h2 className="text-sm font-semibold text-[#EAECEF]">{t('strategyBot.activeBots')}</h2>
-            <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[9px] px-1.5 py-0 h-4 font-semibold">
-              {activeBots.length} {t('status.active').toLowerCase()}
+            <Bot className="h-4 w-4 text-primary" />
+            <h2 className="text-sm font-semibold text-foreground">{t('strategyBot.activeBots')}</h2>
+            <Badge className="bg-success/10 text-success border-0 text-[10px] px-1.5 py-0 h-4 font-semibold">
+              {activeBots.length} {t('status.active')}
             </Badge>
           </div>
           <div className="space-y-3">
@@ -179,41 +186,45 @@ export default function StrategyBotView() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Card className="bg-[#1E2329] border-[#2B3139] glass-card overflow-hidden">
+                  <Card className="bg-card border-border glass-card overflow-hidden rounded-xl">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-[#2B3139] flex items-center justify-center">
+                          <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">
                             <BotIcon className={`h-5 w-5 ${bot.iconColor}`} />
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-semibold text-[#EAECEF]">{bot.pair}</span>
-                              <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[9px] px-1.5 py-0 h-4 font-semibold">
+                              <span className="text-sm font-semibold text-foreground">{bot.pair}</span>
+                              <Badge className="bg-success/10 text-success border-0 text-[10px] px-1.5 py-0 h-4 font-semibold">
                                 {t('status.active')}
                               </Badge>
                             </div>
-                            <p className="text-[11px] text-[#5E6673] mt-0.5 capitalize">{bot.type === 'grid' ? t('strategyBot.gridTrading') : t('strategyBot.dca')}</p>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">{bot.type === 'grid' ? t('strategyBot.gridTrading') : t('strategyBot.dca')}</p>
                           </div>
                         </div>
                         <div className="text-end">
-                          <p className={`text-sm font-bold ${bot.profit >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+                          <p className={`text-sm font-bold ${bot.profit >= 0 ? 'text-success' : 'text-destructive'}`}>
                             {bot.profit >= 0 ? '+' : ''}{bot.profitPercent}%
                           </p>
-                          <p className={`text-xs ${bot.profit >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+                          <p className={`text-xs ${bot.profit >= 0 ? 'text-success' : 'text-destructive'}`}>
                             {bot.profit >= 0 ? '+' : ''}${bot.profit.toFixed(2)}
                           </p>
                         </div>
                       </div>
-                      <div className="mt-3 flex items-center gap-2 text-[11px] text-[#5E6673] bg-[#0B0E11]/30 px-3 py-2 rounded-lg">
-                        <Zap className="h-3 w-3 text-[#F0B90B]" />
-                        {bot.params}
+                      <div className="mt-3 flex items-center gap-2 text-[11px] text-muted-foreground bg-background/30 px-3 py-2 rounded-lg">
+                        <Zap className="h-3 w-3 text-primary" />
+                        {bot.type === 'grid' && bot.paramArgs
+                          ? <>{t('strategyBot.paramsGridUpper')}: {bot.paramArgs.upper} / {t('strategyBot.paramsGridLower')}: {bot.paramArgs.lower} / {bot.paramArgs.grids} {t('strategyBot.paramsGrids')}</>
+                          : bot.type === 'dca' && bot.paramArgs
+                          ? <>{bot.paramArgs.weekly}{t('strategyBot.paramsDcaWeekly')} • {t('strategyBot.paramsDcaNext')}: {bot.paramArgs.nextBuy}</>
+                          : null}
                       </div>
                       <div className="flex items-center gap-2 mt-3">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="flex-1 border-[#2B3139] text-[#848E9C] hover:bg-[#2B3139] hover:text-[#EAECEF] h-8 text-xs"
+                          className="flex-1 border-border text-muted-foreground hover:bg-secondary hover:text-foreground h-8 text-xs"
                         >
                           <Eye className="h-3 w-3 me-1.5" />
                           {t('strategyBot.view')}
@@ -221,7 +232,7 @@ export default function StrategyBotView() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="flex-1 border-[#F6465D]/20 text-[#F6465D] hover:bg-[#F6465D]/10 h-8 text-xs"
+                          className="flex-1 border-destructive/20 text-destructive hover:bg-destructive/10 h-8 text-xs"
                         >
                           <Square className="h-3 w-3 me-1.5" />
                           {t('strategyBot.stop')}
@@ -238,8 +249,8 @@ export default function StrategyBotView() {
         {/* Available Bots */}
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <Plus className="h-4 w-4 text-[#F0B90B]" />
-            <h2 className="text-sm font-semibold text-[#EAECEF]">{t('strategyBot.availableBots')}</h2>
+            <Plus className="h-4 w-4 text-primary" />
+            <h2 className="text-sm font-semibold text-foreground">{t('strategyBot.availableBots')}</h2>
           </div>
           <div className="grid grid-cols-2 gap-3">
             {botTemplates.map((template, index) => {
@@ -251,16 +262,16 @@ export default function StrategyBotView() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <Card className="bg-[#1E2329] border-[#2B3139] hover:border-[#F0B90B]/20 cursor-pointer transition-all hover-lift glass-card">
+                  <Card className="bg-card border-border hover:border-primary/20 cursor-pointer transition-all hover-lift glass-card rounded-xl">
                     <CardContent className="p-4">
-                      <div className="w-10 h-10 rounded-xl bg-[#2B3139] flex items-center justify-center mb-3">
+                      <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center mb-3">
                         <TemplateIcon className={`h-5 w-5 ${template.iconColor}`} />
                       </div>
-                      <h3 className="text-sm font-semibold text-[#EAECEF] mb-0.5">{t(template.nameKey)}</h3>
-                      <p className="text-[10px] text-[#5E6673] mb-3">{t(template.descriptionKey)}</p>
+                      <h3 className="text-sm font-semibold text-foreground mb-0.5">{t(template.nameKey)}</h3>
+                      <p className="text-[10px] text-muted-foreground mb-3">{t(template.descriptionKey)}</p>
                       <Button
                         onClick={() => handleCreate(template)}
-                        className="w-full h-8 text-xs font-semibold rounded-lg bg-gradient-to-r from-[#F0B90B] to-[#F0B90B]/80 text-[#0B0E11] hover:opacity-90 shadow-md shadow-[#F0B90B]/15 press-scale"
+                        className="w-full h-8 text-xs font-semibold rounded-lg bg-gradient-to-r from-primary to-primary/80 text-primary-foreground hover:opacity-90 shadow-md shadow-primary/15 press-scale"
                       >
                         {t('strategyBot.create')}
                       </Button>
@@ -275,42 +286,42 @@ export default function StrategyBotView() {
         {/* Bot History */}
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <Clock className="h-4 w-4 text-[#5E6673]" />
-            <h2 className="text-sm font-semibold text-[#EAECEF]">{t('strategyBot.botHistory')}</h2>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-sm font-semibold text-foreground">{t('strategyBot.botHistory')}</h2>
           </div>
-          <Card className="bg-[#1E2329] border-[#2B3139] glass-card">
+          <Card className="bg-card border-border glass-card rounded-xl">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-[#2B3139]">
-                      <th className="text-[10px] text-[#5E6673] font-medium px-4 py-2.5 text-start">{t('strategyBot.pairCol')}</th>
-                      <th className="text-[10px] text-[#5E6673] font-medium px-4 py-2.5 text-start">{t('strategyBot.typeCol')}</th>
-                      <th className="text-[10px] text-[#5E6673] font-medium px-4 py-2.5 text-end">{t('strategyBot.profitCol')}</th>
-                      <th className="text-[10px] text-[#5E6673] font-medium px-4 py-2.5 text-end">{t('strategyBot.durationCol')}</th>
-                      <th className="text-[10px] text-[#5E6673] font-medium px-4 py-2.5 text-end">{t('strategyBot.statusCol')}</th>
+                    <tr className="border-b border-border">
+                      <th className="text-[10px] text-muted-foreground font-medium px-4 py-2.5 text-start">{t('strategyBot.pairCol')}</th>
+                      <th className="text-[10px] text-muted-foreground font-medium px-4 py-2.5 text-start">{t('strategyBot.typeCol')}</th>
+                      <th className="text-[10px] text-muted-foreground font-medium px-4 py-2.5 text-end">{t('strategyBot.profitCol')}</th>
+                      <th className="text-[10px] text-muted-foreground font-medium px-4 py-2.5 text-end">{t('strategyBot.durationCol')}</th>
+                      <th className="text-[10px] text-muted-foreground font-medium px-4 py-2.5 text-end">{t('strategyBot.statusCol')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {botHistory.map((entry) => (
-                      <tr key={entry.id} className="border-b border-[#2B3139]/50 last:border-0 hover:bg-[#2B3139]/20 transition-colors">
-                        <td className="px-4 py-2.5 text-xs font-medium text-[#EAECEF]">{entry.pair}</td>
-                        <td className="px-4 py-2.5 text-xs text-[#848E9C]">{entry.type}</td>
-                        <td className={`px-4 py-2.5 text-xs font-medium text-end ${entry.profit >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+                      <tr key={entry.id} className="border-b border-border/50 last:border-0 hover:bg-secondary/20 transition-colors">
+                        <td className="px-4 py-2.5 text-xs font-medium text-foreground">{entry.pair}</td>
+                        <td className="px-4 py-2.5 text-xs text-muted-foreground">{t(entry.typeKey)}</td>
+                        <td className={`px-4 py-2.5 text-xs font-medium text-end ${entry.profit >= 0 ? 'text-success' : 'text-destructive'}`}>
                           {entry.profit >= 0 ? '+' : ''}{entry.profitPercent}%
                         </td>
-                        <td className="px-4 py-2.5 text-xs text-[#848E9C] text-end">{entry.duration}</td>
+                        <td className="px-4 py-2.5 text-xs text-muted-foreground text-end">{entry.duration}</td>
                         <td className="px-4 py-2.5 text-end">
                           <Badge
-                            className={`border-0 text-[9px] px-1.5 py-0 h-4 font-semibold ${
+                            className={`border-0 text-[10px] px-1.5 py-0 h-4 font-semibold ${
                               entry.status === 'completed'
-                                ? 'bg-[#0ECB81]/10 text-[#0ECB81]'
+                                ? 'bg-success/10 text-success'
                                 : entry.status === 'stopped'
-                                ? 'bg-[#F0B90B]/10 text-[#F0B90B]'
-                                : 'bg-[#F6465D]/10 text-[#F6465D]'
+                                ? 'bg-primary/10 text-primary'
+                                : 'bg-destructive/10 text-destructive'
                             }`}
                           >
-                            {entry.status === 'completed' ? t('status.completed') : entry.status === 'stopped' ? t('status.inactive') : t('status.failed')}
+                            {entry.status === 'completed' ? t('strategyBot.statusCompleted') : entry.status === 'stopped' ? t('strategyBot.statusStopped') : t('strategyBot.statusError')}
                           </Badge>
                         </td>
                       </tr>
@@ -330,7 +341,7 @@ export default function StrategyBotView() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
             onClick={() => setShowCreateModal(false)}
           >
             <motion.div
@@ -342,16 +353,16 @@ export default function StrategyBotView() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="w-full max-w-md mx-4 mb-4 sm:mb-0 bg-[#1E2329] border border-[#2B3139] rounded-2xl overflow-hidden glass-card max-h-[85vh] overflow-y-auto"
+              className="w-full max-w-md mx-4 mb-4 sm:mb-0 bg-card border border-border rounded-2xl overflow-hidden glass-card max-h-[85vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="flex items-center justify-between p-4 border-b border-[#2B3139] sticky top-0 bg-[#1E2329] z-10">
+              <div className="flex items-center justify-between p-4 border-b border-border sticky top-0 bg-card z-10">
                 <div className="flex items-center gap-2">
                   {React.createElement(selectedTemplate.icon, { className: `h-5 w-5 ${selectedTemplate.iconColor}` })}
-                  <h3 className="text-sm font-semibold text-[#EAECEF]">{t(selectedTemplate.nameKey)} {t('strategyBot.bot')}</h3>
+                  <h3 className="text-sm font-semibold text-foreground">{t(selectedTemplate.nameKey)} {t('strategyBot.bot')}</h3>
                 </div>
-                <Button variant="ghost" size="icon" className="h-7 w-7 text-[#848E9C]" onClick={() => setShowCreateModal(false)}>
+                <Button variant="ghost" size="icon" aria-label={t('actions.close')} className="h-9 w-9 text-muted-foreground" onClick={() => setShowCreateModal(false)}>
                   <X className="h-4 w-4" />
                 </Button>
               </div>
@@ -359,93 +370,93 @@ export default function StrategyBotView() {
               <div className="p-4 space-y-4">
                 {/* Pair Selector */}
                 <div>
-                  <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1.5 block">{t('strategyBot.pairLabel')}</label>
+                  <label className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1.5 block">{t('strategyBot.pairLabel')}</label>
                   <div className="relative">
                     <select
                       value={selectedPair}
                       onChange={(e) => setSelectedPair(e.target.value)}
-                      className="w-full bg-[#0B0E11]/50 border border-[#2B3139] rounded-lg px-3 py-2.5 text-sm text-[#EAECEF] appearance-none focus:border-[#F0B90B] focus:outline-none"
+                      className="w-full bg-background/50 border border-border rounded-lg px-3 py-2.5 text-sm text-foreground appearance-none focus:border-primary focus:outline-none"
                     >
                       {pairs.map((pair) => (
-                        <option key={pair} value={pair} className="bg-[#1E2329] text-[#EAECEF]">{pair}</option>
+                        <option key={pair} value={pair} className="bg-card text-foreground">{pair}</option>
                       ))}
                     </select>
-                    <ChevronDown className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673] pointer-events-none" />
+                    <ChevronDown className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                   </div>
                 </div>
 
                 {/* Investment Amount */}
                 <div>
-                  <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1.5 block">{t('strategyBot.investment')}</label>
+                  <label className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1.5 block">{t('strategyBot.investment')}</label>
                   <div className="relative">
                     <Input
                       type="number"
                       placeholder="1,000.00"
                       value={investmentAmount}
                       onChange={(e) => setInvestmentAmount(e.target.value)}
-                      className="bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] pe-14 focus:border-[#F0B90B]"
+                      className="bg-background/50 border-border text-foreground pe-14 focus:border-primary"
                     />
-                    <span className="absolute end-3 top-1/2 -translate-y-1/2 text-xs text-[#5E6673]">USDT</span>
+                    <span className="absolute end-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">USDT</span>
                   </div>
                 </div>
 
                 {/* Parameter Grid */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1.5 block">{t('strategyBot.takeProfit')}</label>
+                    <label className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1.5 block">{t('strategyBot.takeProfit')}</label>
                     <div className="relative">
                       <Input
                         type="number"
                         value={takeProfit}
                         onChange={(e) => setTakeProfit(e.target.value)}
-                        className="bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] pe-8 focus:border-[#F0B90B]"
+                        className="bg-background/50 border-border text-foreground pe-8 focus:border-primary"
                       />
-                      <span className="absolute end-3 top-1/2 -translate-y-1/2 text-xs text-[#5E6673]">%</span>
+                      <span className="absolute end-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span>
                     </div>
                   </div>
                   <div>
-                    <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1.5 block">{t('strategyBot.stopLoss')}</label>
+                    <label className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1.5 block">{t('strategyBot.stopLoss')}</label>
                     <div className="relative">
                       <Input
                         type="number"
                         value={stopLoss}
                         onChange={(e) => setStopLoss(e.target.value)}
-                        className="bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] pe-8 focus:border-[#F0B90B]"
+                        className="bg-background/50 border-border text-foreground pe-8 focus:border-primary"
                       />
-                      <span className="absolute end-3 top-1/2 -translate-y-1/2 text-xs text-[#5E6673]">%</span>
+                      <span className="absolute end-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium mb-1.5 block">{t('strategyBot.maxPositions')}</label>
+                  <label className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1.5 block">{t('strategyBot.maxPositions')}</label>
                   <Input
                     type="number"
                     value={maxPositions}
                     onChange={(e) => setMaxPositions(e.target.value)}
-                    className="bg-[#0B0E11]/50 border-[#2B3139] text-[#EAECEF] focus:border-[#F0B90B]"
+                    className="bg-background/50 border-border text-foreground focus:border-primary"
                   />
                 </div>
 
                 {/* Backtest Results Preview */}
                 {backtestResults && (
-                  <div className="bg-[#0B0E11]/50 rounded-xl p-3 space-y-2 border border-[#2B3139]">
+                  <div className="bg-background/50 rounded-xl p-3 space-y-2 border border-border">
                     <div className="flex items-center gap-1.5 mb-1">
-                      <Zap className="h-3 w-3 text-[#F0B90B]" />
-                      <span className="text-[10px] text-[#F0B90B] font-semibold uppercase tracking-wider">{t('strategyBot.backtestResults')}</span>
+                      <Zap className="h-3 w-3 text-primary" />
+                      <span className="text-[10px] text-primary font-semibold uppercase tracking-wider">{t('strategyBot.backtestResults')}</span>
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                       <div className="text-center">
-                        <p className="text-sm font-bold text-[#0ECB81]">{backtestResults.winRate}%</p>
-                        <p className="text-[9px] text-[#5E6673]">{t('strategyBot.winRate')}</p>
+                        <p className="text-sm font-bold text-success">{backtestResults.winRate}%</p>
+                        <p className="text-[10px] text-muted-foreground">{t('strategyBot.winRate')}</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-sm font-bold text-[#F6465D]">{backtestResults.maxDrawdown}%</p>
-                        <p className="text-[9px] text-[#5E6673]">{t('strategyBot.maxDrawdown')}</p>
+                        <p className="text-sm font-bold text-destructive">{backtestResults.maxDrawdown}%</p>
+                        <p className="text-[10px] text-muted-foreground">{t('strategyBot.maxDrawdown')}</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-sm font-bold text-[#F0B90B]">{backtestResults.sharpeRatio}</p>
-                        <p className="text-[9px] text-[#5E6673]">{t('strategyBot.sharpeRatio')}</p>
+                        <p className="text-sm font-bold text-primary">{backtestResults.sharpeRatio}</p>
+                        <p className="text-[10px] text-muted-foreground">{t('strategyBot.sharpeRatio')}</p>
                       </div>
                     </div>
                   </div>
@@ -455,12 +466,12 @@ export default function StrategyBotView() {
                 <Button
                   onClick={handleStartBot}
                   disabled={isStarting || !investmentAmount}
-                  className="w-full h-12 text-sm font-semibold rounded-xl bg-gradient-to-r from-[#F0B90B] to-[#0ECB81] text-[#0B0E11] hover:opacity-90 shadow-lg shadow-[#F0B90B]/20 press-scale disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full h-12 text-sm font-semibold rounded-xl bg-gradient-to-r from-primary to-success text-primary-foreground hover:opacity-90 shadow-lg shadow-primary/20 press-scale disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ boxShadow: investmentAmount ? '0 0 20px rgba(240, 185, 11, 0.3)' : undefined }}
                 >
                   {isStarting ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-[#0B0E11]/30 border-t-[#0B0E11] rounded-full animate-spin me-2" />
+                      <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin me-2" />
                       {t('strategyBot.starting')}
                     </>
                   ) : (

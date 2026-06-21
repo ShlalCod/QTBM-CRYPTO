@@ -85,6 +85,7 @@ const en: Translations = {
     earn: 'Earn',
     borrow: 'Borrow',
     repay: 'Repay',
+    toggle: 'Toggle visibility',
   },
 
   // Wallet
@@ -500,6 +501,9 @@ const en: Translations = {
     free: 'FREE',
     none: 'None',
     countdown: 'Countdown',
+    typeLaunchpad: 'Launchpad',
+    typeLaunchpool: 'Launchpool',
+    typeAirdrop: 'Airdrop',
   },
 
   // Status labels
@@ -594,6 +598,19 @@ const en: Translations = {
     medium: 'Medium',
     strong: 'Strong',
     passwordChars: '/8+ chars',
+    // Firebase Auth error-code messages (SEC-002)
+    errFirebaseInvalidEmail: 'Invalid email address.',
+    errFirebaseUserDisabled: 'This account has been disabled.',
+    errFirebaseUserNotFound: 'No account found with these credentials.',
+    errFirebaseWrongPassword: 'Incorrect password.',
+    errFirebaseInvalidCredentials: 'Invalid email or password.',
+    errFirebaseEmailInUse: 'This email is already registered.',
+    errFirebaseWeakPassword: 'Password is too weak. Use at least 6 characters.',
+    errFirebaseTooManyRequests: 'Too many attempts. Please try again later.',
+    errFirebaseNetwork: 'Network error. Please check your connection.',
+    errFirebaseOperationNotAllowed: 'Sign-in is temporarily unavailable.',
+    errFirebaseDefault: 'Authentication failed. Please try again.',
+    socialComingSoon: 'Social sign-in is coming soon.',
   },
 
   // Settings
@@ -628,6 +645,11 @@ const en: Translations = {
     rtlEnabled: 'RTL layout enabled',
     activeDevices: 'Active Devices',
     activeDevicesCount: '2 active devices',
+    placeholderName: 'User',
+    placeholderEmail: 'user@qtbm.bank',
+    placeholderPhone: '+1 ***-***-1234',
+    vipLevel1: 'VIP 1',
+    versionNumber: 'v2.1.0',
   },
 
   // More (MoreView menu items, badges, sections, footer)
@@ -991,6 +1013,20 @@ const en: Translations = {
     allActions: 'All actions',
     orContinueWith: 'Or continue with',
     getPersonalizedHelp: 'Get personalized help',
+    back: 'Back',
+    close: 'Close',
+    cancel: 'Cancel',
+    copy: 'Copy',
+    copied: 'Copied',
+    bookmark: 'Bookmark',
+    share: 'Share',
+    vote: 'Vote',
+    follow: 'Follow',
+    unfollow: 'Unfollow',
+    edit: 'Edit',
+    delete: 'Delete',
+    save: 'Save',
+    confirm: 'Confirm',
   },
 
   // Errors
@@ -1024,6 +1060,12 @@ const en: Translations = {
     disclaimer: 'AI responses are for informational purposes only. Not financial advice.',
     defaultResponse: 'I\'m here to help! Feel free to ask me anything about trading, crypto, or QTBM BANK features.',
     errorMessage: 'Sorry, I\'m having trouble connecting right now. Please try again in a moment.',
+    q1: 'What is Bitcoin?',
+    q2: 'How to trade?',
+    q3: 'Security tips',
+    q4: 'What is DeFi?',
+    q5: 'How to earn?',
+    q6: 'Fees explained',
   },
 
   // Swap
@@ -1386,6 +1428,10 @@ const en: Translations = {
     views: 'Views',
     comments: 'Comments',
     breakingText: 'Bitcoin surges past $70K as institutional demand reaches record high',
+    catBreaking: 'Breaking',
+    catMarket: 'Market',
+    catRegulation: 'Regulation',
+    catTech: 'Tech',
   },
 
   // Transaction Detail
@@ -1452,6 +1498,15 @@ const en: Translations = {
     signalBotDesc: 'Follow signals',
     martingale: 'Martingale',
     martingaleDesc: 'Position sizing',
+    statusRunning: 'Running',
+    statusCompleted: 'Completed',
+    statusStopped: 'Stopped',
+    statusError: 'Error',
+    paramsGridUpper: 'Upper',
+    paramsGridLower: 'Lower',
+    paramsGrids: 'grids',
+    paramsDcaWeekly: '/week',
+    paramsDcaNext: 'Next buy in',
   },
 
   // Savings Goals
@@ -1559,6 +1614,12 @@ const en: Translations = {
     exportCSV: 'Export CSV',
     exportPDF: 'Export PDF',
     disclaimer: 'This report is for informational purposes only. Please consult a tax professional.',
+    types: {
+      spot: 'Spot Trading',
+      futures: 'Futures Trading',
+      staking: 'Staking Rewards',
+      p2p: 'P2P',
+    },
   },
 
   // Trade Challenge
@@ -1651,6 +1712,8 @@ const en: Translations = {
     posts: 'posts',
     topTraders: 'Top Traders',
     follow: 'Follow',
+    like: 'Like',
+    comment: 'Comment',
   },
 
   // Admin Dashboard
@@ -1700,6 +1763,34 @@ const en: Translations = {
     annTitle: 'Title',
     type: 'Type',
     date: 'Date',
+    // Lookups for mock-data fields that previously used .charAt(0).toUpperCase()+.slice(1)
+    kycStatusVerified: 'Verified',
+    kycStatusPending: 'Pending',
+    kycStatusRejected: 'Rejected',
+    roleUser: 'User',
+    roleModerator: 'Moderator',
+    roleAdmin: 'Admin',
+    userStatusActive: 'Active',
+    userStatusSuspended: 'Suspended',
+    annTypeSystem: 'System',
+    annTypePromotion: 'Promotion',
+    annTypeSecurity: 'Security',
+    annStatusActive: 'Active',
+    annStatusExpired: 'Expired',
+    resultSuccess: 'Success',
+    // Audit-log action labels (mock-data was English-only)
+    actionSuspendUser: 'Suspend User',
+    actionApproveKyc: 'Approve KYC',
+    actionRejectKyc: 'Reject KYC',
+    actionFlagOrder: 'Flag Order',
+    actionFreezeWithdrawal: 'Freeze Withdrawal',
+    actionSystemConfig: 'System Config Change',
+    actionCreateAnnouncement: 'Create Announcement',
+    actionUpdateAnnouncement: 'Update Announcement',
+    // Flagged-order reasons (mock-data was English-only)
+    reasonLargeVolume: 'Large volume',
+    reasonRapidSuccessive: 'Rapid successive',
+    reasonNewAccount: 'New account',
   },
 
   // Asset Detail
@@ -1725,6 +1816,28 @@ const en: Translations = {
     genericAbout: 'is a digital asset traded on QTBM BANK. It represents a blockchain-based cryptocurrency with a market cap of',
     andVolume: 'and 24-hour trading volume of',
     trade: 'Trade',
+    descriptions: {
+      BTC: 'Bitcoin is the first decentralized cryptocurrency, created in 2009 by Satoshi Nakamoto. It operates on a peer-to-peer network using blockchain technology, enabling secure, transparent, and borderless transactions without the need for intermediaries.',
+      ETH: 'Ethereum is a decentralized platform that enables smart contracts and decentralized applications (dApps). Created by Vitalik Buterin in 2015, it introduced programmable blockchain technology, powering DeFi, NFTs, and Web3 innovation.',
+      BNB: 'BNB is the native cryptocurrency of the BNB Chain ecosystem, launched by Binance in 2017. It serves as the backbone for BSC transactions, smart contract execution, and offers various utility benefits across the Binance platform.',
+      SOL: 'Solana is a high-performance blockchain supporting builders around the world creating crypto apps that scale. Known for its speed and low transaction costs, Solana processes up to 65,000 transactions per second.',
+      XRP: 'XRP is the native token of the XRP Ledger, an open-source, permissionless blockchain. Created by Ripple, XRP enables fast, low-cost cross-border payments and is used by financial institutions worldwide.',
+      ADA: 'Cardano is a proof-of-stake blockchain platform founded on peer-reviewed research and evidence-based development. ADA is its native token, used for transactions, staking, and governance within the ecosystem.',
+      DOGE: 'Dogecoin is a cryptocurrency inspired by the "Doge" meme. What started as a joke in 2013 has grown into a widely used digital currency with a passionate community, known for tipping and charitable donations.',
+      AVAX: 'Avalanche is a blazingly fast, low-cost, eco-friendly platform for launching dApps, enterprise blockchain deployments, and new financial primitives. AVAX is its native token used for fees, staking, and governance.',
+      DOT: 'Polkadot enables cross-chain communication and interoperability, allowing multiple blockchains to work together seamlessly. DOT is used for governance, staking, and bonding to connect new chains.',
+      LINK: 'Chainlink is a decentralized oracle network that provides real-world data to smart contracts on any blockchain. LINK is used to pay node operators for retrieving data and securing the network.',
+      MATIC: 'Polygon is a protocol and framework for building and connecting Ethereum-compatible blockchain networks. MATIC is used for staking, governance, and paying transaction fees on the Polygon network.',
+      UNI: 'Uniswap is a decentralized exchange protocol built on Ethereum. UNI is the governance token that allows holders to vote on protocol changes and participate in the development of the platform.',
+      ATOM: 'Cosmos is an ever-expanding ecosystem of interconnected apps and services built for a decentralized future. ATOM is used for staking and governance in the Cosmos Hub.',
+      LTC: 'Litecoin is a peer-to-peer cryptocurrency created in 2011 by Charlie Lee. Often called the "silver to Bitcoin\'s gold," it offers faster transaction confirmation times and a different hashing algorithm.',
+      NEAR: 'NEAR Protocol is a sharded, proof-of-stake, layer-one blockchain designed to be usable and scalable. NEAR is its native token used for transaction fees, staking, and governance.',
+      APT: 'Aptos is a scalable, safe, and upgradeable Layer 1 blockchain built with the Move programming language. APT is used for transaction fees, staking, and governance within the Aptos ecosystem.',
+      ARB: 'Arbitrum is a Layer 2 scaling solution for Ethereum that uses optimistic rollups. ARB is the governance token that allows holders to vote on protocol upgrades and fund ecosystem development.',
+      OP: 'Optimism is a Layer 2 scaling solution for Ethereum that uses optimistic rollups to deliver faster and cheaper transactions. OP is the governance token for the Optimism Collective.',
+      FIL: 'Filecoin is a decentralized storage network that turns cloud storage into an algorithmic market. FIL is the native token used to pay for storage and retrieval of data on the network.',
+      IMX: 'Immutable X is a Layer 2 scaling solution for NFTs on Ethereum, offering zero gas fees and carbon-neutral minting. IMX is the utility token used for staking, governance, and paying fees.',
+    },
   },
 
   // Notifications
@@ -1742,6 +1855,12 @@ const en: Translations = {
     noNotificationsCategory: 'No notifications in this category',
     noUnreadNotifications: 'You have no unread notifications',
     notificationPreferences: 'Notification preferences',
+    typeSecurity: 'Security',
+    typeTrade: 'Trade',
+    typeDeposit: 'Deposit',
+    typeWithdrawal: 'Withdrawal',
+    typeSystem: 'System',
+    typePromotion: 'Promo',
   },
 
   // Order History
@@ -1874,6 +1993,7 @@ const ar: Translations = {
     earn: 'كسب',
     borrow: 'اقتراض',
     repay: 'سداد',
+    toggle: 'تبديل الظهور',
   },
 
   // Wallet
@@ -2289,6 +2409,9 @@ const ar: Translations = {
     free: 'مجاني',
     none: 'لا شيء',
     countdown: 'العد التنازلي',
+    typeLaunchpad: 'إطلاق',
+    typeLaunchpool: 'تجمع الإطلاق',
+    typeAirdrop: 'توزيع مجاني',
   },
 
   // Status labels
@@ -2383,6 +2506,18 @@ const ar: Translations = {
     medium: 'متوسطة',
     strong: 'قوية',
     passwordChars: '/8+ أحرف',
+    errFirebaseInvalidEmail: 'بريد إلكتروني غير صالح.',
+    errFirebaseUserDisabled: 'تم تعطيل هذا الحساب.',
+    errFirebaseUserNotFound: 'لا يوجد حساب بهذه البيانات.',
+    errFirebaseWrongPassword: 'كلمة المرور غير صحيحة.',
+    errFirebaseInvalidCredentials: 'بريد إلكتروني أو كلمة مرور غير صحيحة.',
+    errFirebaseEmailInUse: 'هذا البريد الإلكتروني مسجّل بالفعل.',
+    errFirebaseWeakPassword: 'كلمة المرور ضعيفة جداً. استخدم 6 أحرف على الأقل.',
+    errFirebaseTooManyRequests: 'محاولات كثيرة جداً. يرجى المحاولة لاحقاً.',
+    errFirebaseNetwork: 'خطأ في الشبكة. يرجى التحقق من اتصالك.',
+    errFirebaseOperationNotAllowed: 'تسجيل الدخول غير متاح مؤقتاً.',
+    errFirebaseDefault: 'فشل المصادقة. يرجى المحاولة مرة أخرى.',
+    socialComingSoon: 'تسجيل الدخول الاجتماعي قريباً.',
   },
 
   // Settings
@@ -2417,6 +2552,11 @@ const ar: Translations = {
     rtlEnabled: 'تخطيط RTL مفعّل',
     activeDevices: 'الأجهزة النشطة',
     activeDevicesCount: 'جهازان نشطان',
+    placeholderName: 'مستخدم',
+    placeholderEmail: 'user@qtbm.bank',
+    placeholderPhone: '+1 ***-***-1234',
+    vipLevel1: 'VIP 1',
+    versionNumber: 'v2.1.0',
   },
 
   // More (MoreView menu items, badges, sections, footer)
@@ -2780,6 +2920,20 @@ const ar: Translations = {
     allActions: 'جميع الإجراءات',
     orContinueWith: 'أو تابع باستخدام',
     getPersonalizedHelp: 'احصل على مساعدة مخصصة',
+    back: 'رجوع',
+    close: 'إغلاق',
+    cancel: 'إلغاء',
+    copy: 'نسخ',
+    copied: 'تم النسخ',
+    bookmark: 'حفظ',
+    share: 'مشاركة',
+    vote: 'تصويت',
+    follow: 'متابعة',
+    unfollow: 'إلغاء المتابعة',
+    edit: 'تعديل',
+    delete: 'حذف',
+    save: 'حفظ',
+    confirm: 'تأكيد',
   },
 
   // Errors
@@ -2813,6 +2967,12 @@ const ar: Translations = {
     disclaimer: 'ردود الذكاء الاصطناعي للمعلومات فقط. ليست نصيحة مالية.',
     defaultResponse: 'أنا هنا للمساعدة! لا تتردد في سؤالي أي شيء عن التداول أو العملات المشفرة أو ميزات QTBM BANK.',
     errorMessage: 'عذراً، أواجه صعوبة في الاتصال حالياً. يرجى المحاولة مرة أخرى.',
+    q1: 'ما هي البيتكوين؟',
+    q2: 'كيف أتداول؟',
+    q3: 'نصائح أمنية',
+    q4: 'ما هو DeFi؟',
+    q5: 'كيف أربح؟',
+    q6: 'شرح الرسوم',
   },
 
   // Swap
@@ -3175,6 +3335,10 @@ const ar: Translations = {
     views: 'المشاهدات',
     comments: 'التعليقات',
     breakingText: 'بيتكوين يتجاوز 70 ألف دولار مع وصول الطلب المؤسسي لمستوى قياسي',
+    catBreaking: 'عاجل',
+    catMarket: 'السوق',
+    catRegulation: 'التنظيم',
+    catTech: 'التقنية',
   },
 
   // Transaction Detail
@@ -3241,6 +3405,15 @@ const ar: Translations = {
     signalBotDesc: 'متابعة الإشارات',
     martingale: 'مارتينجال',
     martingaleDesc: 'تحديد حجم المركز',
+    statusRunning: 'يعمل',
+    statusCompleted: 'مكتمل',
+    statusStopped: 'متوقف',
+    statusError: 'خطأ',
+    paramsGridUpper: 'الحد الأعلى',
+    paramsGridLower: 'الحد الأدنى',
+    paramsGrids: 'شبكات',
+    paramsDcaWeekly: '/أسبوع',
+    paramsDcaNext: 'الشراء التالي خلال',
   },
 
   // Savings Goals
@@ -3348,6 +3521,12 @@ const ar: Translations = {
     exportCSV: 'تصدير CSV',
     exportPDF: 'تصدير PDF',
     disclaimer: 'هذا التقرير للمعلومات فقط. يرجى استشارة متخصص ضرائب.',
+    types: {
+      spot: 'تداول سبوت',
+      futures: 'تداول العقود الآجلة',
+      staking: 'مكافآت التخزين',
+      p2p: 'P2P',
+    },
   },
 
   // Trade Challenge
@@ -3440,6 +3619,8 @@ const ar: Translations = {
     posts: 'منشورات',
     topTraders: 'أفضل المتداولين',
     follow: 'متابعة',
+    like: 'إعجاب',
+    comment: 'تعليق',
   },
 
   // Admin Dashboard
@@ -3489,6 +3670,31 @@ const ar: Translations = {
     annTitle: 'العنوان',
     type: 'النوع',
     date: 'التاريخ',
+    kycStatusVerified: 'موثق',
+    kycStatusPending: 'قيد المراجعة',
+    kycStatusRejected: 'مرفوض',
+    roleUser: 'مستخدم',
+    roleModerator: 'مشرف',
+    roleAdmin: 'مدير',
+    userStatusActive: 'نشط',
+    userStatusSuspended: 'معلّق',
+    annTypeSystem: 'نظام',
+    annTypePromotion: 'عرض ترويجي',
+    annTypeSecurity: 'أمان',
+    annStatusActive: 'نشط',
+    annStatusExpired: 'منتهي',
+    resultSuccess: 'نجاح',
+    actionSuspendUser: 'تعليق مستخدم',
+    actionApproveKyc: 'الموافقة على KYC',
+    actionRejectKyc: 'رفض KYC',
+    actionFlagOrder: 'تعليم أمر',
+    actionFreezeWithdrawal: 'تجميد سحب',
+    actionSystemConfig: 'تغيير إعداد النظام',
+    actionCreateAnnouncement: 'إنشاء إعلان',
+    actionUpdateAnnouncement: 'تحديث إعلان',
+    reasonLargeVolume: 'حجم كبير',
+    reasonRapidSuccessive: 'تداولات متتالية سريعة',
+    reasonNewAccount: 'حساب جديد',
   },
 
   // Asset Detail
@@ -3514,6 +3720,28 @@ const ar: Translations = {
     genericAbout: 'هو أصل رقمي يتم تداوله على QTBM BANK. يمثل عملة مشفرة قائمة على البلوكشين بقيمة سوقية قدرها',
     andVolume: 'وحجم تداول خلال 24 ساعة قدره',
     trade: 'تداول',
+    descriptions: {
+      BTC: 'بيتكوين هي أول عملة رقمية لامركزية، تم إنشاؤها في عام 2009 بواسطة ساتوشي ناكاموتو. تعمل على شبكة ند للند باستخدام تقنية البلوكشين، مما يتيح معاملات آمنة وشفافة وعابرة للحدود دون الحاجة إلى وسطاء.',
+      ETH: 'إيثيريوم منصة لامركزية تتيح العقود الذكية والتطبيقات اللامركزية (dApps). أنشأها فيتاليك بوترين عام 2015، وقدّمت تقنية بلوكشين قابلة للبرمجة، تشغّل DeFi وNFTs وابتكارات Web3.',
+      BNB: 'بي إن بي هي العملة الأصلية لمنظومة BNB Chain، التي أطلقتها بينانس عام 2017. تعمل كعمود فقري لمعاملات BSC وتنفيذ العقود الذكية، وتوفر مزايا متعددة عبر منصة بينانس.',
+      SOL: 'سولانا بلوكشين عالي الأداء يدعم المطورين حول العالم في بناء تطبيقات مشفرة قابلة للتوسع. تشتهر بسرعتها وانخفاض تكاليف معاملاتها، وتعالج حتى 65,000 معاملة في الثانية.',
+      XRP: 'إكس آر بي هو الرمز الأصلي لـ XRP Ledger، وهي بلوكشين مفتوح المصدر وغير مُصرّح به. أنشأته شركة Ripple، ويتيح إكس آر بي مدفوات عبر الحدود سريعة ومنخفضة التكلفة ويستخدمه مؤسسات مالية حول العالم.',
+      ADA: 'كاردانو منصة بلوكشين تعتمد إثبات الحصة، تأسست على بحث خاضع لمراجعة الأقران وتطوير قائم على الأدلة. كاردانو (ADA) هو رمزها الأصلي، يُستخدم للمعاملات والتخزين والحوكمة داخل المنظومة.',
+      DOGE: 'دوجكوين عملة رقمية مستوحاة من ميم "Doge". بدأت كمزحة عام 2013 ونمت لتصبح عملة رقمية مستخدمة على نطاق واسع مع مجتمع شغوف، تشتهر بالإكراميات والتبرعات الخيرية.',
+      AVAX: 'أفالانش منصة سريعة جدًا ومنخفضة التكلفة وصديقة للبيئة لإطلاق التطبيقات اللامركزية ونشر بلوكشين للمؤسسات وأدوات مالية جديدة. أفالانش (AVAX) هو رمزها الأصلي يُستخدم للرسوم والتخزين والحوكمة.',
+      DOT: 'بولكادوت يتيح التواصل بين السلاسل والتعاون، مما يسمح لعدة بلوكشين بالعمل معًا بسلاسة. يُستخدم DOT للحوكمة والتخزين والربط لإضافة سلاسل جديدة.',
+      LINK: 'تشين لينك شبكة أوراكل لامركزية توفّر بيانات العالم الحقيقي للعقود الذكية على أي بلوكشين. يُستخدم LINK لدفع مشغلي العقد لاسترجاع البيانات وتأمين الشبكة.',
+      MATIC: 'بوليغون بروتوكول وإطار عمل لبناء وربط شبكات بلوكشين المتوافقة مع إيثيريوم. يُستخدم MATIC للتخزين والحوكمة ودفع رسوم المعاملات على شبكة بوليغون.',
+      UNI: 'يونيسواب بروتوكول تبادل لامركزي مبني على إيثيريوم. UNI هو رمز الحوكمة الذي يتيح لحامليه التصويت على تغييرات البروتوكول والمشاركة في تطوير المنصة.',
+      ATOM: 'كوزموس منظومة متوسعة باستمرار من التطبيقات والخدمات المترابطة المبنية لمستقبل لامركزي. يُستخدم ATOM للتخزين والحوكمة في كوزموس هَب.',
+      LTC: 'لايتكوين عملة رقمية ند للند أنشأها تشارلي لي عام 2011. تُسمى غالبًا "الفضة مقابل ذهب بيتكوين"، وتوفر أوقات تأكيد معاملات أسرع وخوارزمية تجزئة مختلفة.',
+      NEAR: 'بروتوكول نير بلوكشين من الطبقة الأولى مُجزّأ ويعتمد إثبات الحصة، مصمم ليكون قابلًا للاستخدام وقابل للتوسع. نير (NEAR) هو رمزها الأصلي يُستخدم لرسوم المعاملات والتخزين والحوكمة.',
+      APT: 'أبتوس بلوكشين من الطبقة الأولى قابل للتوسع وآمن وقابل للترقية، مبني بلغة Move. يُستخدم APT لرسوم المعاملات والتخزين والحوكمة داخل منظومة أبتوس.',
+      ARB: 'أربيترام حل تحجيم من الطبقة الثانية لإيثيريوم يستخدم عمليات الدمج المتفائلة. ARB هو رمز الحوكمة الذي يتيح لحامليه التصويت على ترقيات البروتوكول وتمويل تطوير المنظومة.',
+      OP: 'أوبتيميزم حل تحجيم من الطبقة الثانية لإيثيريوم يستخدم عمليات الدمج المتفائلة لتقديم معاملات أسرع وأرخص. OP هو رمز حوكمة أوبتيميزم كولكتف.',
+      FIL: 'فايلكوين شبكة تخزين لامركزية تحوّل التخزين السحابي إلى سوق خوارزمي. FIL هو الرمز الأصلي المستخدم لدفع تكاليف تخزين واسترجاع البيانات على الشبكة.',
+      IMX: 'إيموتابل إكس حل تحجيم من الطبقة الثانية لـ NFTs على إيثيريوم، يوفر رسوم غاز صفرية وسكّ محايد للكربون. IMX هو الرمز العملي يُستخدم للتخزين والحوكمة ودفع الرسوم.',
+    },
   },
 
   // Notifications
@@ -3531,6 +3759,12 @@ const ar: Translations = {
     noNotificationsCategory: 'لا توجد إشعارات في هذه الفئة',
     noUnreadNotifications: 'ليس لديك إشعارات غير مقروءة',
     notificationPreferences: 'تفضيلات الإشعارات',
+    typeSecurity: 'أمان',
+    typeTrade: 'تداول',
+    typeDeposit: 'إيداع',
+    typeWithdrawal: 'سحب',
+    typeSystem: 'نظام',
+    typePromotion: 'عرض',
   },
 
   // Order History

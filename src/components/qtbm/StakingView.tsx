@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
 import { useTranslation } from '@/lib/i18n';
+import { useLocaleFmt } from '@/hooks/use-locale-fmt';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -132,6 +133,7 @@ function UnstakeModal({
   const [cooldown, setCooldown] = useState(5);
   const [confirmed, setConfirmed] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const { isRTL } = useAppStore();
   useModalA11y({ open: true, onClose, ref: modalRef });
 
   useEffect(() => {
@@ -149,7 +151,7 @@ function UnstakeModal({
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -160,15 +162,15 @@ function UnstakeModal({
         role="dialog"
         aria-modal="true"
         aria-label={t('staking.unstake')}
-        className="w-full max-w-sm bg-[#1E2329] border border-[#2B3139] rounded-2xl overflow-hidden"
+        className="w-full max-w-sm bg-card border border-border rounded-2xl overflow-hidden"
         initial={{ scale: 0.95, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.95, y: 20 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-4 border-b border-[#2B3139]">
-          <h3 className="text-base font-semibold text-[#EAECEF]">{t('staking.unstake')}</h3>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-[#848E9C] hover:text-[#EAECEF]" onClick={onClose}>
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <h3 className="text-base font-semibold text-foreground">{t('staking.unstake')}</h3>
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground" onClick={onClose} aria-label={t('common.close')}>
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -180,36 +182,36 @@ function UnstakeModal({
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
             >
-              <CheckCircle2 className="h-12 w-12 text-[#0ECB81] mb-3" />
-              <p className="text-lg font-semibold text-[#0ECB81]">{t('staking.unstakeSuccess')}</p>
-              <p className="text-xs text-[#848E9C] mt-1">{t('staking.unstakeNote')}</p>
+              <CheckCircle2 className="h-12 w-12 text-success mb-3" />
+              <p className="text-lg font-semibold text-success">{t('staking.unstakeSuccess')}</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('staking.unstakeNote')}</p>
             </motion.div>
           ) : (
             <>
-              <div className="flex items-center gap-3 p-3 bg-[#0B0E11]/50 rounded-xl">
-                <div className="w-10 h-10 rounded-full bg-[#2B3139] flex items-center justify-center text-lg">{position.icon}</div>
+              <div className="flex items-center gap-3 p-3 bg-background/50 rounded-xl">
+                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-lg">{position.icon}</div>
                 <div>
-                  <p className="text-sm font-semibold text-[#EAECEF]">{position.amount} {position.asset}</p>
-                  <p className="text-xs text-[#848E9C]">{position.apy}% APY</p>
+                  <p className="text-sm font-semibold text-foreground">{position.amount} {position.asset}</p>
+                  <p className="text-xs text-muted-foreground">{position.apy}% APY</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-2 p-3 bg-[#F6465D]/5 border border-[#F6465D]/10 rounded-lg">
-                <AlertTriangle className="h-4 w-4 text-[#F6465D] shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/10 rounded-lg">
+                <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs text-[#F6465D] font-medium">{t('staking.unstakeWarning')}</p>
-                  <p className="text-[10px] text-[#848E9C] mt-1">{t('staking.unstakeCooldown')}</p>
+                  <p className="text-xs text-destructive font-medium">{t('staking.unstakeWarning')}</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">{t('staking.unstakeCooldown')}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 text-center">
-                <div className="bg-[#0B0E11]/50 rounded-lg p-3">
-                  <p className="text-[10px] text-[#5E6673]">{t('staking.rewards')}</p>
-                  <p className="text-sm font-semibold text-[#0ECB81]">+{position.rewardsEarned} {position.asset}</p>
+                <div className="bg-background/50 rounded-lg p-3">
+                  <p className="text-[10px] text-muted-foreground">{t('staking.rewards')}</p>
+                  <p className="text-sm font-semibold text-success">+{position.rewardsEarned} {position.asset}</p>
                 </div>
-                <div className="bg-[#0B0E11]/50 rounded-lg p-3">
-                  <p className="text-[10px] text-[#5E6673]">{t('staking.lockPeriod')}</p>
-                  <p className="text-sm font-semibold text-[#EAECEF]">{position.daysRemaining}d {t('staking.remaining')}</p>
+                <div className="bg-background/50 rounded-lg p-3">
+                  <p className="text-[10px] text-muted-foreground">{t('staking.lockPeriod')}</p>
+                  <p className="text-sm font-semibold text-foreground">{position.daysRemaining}d {t('staking.remaining')}</p>
                 </div>
               </div>
 
@@ -274,7 +276,7 @@ function StakeDialog({
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -285,18 +287,18 @@ function StakeDialog({
         role="dialog"
         aria-modal="true"
         aria-label={t('staking.stakeNow')}
-        className="w-full max-w-sm bg-[#1E2329] border border-[#2B3139] rounded-2xl overflow-hidden"
+        className="w-full max-w-sm bg-card border border-border rounded-2xl overflow-hidden"
         initial={{ scale: 0.95, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.95, y: 20 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-4 border-b border-[#2B3139]">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center gap-2">
-            <Lock className="h-4 w-4 text-[#F0B90B]" />
-            <h3 className="text-base font-semibold text-[#EAECEF]">{t('staking.stakeNow')}</h3>
+            <Lock className="h-4 w-4 text-primary" />
+            <h3 className="text-base font-semibold text-foreground">{t('staking.stakeNow')}</h3>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-[#848E9C] hover:text-[#EAECEF]" onClick={onClose}>
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground" onClick={onClose} aria-label={t('common.close')}>
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -308,46 +310,46 @@ function StakeDialog({
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
             >
-              <CheckCircle2 className="h-12 w-12 text-[#0ECB81] mb-3" />
-              <p className="text-lg font-semibold text-[#0ECB81]">{t('staking.stakeSuccess')}</p>
-              <p className="text-xs text-[#848E9C] mt-1">{numAmount} {asset} {t('staking.staked')}</p>
+              <CheckCircle2 className="h-12 w-12 text-success mb-3" />
+              <p className="text-lg font-semibold text-success">{t('staking.stakeSuccess')}</p>
+              <p className="text-xs text-muted-foreground mt-1">{numAmount} {asset} {t('staking.staked')}</p>
             </motion.div>
           ) : (
             <>
-              <div className="flex items-center gap-3 p-3 bg-[#0B0E11]/50 rounded-xl">
-                <div className="w-10 h-10 rounded-full bg-[#2B3139] flex items-center justify-center text-lg">{icon}</div>
+              <div className="flex items-center gap-3 p-3 bg-background/50 rounded-xl">
+                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-lg">{icon}</div>
                 <div>
-                  <p className="text-sm font-semibold text-[#EAECEF]">{asset}</p>
-                  <Badge className="text-[9px] border-0 h-4 px-1.5 bg-[#0ECB81]/10 text-[#0ECB81] font-semibold">
+                  <p className="text-sm font-semibold text-foreground">{asset}</p>
+                  <Badge className="text-[10px] border-0 h-4 px-1.5 bg-success/10 text-success font-semibold">
                     {effectiveApy}% APY
                   </Badge>
                 </div>
               </div>
 
               <div>
-                <label className="text-[10px] text-[#5E6673] mb-1 block">{t('staking.stakeAmount')}</label>
+                <label className="text-[10px] text-muted-foreground mb-1 block">{t('staking.stakeAmount')}</label>
                 <div className="relative">
                   <Input
                     type="number"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] h-11 text-base focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 pe-16"
+                    className="bg-secondary border-border text-foreground h-11 text-base focus:border-primary focus:ring-primary/20 pe-16"
                     placeholder={`${t('staking.min')} ${minAmount}`}
                   />
-                  <span className="absolute end-3 top-1/2 -translate-y-1/2 text-xs text-[#848E9C] font-medium">{asset}</span>
+                  <span className="absolute end-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">{asset}</span>
                 </div>
               </div>
 
               <div>
-                <label className="text-[10px] text-[#5E6673] mb-1 block">{t('staking.lockPeriod')}</label>
-                <div className="flex gap-1 bg-[#0B0E11]/50 rounded-lg p-1">
+                <label className="text-[10px] text-muted-foreground mb-1 block">{t('staking.lockPeriod')}</label>
+                <div className="flex gap-1 bg-background/50 rounded-lg p-1">
                   {[30, 60, 90, 120].map((d) => (
                     <button
                       key={d}
                       onClick={() => setLockDays(d)}
                       className={cn(
                         'flex-1 py-2 text-xs font-medium rounded-md transition-all',
-                        lockDays === d ? 'bg-[#F0B90B] text-[#0B0E11] shadow-sm' : 'text-[#848E9C] hover:text-[#EAECEF]'
+                        lockDays === d ? 'bg-primary text-background shadow-sm' : 'text-muted-foreground hover:text-foreground'
                       )}
                     >
                       {d}d
@@ -358,27 +360,27 @@ function StakeDialog({
 
               {numAmount > 0 && (
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-[#0B0E11]/50 rounded-lg p-2.5 text-center">
-                    <p className="text-[9px] text-[#5E6673]">{t('staking.daily')}</p>
-                    <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+{dailyReward.toFixed(4)}</p>
+                  <div className="bg-background/50 rounded-lg p-2.5 text-center">
+                    <p className="text-[10px] text-muted-foreground">{t('staking.daily')}</p>
+                    <p className="text-xs text-success font-semibold tabular-nums">+{dailyReward.toFixed(4)}</p>
                   </div>
-                  <div className="bg-[#0B0E11]/50 rounded-lg p-2.5 text-center">
-                    <p className="text-[9px] text-[#5E6673]">{t('staking.weekly')}</p>
-                    <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+{weeklyReward.toFixed(4)}</p>
+                  <div className="bg-background/50 rounded-lg p-2.5 text-center">
+                    <p className="text-[10px] text-muted-foreground">{t('staking.weekly')}</p>
+                    <p className="text-xs text-success font-semibold tabular-nums">+{weeklyReward.toFixed(4)}</p>
                   </div>
-                  <div className="bg-[#0B0E11]/50 rounded-lg p-2.5 text-center">
-                    <p className="text-[9px] text-[#5E6673]">{t('staking.monthly')}</p>
-                    <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+{monthlyReward.toFixed(4)}</p>
+                  <div className="bg-background/50 rounded-lg p-2.5 text-center">
+                    <p className="text-[10px] text-muted-foreground">{t('staking.monthly')}</p>
+                    <p className="text-xs text-success font-semibold tabular-nums">+{monthlyReward.toFixed(4)}</p>
                   </div>
-                  <div className="bg-[#0B0E11]/50 rounded-lg p-2.5 text-center">
-                    <p className="text-[9px] text-[#5E6673]">{t('staking.yearly')}</p>
-                    <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+{yearlyReward.toFixed(4)}</p>
+                  <div className="bg-background/50 rounded-lg p-2.5 text-center">
+                    <p className="text-[10px] text-muted-foreground">{t('staking.yearly')}</p>
+                    <p className="text-xs text-success font-semibold tabular-nums">+{yearlyReward.toFixed(4)}</p>
                   </div>
                 </div>
               )}
 
               <Button
-                className="w-full gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-11 shadow-md shadow-[#F0B90B]/20"
+                className="w-full gradient-yellow hover:opacity-90 text-background font-semibold h-11 shadow-md shadow-primary/20"
                 onClick={handleConfirm}
                 disabled={numAmount < minAmount}
               >
@@ -419,57 +421,57 @@ function StakingOverviewCard({ t, autoCompound }: { t: (key: string) => string; 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <div className="flex items-center gap-1.5 mb-1">
-              <Coins className="h-3.5 w-3.5 text-[#F0B90B]" />
-              <span className="text-[10px] text-[#848E9C] uppercase tracking-wider font-medium">
+              <Coins className="h-3.5 w-3.5 text-primary" />
+              <span className="text-[10px] text-muted-foreground tracking-wider font-medium">
                 {t('staking.totalStaked')}
               </span>
             </div>
-            <p className="text-xl font-bold text-[#EAECEF] tabular-nums">$12,450.00</p>
+            <p className="text-xl font-bold text-foreground tabular-nums">$12,450.00</p>
           </div>
           <div>
             <div className="flex items-center gap-1.5 mb-1">
-              <Award className="h-3.5 w-3.5 text-[#0ECB81]" />
-              <span className="text-[10px] text-[#848E9C] uppercase tracking-wider font-medium">
+              <Award className="h-3.5 w-3.5 text-success" />
+              <span className="text-[10px] text-muted-foreground tracking-wider font-medium">
                 {t('staking.totalRewards')}
               </span>
             </div>
-            <p className="text-xl font-bold text-[#0ECB81] tabular-nums">$342.50</p>
+            <p className="text-xl font-bold text-success tabular-nums">$342.50</p>
           </div>
           <div>
             <div className="flex items-center gap-1.5 mb-1">
-              <TrendingUp className="h-3.5 w-3.5 text-[#F0B90B]" />
-              <span className="text-[10px] text-[#848E9C] uppercase tracking-wider font-medium">
+              <TrendingUp className="h-3.5 w-3.5 text-primary" />
+              <span className="text-[10px] text-muted-foreground tracking-wider font-medium">
                 {t('staking.averageApy')}
               </span>
             </div>
-            <p className="text-xl font-bold text-[#F0B90B] tabular-nums">8.5%</p>
+            <p className="text-xl font-bold text-primary tabular-nums">8.5%</p>
           </div>
           <div>
             <div className="flex items-center gap-1.5 mb-1">
-              <Clock className="h-3.5 w-3.5 text-[#0ECB81]" />
-              <span className="text-[10px] text-[#848E9C] uppercase tracking-wider font-medium">
+              <Clock className="h-3.5 w-3.5 text-success" />
+              <span className="text-[10px] text-muted-foreground tracking-wider font-medium">
                 {t('staking.nextReward')}
               </span>
             </div>
-            <p className="text-xl font-bold text-[#EAECEF] tabular-nums">
+            <p className="text-xl font-bold text-foreground tabular-nums">
               {timeLeft.h}h {String(timeLeft.m).padStart(2, '0')}m
             </p>
-            <p className="text-[9px] text-[#5E6673] tabular-nums">
+            <p className="text-[10px] text-muted-foreground tabular-nums">
               {String(timeLeft.s).padStart(2, '0')}s
             </p>
           </div>
         </div>
 
         {/* Auto-Compound Status */}
-        <div className="mt-4 flex items-center justify-between p-3 bg-[#0B0E11]/40 rounded-lg border border-[#2B3139]/50">
+        <div className="mt-4 flex items-center justify-between p-3 bg-background/40 rounded-lg border border-border/50">
           <div className="flex items-center gap-2">
-            <RotateCcw className={`h-4 w-4 ${autoCompound ? 'text-[#0ECB81]' : 'text-[#5E6673]'}`} />
+            <RotateCcw className={`h-4 w-4 ${autoCompound ? 'text-success' : 'text-muted-foreground'}`} />
             <div>
-              <p className="text-xs font-medium text-[#EAECEF]">{t('staking.autoCompound')}</p>
-              <p className="text-[9px] text-[#5E6673]">{t('staking.autoCompoundDesc')}</p>
+              <p className="text-xs font-medium text-foreground">{t('staking.autoCompound')}</p>
+              <p className="text-[10px] text-muted-foreground">{t('staking.autoCompoundDesc')}</p>
             </div>
           </div>
-          <Badge className={`text-[9px] border-0 h-5 px-1.5 ${autoCompound ? 'bg-[#0ECB81]/10 text-[#0ECB81]' : 'bg-[#5E6673]/10 text-[#5E6673]'}`}>
+          <Badge className={`text-[10px] border-0 h-5 px-1.5 ${autoCompound ? 'bg-success/10 text-success' : 'bg-muted-foreground/10 text-muted-foreground'}`}>
             {autoCompound ? t('status.active') : t('status.inactive')}
           </Badge>
         </div>
@@ -500,27 +502,27 @@ function ActiveStakingTab({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.06 }}
           >
-            <Card className="bg-[#1E2329] border-[#2B3139] hover:border-[#F0B90B]/15 transition-all hover-lift">
+            <Card className="bg-card border-border hover:border-primary/15 transition-all hover-lift">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#2B3139] flex items-center justify-center text-lg">
+                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-lg">
                       {pos.icon}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-[#EAECEF]">{pos.amount} {pos.asset}</span>
-                        <Badge className="text-[9px] border-0 h-4 px-1.5 bg-[#0ECB81]/10 text-[#0ECB81] font-semibold">
+                        <span className="text-sm font-semibold text-foreground">{pos.amount} {pos.asset}</span>
+                        <Badge className="text-[10px] border-0 h-4 px-1.5 bg-success/10 text-success font-semibold">
                           {pos.apy}% APY
                         </Badge>
                       </div>
-                      <span className="text-[10px] text-[#5E6673]">{t('staking.stake')} &middot; {pos.totalDays}d {t('staking.dLock')}</span>
+                      <span className="text-[10px] text-muted-foreground">{t('staking.stake')} &middot; {pos.totalDays}d {t('staking.dLock')}</span>
                     </div>
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-[#F6465D]/30 text-[#F6465D] hover:bg-[#F6465D]/10 hover:border-[#F6465D]/50 text-[11px] h-7 px-3 press-scale"
+                    className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:border-destructive/50 text-[11px] h-7 px-3 press-scale"
                     onClick={() => onUnstake(pos)}
                   >
                     {t('staking.unstake')}
@@ -529,23 +531,23 @@ function ActiveStakingTab({
 
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <p className="text-[10px] text-[#5E6673]">{t('staking.rewards')}</p>
-                    <p className="text-sm font-semibold text-[#0ECB81] tabular-nums">
+                    <p className="text-[10px] text-muted-foreground">{t('staking.rewards')}</p>
+                    <p className="text-sm font-semibold text-success tabular-nums">
                       +{pos.rewardsEarned} {pos.asset}
                     </p>
                   </div>
                   <div className="text-end">
-                    <p className="text-[10px] text-[#5E6673]">{t('staking.usdEquivalent')}</p>
-                    <p className="text-sm font-medium text-[#EAECEF] tabular-nums">${pos.rewardsUsd}</p>
+                    <p className="text-[10px] text-muted-foreground">{t('staking.usdEquivalent')}</p>
+                    <p className="text-sm font-medium text-foreground tabular-nums">${pos.rewardsUsd}</p>
                   </div>
                 </div>
 
                 <div>
-                  <div className="flex justify-between text-[9px] mb-1">
-                    <span className="text-[#5E6673]">{pos.daysRemaining} {t('staking.days')} {t('staking.remaining')}</span>
-                    <span className="text-[#848E9C]">{Math.round(progress)}%</span>
+                  <div className="flex justify-between text-[10px] mb-1">
+                    <span className="text-muted-foreground">{pos.daysRemaining} {t('staking.days')} {t('staking.remaining')}</span>
+                    <span className="text-muted-foreground">{Math.round(progress)}%</span>
                   </div>
-                  <div className="h-1.5 bg-[#2B3139] rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
                     <div
                       className="apy-progress-bar"
                       style={{ width: `${progress}%` }}
@@ -560,7 +562,7 @@ function ActiveStakingTab({
 
       {/* Stake Now Button */}
       <Button
-        className="w-full gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-11 shadow-md shadow-[#F0B90B]/20"
+        className="w-full gradient-yellow hover:opacity-90 text-background font-semibold h-11 shadow-md shadow-primary/20"
         onClick={() => onStakeNow(availableAssets[1])}
       >
         <Lock className="h-4 w-4 me-1.5" />
@@ -584,7 +586,7 @@ function AvailableStakeTab({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-1 bg-[#1E2329] rounded-lg p-1">
+      <div className="flex gap-1 bg-card rounded-lg p-1">
         {lockTabs.map((days) => (
           <button
             key={days}
@@ -592,8 +594,8 @@ function AvailableStakeTab({
             className={cn(
               'flex-1 py-2 text-xs font-medium rounded-md transition-all duration-200',
               lockPeriod === days
-                ? 'bg-[#2B3139] text-[#F0B90B] shadow-sm'
-                : 'text-[#848E9C] hover:text-[#EAECEF]'
+                ? 'bg-secondary text-primary shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
             )}
           >
             {days}d
@@ -612,32 +614,32 @@ function AvailableStakeTab({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.06 }}
             >
-              <Card className="bg-[#1E2329] border-[#2B3139] hover:border-[#F0B90B]/15 transition-all hover-lift">
+              <Card className="bg-card border-border hover:border-primary/15 transition-all hover-lift">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#2B3139] flex items-center justify-center text-lg">
+                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-lg">
                         {asset.icon}
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-[#EAECEF]">{asset.asset}</span>
-                          <Badge className="text-[9px] border-0 h-4 px-1.5 bg-[#0ECB81]/10 text-[#0ECB81] font-semibold">
+                          <span className="text-sm font-semibold text-foreground">{asset.asset}</span>
+                          <Badge className="text-[10px] border-0 h-4 px-1.5 bg-success/10 text-success font-semibold">
                             {effectiveApy}% APY
                           </Badge>
                           {isHot && (
-                            <Badge className="text-[8px] border-0 h-4 px-1.5 bg-[#F6465D]/15 text-[#F6465D] hot-badge font-bold">
+                            <Badge className="text-[10px] border-0 h-4 px-1.5 bg-destructive/15 text-destructive hot-badge font-bold">
                               {t('staking.popular')}
                             </Badge>
                           )}
                         </div>
-                        <p className="text-[10px] text-[#5E6673]">
+                        <p className="text-[10px] text-muted-foreground">
                           {t('staking.upTo')} {asset.maxAmount} {asset.asset} &middot; {t('staking.min')} {asset.minAmount} {asset.asset}
                         </p>
                       </div>
                     </div>
                     <Button
-                      className="gradient-yellow hover:opacity-90 text-[#0B0E11] text-xs h-8 px-4 font-semibold press-scale"
+                      className="gradient-yellow hover:opacity-90 text-background text-xs h-8 px-4 font-semibold press-scale"
                       onClick={() => onStakeNow(asset)}
                     >
                       {t('staking.stake')}
@@ -645,11 +647,11 @@ function AvailableStakeTab({
                   </div>
 
                   <div>
-                    <div className="flex justify-between text-[9px] text-[#5E6673] mb-1">
+                    <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
                       <span>{t('staking.apyLevel')}</span>
-                      <span className="text-[#0ECB81]">{Math.round(Math.min(effectiveApy / 25 * 100, 100))}%</span>
+                      <span className="text-success">{Math.round(Math.min(effectiveApy / 25 * 100, 100))}%</span>
                     </div>
-                    <div className="h-1 bg-[#2B3139] rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
                       <div
                         className="apy-progress-bar"
                         style={{ width: `${Math.min(effectiveApy / 25 * 100, 100)}%` }}
@@ -667,45 +669,47 @@ function AvailableStakeTab({
 }
 
 function RewardsHistoryTab({ t }: { t: (key: string) => string }) {
+  const { formatDate } = useLocaleFmt();
+  const { isRTL } = useAppStore();
   return (
     <div className="space-y-0">
-      <div className="grid grid-cols-5 gap-2 px-3 py-2 text-[9px] text-[#5E6673] uppercase tracking-wider font-semibold">
+      <div className="grid grid-cols-5 gap-2 px-3 py-2 text-[10px] text-muted-foreground tracking-wider font-semibold">
         <span>{t('staking.date')}</span>
         <span>{t('staking.asset')}</span>
         <span className="text-end">{t('staking.amount')}</span>
         <span className="text-end">{t('staking.usd')}</span>
         <span className="text-end">{t('staking.type')}</span>
       </div>
-      <Separator className="bg-[#2B3139]" />
+      <Separator className="bg-secondary" />
 
       {rewardsHistory.map((entry, idx) => (
         <motion.div
           key={entry.id}
-          initial={{ opacity: 0, x: -8 }}
+          initial={{ opacity: 0, x: isRTL ? 8 : -8 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: idx * 0.04 }}
         >
-          <div className="grid grid-cols-5 gap-2 px-3 py-2.5 text-xs hover:bg-[#1E2329]/50 transition-colors">
-            <span className="text-[#848E9C] tabular-nums text-[11px]">
-              {new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+          <div className="grid grid-cols-5 gap-2 px-3 py-2.5 text-xs hover:bg-card/50 transition-colors">
+            <span className="text-muted-foreground tabular-nums text-[11px]">
+              {formatDate(entry.date, { month: 'short', day: 'numeric' })}
             </span>
-            <span className="text-[#EAECEF] font-medium">{entry.asset}</span>
-            <span className="text-end text-[#0ECB81] tabular-nums text-[11px]">+{entry.amount}</span>
-            <span className="text-end text-[#EAECEF] tabular-nums text-[11px]">{entry.usdValue}</span>
+            <span className="text-foreground font-medium">{entry.asset}</span>
+            <span className="text-end text-success tabular-nums text-[11px]">+{entry.amount}</span>
+            <span className="text-end text-foreground tabular-nums text-[11px]">{entry.usdValue}</span>
             <span className="text-end">
               <Badge
                 className={cn(
-                  'text-[8px] border-0 h-4 px-1.5 font-medium',
+                  'text-[10px] border-0 h-4 px-1.5 font-medium',
                   entry.type === 'Auto-compound'
-                    ? 'bg-[#F0B90B]/10 text-[#F0B90B]'
-                    : 'bg-[#0ECB81]/10 text-[#0ECB81]'
+                    ? 'bg-primary/10 text-primary'
+                    : 'bg-success/10 text-success'
                 )}
               >
                 {entry.type === 'Auto-compound' ? t('staking.auto') : t('staking.reward')}
               </Badge>
             </span>
           </div>
-          {idx < rewardsHistory.length - 1 && <Separator className="bg-[#2B3139]/50" />}
+          {idx < rewardsHistory.length - 1 && <Separator className="bg-secondary/50" />}
         </motion.div>
       ))}
     </div>
@@ -713,15 +717,16 @@ function RewardsHistoryTab({ t }: { t: (key: string) => string }) {
 }
 
 function StakingHistoryTab({ t }: { t: (key: string) => string }) {
+  const { formatDate } = useLocaleFmt();
   const statusColors: Record<string, string> = {
-    Completed: 'bg-[#0ECB81]/10 text-[#0ECB81]',
-    Pending: 'bg-[#F0B90B]/10 text-[#F0B90B]',
-    Unbonding: 'bg-[#F6465D]/10 text-[#F6465D]',
+    Completed: 'bg-success/10 text-success',
+    Pending: 'bg-primary/10 text-primary',
+    Unbonding: 'bg-destructive/10 text-destructive',
   };
   const typeIcons: Record<string, React.ReactNode> = {
-    Stake: <Lock className="h-3.5 w-3.5 text-[#0ECB81]" />,
-    Unstake: <Unlock className="h-3.5 w-3.5 text-[#F6465D]" />,
-    'Claim Reward': <Award className="h-3.5 w-3.5 text-[#F0B90B]" />,
+    Stake: <Lock className="h-3.5 w-3.5 text-success" />,
+    Unstake: <Unlock className="h-3.5 w-3.5 text-destructive" />,
+    'Claim Reward': <Award className="h-3.5 w-3.5 text-primary" />,
   };
 
   return (
@@ -733,26 +738,26 @@ function StakingHistoryTab({ t }: { t: (key: string) => string }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: idx * 0.05 }}
         >
-          <Card className="bg-[#1E2329] border-[#2B3139]">
+          <Card className="bg-card border-border">
             <CardContent className="p-3">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-[#2B3139] flex items-center justify-center">
+                <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center">
                   {typeIcons[entry.type]}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-[#EAECEF]">{entry.type}</span>
-                      <Badge className={cn('text-[8px] border-0 h-4 px-1.5 font-medium', statusColors[entry.status])}>
+                      <span className="text-sm font-semibold text-foreground">{entry.type}</span>
+                      <Badge className={cn('text-[10px] border-0 h-4 px-1.5 font-medium', statusColors[entry.status])}>
                         {entry.status}
                       </Badge>
                     </div>
-                    <span className="text-sm font-semibold text-[#EAECEF] tabular-nums">{entry.amount}</span>
+                    <span className="text-sm font-semibold text-foreground tabular-nums">{entry.amount}</span>
                   </div>
                   <div className="flex items-center justify-between mt-1">
-                    <span className="text-[10px] text-[#5E6673]">{new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                    <span className="text-[10px] text-muted-foreground">{formatDate(entry.date, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                     {entry.lockPeriod !== '-' && (
-                      <span className="text-[10px] text-[#848E9C]">{entry.lockPeriod}</span>
+                      <span className="text-[10px] text-muted-foreground">{entry.lockPeriod}</span>
                     )}
                   </div>
                 </div>
@@ -782,28 +787,28 @@ function StakingCalculator({ t }: { t: (key: string) => string }) {
       <div className="absolute inset-0 rounded-xl gradient-border pointer-events-none" />
       <CardContent className="relative p-5">
         <div className="flex items-center gap-2 mb-4">
-          <Calculator className="h-4 w-4 text-[#F0B90B]" />
-          <h3 className="text-sm font-semibold text-[#EAECEF]">{t('staking.calculator')}</h3>
+          <Calculator className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold text-foreground">{t('staking.calculator')}</h3>
         </div>
 
         <div className="space-y-3">
           <div>
-            <label className="text-[10px] text-[#5E6673] mb-1 block">{t('staking.amountUsd')}</label>
+            <label className="text-[10px] text-muted-foreground mb-1 block">{t('staking.amountUsd')}</label>
             <Input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] h-9 text-sm focus:border-[#F0B90B] focus:ring-[#F0B90B]/20"
+              className="bg-secondary border-border text-foreground h-9 text-sm focus:border-primary focus:ring-primary/20"
               placeholder={t('staking.enterAmount')}
             />
           </div>
 
           <div>
-            <label className="text-[10px] text-[#5E6673] mb-1 block">{t('staking.asset')}</label>
+            <label className="text-[10px] text-muted-foreground mb-1 block">{t('staking.asset')}</label>
             <select
               value={selectedAsset}
               onChange={(e) => setSelectedAsset(e.target.value)}
-              className="w-full bg-[#2B3139] border border-[#2B3139] text-[#EAECEF] h-9 text-sm rounded-md px-3 focus:border-[#F0B90B] focus:outline-none"
+              className="w-full bg-secondary border border-border text-foreground h-9 text-sm rounded-md px-3 focus:border-primary focus:outline-none"
             >
               {availableAssets.map((a) => (
                 <option key={a.asset} value={a.asset}>
@@ -814,8 +819,8 @@ function StakingCalculator({ t }: { t: (key: string) => string }) {
           </div>
 
           <div>
-            <label className="text-[10px] text-[#5E6673] mb-1 block">{t('staking.lockPeriod')}</label>
-            <div className="flex gap-1 bg-[#2B3139] rounded-lg p-1">
+            <label className="text-[10px] text-muted-foreground mb-1 block">{t('staking.lockPeriod')}</label>
+            <div className="flex gap-1 bg-secondary rounded-lg p-1">
               {[30, 60, 90, 120].map((d) => (
                 <button
                   key={d}
@@ -823,8 +828,8 @@ function StakingCalculator({ t }: { t: (key: string) => string }) {
                   className={cn(
                     'flex-1 py-1.5 text-[11px] font-medium rounded-md transition-all',
                     selectedLock === d
-                      ? 'bg-[#1E2329] text-[#F0B90B] shadow-sm'
-                      : 'text-[#848E9C] hover:text-[#EAECEF]'
+                      ? 'bg-card text-primary shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
                   {d}d
@@ -833,23 +838,23 @@ function StakingCalculator({ t }: { t: (key: string) => string }) {
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-xs bg-[#2B3139] rounded-lg px-3 py-2">
-            <span className="text-[#848E9C]">{t('staking.effectiveApy')}</span>
-            <span className="text-[#0ECB81] font-bold tabular-nums">{effectiveApy}%</span>
+          <div className="flex items-center justify-between text-xs bg-secondary rounded-lg px-3 py-2">
+            <span className="text-muted-foreground">{t('staking.effectiveApy')}</span>
+            <span className="text-success font-bold tabular-nums">{effectiveApy}%</span>
           </div>
 
           <div className="grid grid-cols-3 gap-2">
-            <div className="bg-[#2B3139] rounded-lg p-2.5 text-center">
-              <p className="text-[9px] text-[#5E6673]">{t('staking.daily')}</p>
-              <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+${dailyReward.toFixed(2)}</p>
+            <div className="bg-secondary rounded-lg p-2.5 text-center">
+              <p className="text-[10px] text-muted-foreground">{t('staking.daily')}</p>
+              <p className="text-xs text-success font-semibold tabular-nums">+${dailyReward.toFixed(2)}</p>
             </div>
-            <div className="bg-[#2B3139] rounded-lg p-2.5 text-center">
-              <p className="text-[9px] text-[#5E6673]">{t('staking.monthly')}</p>
-              <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+${monthlyReward.toFixed(2)}</p>
+            <div className="bg-secondary rounded-lg p-2.5 text-center">
+              <p className="text-[10px] text-muted-foreground">{t('staking.monthly')}</p>
+              <p className="text-xs text-success font-semibold tabular-nums">+${monthlyReward.toFixed(2)}</p>
             </div>
-            <div className="bg-[#2B3139] rounded-lg p-2.5 text-center">
-              <p className="text-[9px] text-[#5E6673]">{t('staking.yearly')}</p>
-              <p className="text-xs text-[#0ECB81] font-semibold tabular-nums">+${yearlyReward.toFixed(2)}</p>
+            <div className="bg-secondary rounded-lg p-2.5 text-center">
+              <p className="text-[10px] text-muted-foreground">{t('staking.yearly')}</p>
+              <p className="text-xs text-success font-semibold tabular-nums">+${yearlyReward.toFixed(2)}</p>
             </div>
           </div>
         </div>
@@ -860,7 +865,7 @@ function StakingCalculator({ t }: { t: (key: string) => string }) {
 
 // ── Main Component ───────────────────────────────────────────────────────────
 export default function StakingView() {
-  const { goBack } = useAppStore();
+  const { goBack, isRTL } = useAppStore();
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<StakingTab>('active');
   const [autoCompound, setAutoCompound] = useState(true);
@@ -874,7 +879,7 @@ export default function StakingView() {
   ], [t]);
 
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)] lg:h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-8rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="p-4 space-y-4 max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -882,17 +887,18 @@ export default function StakingView() {
             <Button
               variant="ghost"
               size="icon"
-              className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-9 w-9 lg:hidden"
+              className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9 lg:hidden"
               onClick={goBack}
+              aria-label={t('common.back')}
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
             </Button>
             <div>
-              <h1 className="text-lg font-bold text-[#EAECEF]">{t('staking.title')}</h1>
-              <p className="text-xs text-[#848E9C]">{t('staking.earnPassive')}</p>
+              <h1 className="text-lg font-bold text-foreground">{t('staking.title')}</h1>
+              <p className="text-xs text-muted-foreground">{t('staking.earnPassive')}</p>
             </div>
           </div>
-          <Badge className="bg-[#F0B90B]/10 text-[#F0B90B] border-0 text-[10px] px-2.5 py-1 font-semibold">
+          <Badge className="bg-primary/10 text-primary border-0 text-[10px] px-2.5 py-1 font-semibold">
             <Lock className="h-3 w-3 me-1" />
             $12,450 {t('staking.totalStaked')}
           </Badge>
@@ -902,41 +908,41 @@ export default function StakingView() {
         <StakingOverviewCard t={t} autoCompound={autoCompound} />
 
         {/* Auto-Compound Toggle */}
-        <Card className="bg-[#1E2329] border-[#2B3139]">
+        <Card className="bg-card border-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-[#F0B90B]/10 flex items-center justify-center">
-                  <RotateCcw className="h-4 w-4 text-[#F0B90B]" />
+                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                  <RotateCcw className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-[#EAECEF]">{t('staking.autoCompound')}</p>
-                  <p className="text-[10px] text-[#848E9C] flex items-center gap-1">
+                  <p className="text-sm font-medium text-foreground">{t('staking.autoCompound')}</p>
+                  <p className="text-[10px] text-muted-foreground flex items-center gap-1">
                     {t('staking.autoCompoundDesc')}
-                    <Info className="h-3 w-3 text-[#5E6673] cursor-help" />
+                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                   </p>
                 </div>
               </div>
               <Switch
                 checked={autoCompound}
                 onCheckedChange={setAutoCompound}
-                className="data-[state=checked]:bg-[#0ECB81]"
+                className="data-[state=checked]:bg-success"
               />
             </div>
             {autoCompound && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
-                className="mt-3 p-2.5 bg-[#0ECB81]/5 border border-[#0ECB81]/10 rounded-lg"
+                className="mt-3 p-2.5 bg-success/10 border border-success/10 rounded-lg"
               >
-                <p className="text-[10px] text-[#0ECB81]">{t('staking.autoCompoundBenefit')}</p>
+                <p className="text-[10px] text-success">{t('staking.autoCompoundBenefit')}</p>
               </motion.div>
             )}
           </CardContent>
         </Card>
 
         {/* Tabs */}
-        <div className="flex gap-1 bg-[#1E2329] rounded-lg p-1">
+        <div className="flex gap-1 bg-card rounded-lg p-1">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -944,8 +950,8 @@ export default function StakingView() {
               className={cn(
                 'flex-1 py-2.5 text-xs font-medium rounded-md transition-all duration-200',
                 activeTab === tab.id
-                  ? 'bg-[#2B3139] text-[#F0B90B] shadow-sm'
-                  : 'text-[#848E9C] hover:text-[#EAECEF]'
+                  ? 'bg-secondary text-primary shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
               )}
             >
               {tab.label}
@@ -980,10 +986,10 @@ export default function StakingView() {
             {activeTab === 'history' && (
               <div className="space-y-4">
                 <RewardsHistoryTab t={t} />
-                <Separator className="bg-[#2B3139]" />
+                <Separator className="bg-secondary" />
                 <div>
-                  <h3 className="text-sm font-semibold text-[#EAECEF] mb-3 flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-[#F0B90B]" />
+                  <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-primary" />
                     {t('staking.stakingHistory')}
                   </h3>
                   <StakingHistoryTab t={t} />
@@ -993,7 +999,7 @@ export default function StakingView() {
           </motion.div>
         </AnimatePresence>
 
-        <Separator className="bg-[#2B3139]" />
+        <Separator className="bg-secondary" />
 
         {/* Staking Calculator */}
         <StakingCalculator t={t} />

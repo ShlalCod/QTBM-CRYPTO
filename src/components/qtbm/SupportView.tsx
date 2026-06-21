@@ -32,10 +32,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const statusConfig: Record<string, { icon: React.ElementType; color: string; labelKey: string }> = {
-  open: { icon: AlertCircle, color: 'text-[#F0B90B]', labelKey: 'support.statusOpen' },
-  in_progress: { icon: Loader2, color: 'text-[#F0B90B]', labelKey: 'support.statusInProgress' },
-  resolved: { icon: CheckCircle2, color: 'text-[#0ECB81]', labelKey: 'support.statusResolved' },
-  closed: { icon: CheckCircle2, color: 'text-[#848E9C]', labelKey: 'support.statusClosed' },
+  open: { icon: AlertCircle, color: 'text-primary', labelKey: 'support.statusOpen' },
+  in_progress: { icon: Loader2, color: 'text-primary', labelKey: 'support.statusInProgress' },
+  resolved: { icon: CheckCircle2, color: 'text-success', labelKey: 'support.statusResolved' },
+  closed: { icon: CheckCircle2, color: 'text-muted-foreground', labelKey: 'support.statusClosed' },
 };
 
 export default function SupportView() {
@@ -73,7 +73,7 @@ export default function SupportView() {
   };
 
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)] lg:h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-8rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="p-4 space-y-5 max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -81,18 +81,19 @@ export default function SupportView() {
             <Button
               variant="ghost"
               size="icon"
-              className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-9 w-9 lg:hidden"
+              aria-label={t('actions.back')}
+              className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9 lg:hidden"
               onClick={() => navigateTo('more')}
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="rtl:scale-x-[-1] h-5 w-5 [dir=rtl]:rotate-180" />
             </Button>
             <div>
-              <h1 className="text-lg font-bold text-[#EAECEF]">{t('support.title')}</h1>
-              <p className="text-xs text-[#848E9C]">{t('support.subtitle')}</p>
+              <h1 className="text-lg font-bold text-foreground">{t('support.title')}</h1>
+              <p className="text-xs text-muted-foreground">{t('support.subtitle')}</p>
             </div>
           </div>
           <Button
-            className="bg-[#F0B90B] hover:bg-[#F0B90B]/90 text-[#0B0E11] text-xs h-9 font-semibold"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-9 font-semibold"
             onClick={() => setCreateTicketOpen(true)}
           >
             <Plus className="h-3.5 w-3.5 me-1" />
@@ -103,27 +104,27 @@ export default function SupportView() {
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3">
           <Card
-            className="bg-[#1E2329] border-[#2B3139] hover:border-[#F0B90B]/20 cursor-pointer transition-colors"
+            className="bg-card border-border hover:border-primary/20 cursor-pointer transition-colors rounded-xl"
             onClick={() => setCreateTicketOpen(true)}
           >
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#F0B90B]/10 rounded-full flex items-center justify-center">
-                <MessageSquare className="h-5 w-5 text-[#F0B90B]" />
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                <MessageSquare className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-[#EAECEF]">{t('support.createTicket')}</p>
-                <p className="text-[10px] text-[#5E6673]">{t('support.getPersonalizedHelp')}</p>
+                <p className="text-sm font-semibold text-foreground">{t('support.createTicket')}</p>
+                <p className="text-[10px] text-muted-foreground">{t('support.getPersonalizedHelp')}</p>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-[#1E2329] border-[#2B3139] hover:border-[#0ECB81]/20 cursor-pointer transition-colors">
+          <Card className="bg-card border-border hover:border-success/20 cursor-pointer transition-colors rounded-xl">
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#0ECB81]/10 rounded-full flex items-center justify-center">
-                <Headphones className="h-5 w-5 text-[#0ECB81]" />
+              <div className="w-10 h-10 bg-success/10 rounded-full flex items-center justify-center">
+                <Headphones className="h-5 w-5 text-success" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-[#EAECEF]">{t('support.liveChat')}</p>
-                <p className="text-[10px] text-[#5E6673]">{t('support.chatWithAgent')}</p>
+                <p className="text-sm font-semibold text-foreground">{t('support.liveChat')}</p>
+                <p className="text-[10px] text-muted-foreground">{t('support.chatWithAgent')}</p>
               </div>
             </CardContent>
           </Card>
@@ -131,40 +132,40 @@ export default function SupportView() {
 
         {/* FAQ Section */}
         <div>
-          <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">{t('support.faqTitle')}</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-3">{t('support.faqTitle')}</h3>
 
           {/* Search */}
           <div className="relative mb-3">
-            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673]" />
+            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={t('support.searchFaqs')}
               value={searchFAQ}
               onChange={(e) => setSearchFAQ(e.target.value)}
-              className="ps-9 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-sm focus:border-[#F0B90B]"
+              className="ps-9 bg-secondary border-border text-foreground placeholder:text-muted-foreground h-9 text-sm focus:border-primary"
             />
           </div>
 
           {/* FAQ Accordion with Animations */}
-          <Card className="bg-[#1E2329] border-[#2B3139]">
+          <Card className="bg-card border-border">
             <CardContent className="p-0">
               {filteredFAQs.map((faq) => (
                 <div
                   key={faq.id}
-                  className="border-b border-[#2B3139] last:border-0"
+                  className="border-b border-border last:border-0"
                 >
                   <button
                     onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)}
-                    className="w-full px-4 py-3 hover:bg-[#2B3139]/50 text-sm text-[#EAECEF] text-start flex items-center justify-between"
+                    className="w-full px-4 py-3 hover:bg-secondary/50 text-sm text-foreground text-start flex items-center justify-between"
                   >
                     <div className="flex items-center gap-2">
-                      <HelpCircle className="h-4 w-4 text-[#F0B90B] shrink-0" />
+                      <HelpCircle className="h-4 w-4 text-primary shrink-0" />
                       <span>{faq.question}</span>
                     </div>
                     <motion.div
                       animate={{ rotate: expandedFaq === faq.id ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <ChevronDown className={`h-4 w-4 text-[#5E6673] faq-chevron ${expandedFaq === faq.id ? 'faq-chevron-open' : ''}`} />
+                      <ChevronDown className={`h-4 w-4 text-muted-foreground faq-chevron ${expandedFaq === faq.id ? 'faq-chevron-open' : ''}`} />
                     </motion.div>
                   </button>
                   <AnimatePresence>
@@ -176,7 +177,7 @@ export default function SupportView() {
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
                         className="overflow-hidden"
                       >
-                        <p className="px-4 pb-3 text-xs text-[#848E9C] leading-relaxed">{faq.answer}</p>
+                        <p className="px-4 pb-3 text-xs text-muted-foreground leading-relaxed">{faq.answer}</p>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -184,7 +185,7 @@ export default function SupportView() {
               ))}
               {filteredFAQs.length === 0 && (
                 <div className="p-6 text-center">
-                  <p className="text-sm text-[#5E6673]">{t('support.noFaqs')}</p>
+                  <p className="text-sm text-muted-foreground">{t('support.noFaqs')}</p>
                 </div>
               )}
             </CardContent>
@@ -193,7 +194,7 @@ export default function SupportView() {
 
         {/* My Tickets */}
         <div>
-          <h3 className="text-sm font-semibold text-[#EAECEF] mb-3">{t('support.myTickets')}</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-3">{t('support.myTickets')}</h3>
           <div className="space-y-2">
             {mockSupportTickets.map((ticket) => {
               const config = statusConfig[ticket.status] || statusConfig.open;
@@ -202,7 +203,7 @@ export default function SupportView() {
               return (
                 <Card
                   key={ticket.id}
-                  className="bg-[#1E2329] border-[#2B3139] hover:border-[#F0B90B]/20 transition-colors cursor-pointer"
+                  className="bg-card border-border hover:border-primary/20 transition-colors cursor-pointer"
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between">
@@ -210,40 +211,40 @@ export default function SupportView() {
                         <div
                           className={`w-8 h-8 rounded-full ${
                             ticket.status === 'open' || ticket.status === 'in_progress'
-                              ? 'bg-[#F0B90B]/10'
-                              : 'bg-[#0ECB81]/10'
+                              ? 'bg-primary/10'
+                              : 'bg-success/10'
                           } flex items-center justify-center shrink-0 mt-0.5`}
                         >
                           <FileText
                             className={`h-4 w-4 ${
                               ticket.status === 'open' || ticket.status === 'in_progress'
-                                ? 'text-[#F0B90B]'
-                                : 'text-[#0ECB81]'
+                                ? 'text-primary'
+                                : 'text-success'
                             }`}
                           />
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-[#EAECEF]">{ticket.subject}</p>
-                          <p className="text-[10px] text-[#5E6673] mt-0.5 line-clamp-1">
+                          <p className="text-sm font-semibold text-foreground">{ticket.subject}</p>
+                          <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1">
                             {ticket.lastMessage}
                           </p>
                           <div className="flex items-center gap-2 mt-1.5">
                             <Badge
                               variant="outline"
-                              className={`text-[9px] h-4 px-1.5 border-0 ${
+                              className={`text-[10px] h-4 px-1.5 border-0 ${
                                 ticket.status === 'open'
-                                  ? 'bg-[#F0B90B]/10 text-[#F0B90B]'
+                                  ? 'bg-primary/10 text-primary'
                                   : ticket.status === 'in_progress'
-                                  ? 'bg-[#F0B90B]/10 text-[#F0B90B]'
+                                  ? 'bg-primary/10 text-primary'
                                   : ticket.status === 'resolved'
-                                  ? 'bg-[#0ECB81]/10 text-[#0ECB81]'
-                                  : 'bg-[#848E9C]/10 text-[#848E9C]'
+                                  ? 'bg-success/10 text-success'
+                                  : 'bg-muted-foreground/10 text-muted-foreground'
                               }`}
                             >
                               <StatusIcon className={`h-2.5 w-2.5 me-0.5 ${config.color}`} />
                               {t(config.labelKey)}
                             </Badge>
-                            <span className="text-[9px] text-[#3E444D]">
+                            <span className="text-[10px] text-muted-foreground">
                               {t('support.updated')} {getTimeAgo(ticket.updatedAt)}
                             </span>
                           </div>
@@ -251,7 +252,7 @@ export default function SupportView() {
                       </div>
                       <Badge
                         variant="outline"
-                        className="text-[9px] border-[#2B3139] text-[#5E6673] shrink-0"
+                        className="text-[10px] border-border text-muted-foreground shrink-0"
                       >
                         #{ticket.id}
                       </Badge>
@@ -265,9 +266,9 @@ export default function SupportView() {
 
         {/* Create Ticket Dialog with Step Progress */}
         <Dialog open={createTicketOpen} onOpenChange={(open) => { setCreateTicketOpen(open); if (!open) setTicketStep(1); }}>
-          <DialogContent className="bg-[#1E2329] border-[#2B3139] text-[#EAECEF]">
+          <DialogContent className="bg-card border-border text-foreground">
             <DialogHeader>
-              <DialogTitle className="text-[#EAECEF]">{t('support.createSupportTicket')}</DialogTitle>
+              <DialogTitle className="text-foreground">{t('support.createSupportTicket')}</DialogTitle>
             </DialogHeader>
 
             {/* Step Progress Indicator */}
@@ -275,29 +276,29 @@ export default function SupportView() {
               {[1, 2, 3].map((s) => (
                 <React.Fragment key={s}>
                   <div className={`flex-1 h-1 rounded-full transition-all duration-300 ${
-                    s < ticketStep ? 'bg-[#0ECB81]' : s === ticketStep ? 'bg-[#F0B90B]' : 'bg-[#2B3139]'
+                    s < ticketStep ? 'bg-success' : s === ticketStep ? 'bg-primary' : 'bg-secondary'
                   }`} />
                   {s < 3 && (
-                    <div className="w-2 h-0.5 bg-[#2B3139] rounded" />
+                    <div className="w-2 h-0.5 bg-secondary rounded" />
                   )}
                 </React.Fragment>
               ))}
             </div>
-            <div className="flex justify-between text-[10px] text-[#5E6673] mb-3">
-              <span className={ticketStep >= 1 ? 'text-[#F0B90B]' : ''}>{t('support.stepCategory')}</span>
-              <span className={ticketStep >= 2 ? 'text-[#F0B90B]' : ''}>{t('support.stepDetails')}</span>
-              <span className={ticketStep >= 3 ? 'text-[#F0B90B]' : ''}>{t('support.stepSubmit')}</span>
+            <div className="flex justify-between text-[10px] text-muted-foreground mb-3">
+              <span className={ticketStep >= 1 ? 'text-primary' : ''}>{t('support.stepCategory')}</span>
+              <span className={ticketStep >= 2 ? 'text-primary' : ''}>{t('support.stepDetails')}</span>
+              <span className={ticketStep >= 3 ? 'text-primary' : ''}>{t('support.stepSubmit')}</span>
             </div>
 
             <AnimatePresence mode="wait">
               {ticketStep === 1 && (
                 <motion.div key="step1" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="space-y-4 py-2">
-                  <label className="text-xs text-[#848E9C]">{t('support.category')}</label>
+                  <label className="text-xs text-muted-foreground">{t('support.category')}</label>
                   <Select value={ticketCategory} onValueChange={setTicketCategory}>
-                    <SelectTrigger className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] h-10 text-sm">
+                    <SelectTrigger className="bg-secondary border-border text-foreground h-10 text-sm">
                       <SelectValue placeholder={t('support.selectCategory')} />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#2B3139] border-[#2B3139]">
+                    <SelectContent className="bg-secondary border-border">
                       {[
                         { value: 'deposit', label: t('support.catDeposit') },
                         { value: 'withdrawal', label: t('support.catWithdrawal') },
@@ -309,7 +310,7 @@ export default function SupportView() {
                         { value: 'other', label: t('support.catOther') },
                       ].map(
                         (cat) => (
-                          <SelectItem key={cat.value} value={cat.value} className="text-[#EAECEF] text-sm">
+                          <SelectItem key={cat.value} value={cat.value} className="text-foreground text-sm">
                             {cat.label}
                           </SelectItem>
                         )
@@ -321,40 +322,40 @@ export default function SupportView() {
               {ticketStep === 2 && (
                 <motion.div key="step2" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="space-y-4 py-2">
                   <div className="space-y-2">
-                    <label className="text-xs text-[#848E9C]">{t('support.subject')}</label>
+                    <label className="text-xs text-muted-foreground">{t('support.subject')}</label>
                     <Input
                       placeholder={t('support.subjectPlaceholder')}
                       value={ticketSubject}
                       onChange={(e) => setTicketSubject(e.target.value)}
-                      className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] h-10 text-sm input-focus-glow"
+                      className="bg-secondary border-border text-foreground h-10 text-sm input-focus-glow"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs text-[#848E9C]">{t('support.message')}</label>
+                    <label className="text-xs text-muted-foreground">{t('support.message')}</label>
                     <Textarea
                       placeholder={t('support.messagePlaceholder')}
                       value={ticketMessage}
                       onChange={(e) => setTicketMessage(e.target.value)}
-                      className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] min-h-[120px] text-sm resize-none input-focus-glow"
+                      className="bg-secondary border-border text-foreground min-h-[120px] text-sm resize-none input-focus-glow"
                     />
                   </div>
                 </motion.div>
               )}
               {ticketStep === 3 && (
                 <motion.div key="step3" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="space-y-3 py-2">
-                  <p className="text-xs text-[#848E9C] mb-2">{t('support.reviewTicket')}</p>
-                  <div className="bg-[#2B3139] rounded-lg p-3 space-y-2 text-xs">
+                  <p className="text-xs text-muted-foreground mb-2">{t('support.reviewTicket')}</p>
+                  <div className="bg-secondary rounded-lg p-3 space-y-2 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-[#5E6673]">{t('support.category')}</span>
-                      <span className="text-[#EAECEF] capitalize">{ticketCategory}</span>
+                      <span className="text-muted-foreground">{t('support.category')}</span>
+                      <span className="text-foreground">{t(`support.cat${ticketCategory.charAt(0).toUpperCase()}${ticketCategory.slice(1)}`)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[#5E6673]">{t('support.subject')}</span>
-                      <span className="text-[#EAECEF]">{ticketSubject}</span>
+                      <span className="text-muted-foreground">{t('support.subject')}</span>
+                      <span className="text-foreground">{ticketSubject}</span>
                     </div>
                     <div>
-                      <span className="text-[#5E6673]">{t('support.message')}</span>
-                      <p className="text-[#848E9C] mt-1 line-clamp-3">{ticketMessage}</p>
+                      <span className="text-muted-foreground">{t('support.message')}</span>
+                      <p className="text-muted-foreground mt-1 line-clamp-3">{ticketMessage}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -367,14 +368,14 @@ export default function SupportView() {
                   <Button
                     variant="outline"
                     onClick={() => setTicketStep(ticketStep - 1)}
-                    className="flex-1 border-[#2B3139] text-[#848E9C] hover:text-[#EAECEF] h-11"
+                    className="flex-1 border-border text-muted-foreground hover:text-foreground h-11"
                   >
                     {t('support.back')}
                   </Button>
                 )}
                 {ticketStep < 3 ? (
                   <Button
-                    className="flex-1 bg-[#F0B90B] hover:bg-[#F0B90B]/90 text-[#0B0E11] font-semibold h-11"
+                    className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-11"
                     onClick={() => canAdvanceStep() && setTicketStep(ticketStep + 1)}
                     disabled={!canAdvanceStep()}
                   >
@@ -382,7 +383,7 @@ export default function SupportView() {
                   </Button>
                 ) : (
                   <Button
-                    className="flex-1 gradient-submit-btn text-[#0B0E11] font-semibold h-11"
+                    className="flex-1 gradient-submit-btn text-primary-foreground font-semibold h-11"
                     onClick={handleCreateTicket}
                   >
                     {t('support.submitTicket')}
@@ -394,31 +395,31 @@ export default function SupportView() {
         </Dialog>
 
         {/* Floating Chat Button */}
-        <div className="fixed bottom-24 lg:bottom-8 right-4 z-50">
+        <div className="fixed bottom-24 lg:bottom-8 end-4 z-50">
           <AnimatePresence>
             {chatOpen && (
               <motion.div
                 initial={{ opacity: 0, y: 20, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 20, scale: 0.9 }}
-                className="absolute bottom-16 right-0 w-72 bg-[#1E2329] border border-[#2B3139] rounded-xl shadow-2xl shadow-black/50 overflow-hidden"
+                className="absolute bottom-16 end-0 w-72 bg-card border border-border rounded-xl shadow-2xl shadow-black/50 overflow-hidden"
               >
-                <div className="bg-gradient-to-r from-[#F0B90B] to-[#F0B90B]/80 p-3 flex items-center justify-between">
+                <div className="bg-gradient-to-r from-primary to-primary/80 p-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <MessageCircle className="h-4 w-4 text-[#0B0E11]" />
-                    <span className="text-sm font-bold text-[#0B0E11]">{t('support.liveSupport')}</span>
+                    <MessageCircle className="h-4 w-4 text-primary-foreground" />
+                    <span className="text-sm font-bold text-primary-foreground">{t('support.liveSupport')}</span>
                   </div>
-                  <button onClick={() => setChatOpen(false)} className="text-[#0B0E11]/70 hover:text-[#0B0E11]">
+                  <button onClick={() => setChatOpen(false)} className="text-primary-foreground/70 hover:text-primary-foreground">
                     <ChevronDown className="h-4 w-4" />
                   </button>
                 </div>
                 <div className="p-3 h-48 flex flex-col">
                   <div className="flex-1 overflow-y-auto space-y-2 fancy-scrollbar">
                     <div className="flex gap-2">
-                      <div className="w-6 h-6 rounded-full bg-[#F0B90B]/10 flex items-center justify-center shrink-0">
-                        <Headphones className="h-3 w-3 text-[#F0B90B]" />
+                      <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <Headphones className="h-3 w-3 text-primary" />
                       </div>
-                      <div className="bg-[#2B3139] rounded-lg rounded-tl-none p-2 text-[11px] text-[#848E9C]">
+                      <div className="bg-secondary rounded-lg rounded-tl-none p-2 text-[11px] text-muted-foreground">
                         {t('support.chatGreeting')}
                       </div>
                     </div>
@@ -426,9 +427,9 @@ export default function SupportView() {
                   <div className="mt-2 flex gap-1">
                     <Input
                       placeholder={t('support.typeMessage')}
-                      className="bg-[#2B3139] border-[#2B3139] text-[#EAECEF] h-8 text-xs input-focus-glow"
+                      className="bg-secondary border-border text-foreground h-8 text-xs input-focus-glow"
                     />
-                    <Button size="sm" className="bg-[#F0B90B] hover:bg-[#F0B90B]/90 text-[#0B0E11] h-8 px-3">
+                    <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground h-8 px-3">
                       {t('support.send')}
                     </Button>
                   </div>
@@ -438,10 +439,10 @@ export default function SupportView() {
           </AnimatePresence>
           <button
             onClick={() => setChatOpen(!chatOpen)}
-            className="support-chat-btn w-12 h-12 rounded-full bg-[#F0B90B] flex items-center justify-center text-[#0B0E11] group relative"
+            className="support-chat-btn w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground group relative"
           >
             <MessageCircle className="h-5 w-5" />
-            <span className="absolute -top-8 right-0 bg-[#1E2329] text-[#EAECEF] text-[10px] px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <span className="absolute -top-8 end-0 bg-card text-foreground text-[10px] px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
               {t('support.help')}
             </span>
           </button>

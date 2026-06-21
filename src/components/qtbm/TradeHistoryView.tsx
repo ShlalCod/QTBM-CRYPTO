@@ -19,8 +19,8 @@ const filterOptions: { id: FilterSide; labelKey: string }[] = [
 ];
 
 export default function TradeHistoryView() {
-  const { goBack } = useAppStore();
-  const { t } = useTranslation();
+  const { goBack, isRTL } = useAppStore();
+  const { t, language } = useTranslation();
   const [filterSide, setFilterSide] = useState<FilterSide>('all');
 
   const filteredTrades = useMemo(() => {
@@ -38,36 +38,37 @@ export default function TradeHistoryView() {
   const totalFees = mockTrades.reduce((sum, t) => sum + t.fee, 0);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#0B0E11]">
+    <div className="flex flex-col min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-[#0B0E11] border-b border-[#2B3139]">
+      <div className="sticky top-0 z-10 bg-background border-b border-border">
         <div className="flex items-center gap-3 px-4 py-3">
           <Button
             variant="ghost"
             size="icon"
             onClick={goBack}
-            className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-9 w-9"
+            aria-label={t('actions.back')}
+            className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
           </Button>
           <div className="flex-1">
-            <h1 className="text-lg font-bold text-[#EAECEF]">{t('tradeHistory.title')}</h1>
+            <h1 className="text-lg font-bold text-foreground">{t('tradeHistory.title')}</h1>
           </div>
         </div>
 
         {/* Summary Stats */}
         <div className="grid grid-cols-3 gap-2 px-4 pb-3">
-          <div className="bg-[#1E2329] rounded-lg p-2.5">
-            <p className="text-[10px] text-[#5E6673] mb-0.5">{t('tradeHistory.totalBuy')}</p>
-            <p className="text-xs font-semibold text-[#0ECB81] tabular-nums">${formatPrice(totalBuyVolume)}</p>
+          <div className="bg-card rounded-lg p-2.5">
+            <p className="text-[10px] text-muted-foreground mb-0.5">{t('tradeHistory.totalBuy')}</p>
+            <p className="text-xs font-semibold text-success tabular-nums">${formatPrice(totalBuyVolume)}</p>
           </div>
-          <div className="bg-[#1E2329] rounded-lg p-2.5">
-            <p className="text-[10px] text-[#5E6673] mb-0.5">{t('tradeHistory.totalSell')}</p>
-            <p className="text-xs font-semibold text-[#F6465D] tabular-nums">${formatPrice(totalSellVolume)}</p>
+          <div className="bg-card rounded-lg p-2.5">
+            <p className="text-[10px] text-muted-foreground mb-0.5">{t('tradeHistory.totalSell')}</p>
+            <p className="text-xs font-semibold text-destructive tabular-nums">${formatPrice(totalSellVolume)}</p>
           </div>
-          <div className="bg-[#1E2329] rounded-lg p-2.5">
-            <p className="text-[10px] text-[#5E6673] mb-0.5">{t('tradeHistory.totalFees')}</p>
-            <p className="text-xs font-semibold text-[#F0B90B] tabular-nums">{totalFees.toFixed(4)}</p>
+          <div className="bg-card rounded-lg p-2.5">
+            <p className="text-[10px] text-muted-foreground mb-0.5">{t('tradeHistory.totalFees')}</p>
+            <p className="text-xs font-semibold text-primary tabular-nums">{totalFees.toFixed(4)}</p>
           </div>
         </div>
 
@@ -79,8 +80,8 @@ export default function TradeHistoryView() {
               onClick={() => setFilterSide(opt.id)}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
                 filterSide === opt.id
-                  ? 'bg-[#2B3139] text-[#F0B90B]'
-                  : 'text-[#5E6673] hover:text-[#848E9C] hover:bg-[#1E2329]'
+                  ? 'bg-secondary text-primary'
+                  : 'text-muted-foreground hover:text-muted-foreground hover:bg-card'
               }`}
             >
               {t(opt.labelKey)}
@@ -93,7 +94,7 @@ export default function TradeHistoryView() {
       <ScrollArea className="flex-1">
         <div className="max-w-4xl mx-auto">
           {/* Table Header */}
-          <div className="grid grid-cols-12 gap-2 px-4 py-2 text-[10px] text-[#5E6673] font-medium uppercase tracking-wider border-b border-[#2B3139] sticky top-0 bg-[#0B0E11] z-10">
+          <div className="grid grid-cols-12 gap-2 px-4 py-2 text-[10px] text-muted-foreground font-medium tracking-wider border-b border-border sticky top-0 bg-background z-10">
             <div className="col-span-3">{t('tradeHistory.pair')}</div>
             <div className="col-span-1 text-center">{t('tradeHistory.side')}</div>
             <div className="col-span-2 text-end">{t('tradeHistory.price')}</div>
@@ -105,33 +106,33 @@ export default function TradeHistoryView() {
           {/* Trade Rows */}
           {filteredTrades.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16">
-              <p className="text-sm text-[#5E6673]">{t('tradeHistory.noTrades')}</p>
+              <p className="text-sm text-muted-foreground">{t('tradeHistory.noTrades')}</p>
             </div>
           ) : (
             filteredTrades.map((trade, index) => {
               const baseAsset = trade.market.replace('USDT', '').replace('BTC', '').replace('ETH', '').replace('BNB', '');
               const quoteAsset = trade.market.replace(baseAsset, '');
               const isBuy = trade.side === 'buy';
-              const rowBg = index % 2 === 0 ? 'bg-transparent' : 'bg-[#0B0E11]/50';
+              const rowBg = index % 2 === 0 ? 'bg-transparent' : 'bg-background/50';
 
               return (
                 <div
                   key={trade.id}
-                  className={`grid grid-cols-12 gap-2 px-4 py-3 text-xs hover:bg-[#1E2329]/60 transition-colors cursor-default ${rowBg} border-b border-[#2B3139]/30`}
+                  className={`grid grid-cols-12 gap-2 px-4 py-3 text-xs hover:bg-card/60 transition-colors cursor-default ${rowBg} border-b border-border/30`}
                 >
                   {/* Pair */}
                   <div className="col-span-3 flex items-center gap-1.5">
-                    <span className="text-sm font-semibold text-[#EAECEF]">{baseAsset}</span>
-                    <span className="text-[10px] text-[#5E6673]">/{quoteAsset}</span>
+                    <span className="text-sm font-semibold text-foreground">{baseAsset}</span>
+                    <span className="text-[10px] text-muted-foreground">/{quoteAsset}</span>
                   </div>
 
                   {/* Side */}
                   <div className="col-span-1 flex justify-center">
                     <Badge
-                      className={`text-[9px] h-5 px-1.5 border-0 font-semibold flex items-center gap-0.5 ${
+                      className={`text-[10px] h-5 px-1.5 border-0 font-semibold flex items-center gap-0.5 ${
                         isBuy
-                          ? 'bg-[#0ECB81]/10 text-[#0ECB81]'
-                          : 'bg-[#F6465D]/10 text-[#F6465D]'
+                          ? 'bg-success/10 text-success'
+                          : 'bg-destructive/10 text-destructive'
                       }`}
                     >
                       {isBuy ? (
@@ -139,38 +140,38 @@ export default function TradeHistoryView() {
                       ) : (
                         <ArrowDownRight className="h-2.5 w-2.5" />
                       )}
-                      {isBuy ? 'B' : 'S'}
+                      {isBuy ? t('orders.buy') : t('orders.sell')}
                     </Badge>
                   </div>
 
                   {/* Price */}
                   <div className="col-span-2 text-end">
-                    <span className={`tabular-nums font-medium ${isBuy ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+                    <span className={`tabular-nums font-medium ${isBuy ? 'text-success' : 'text-destructive'}`}>
                       {formatPrice(trade.price)}
                     </span>
                   </div>
 
                   {/* Amount */}
                   <div className="col-span-2 text-end">
-                    <span className="text-[#EAECEF] tabular-nums">
+                    <span className="text-foreground tabular-nums">
                       {trade.quantity} {baseAsset}
                     </span>
                   </div>
 
                   {/* Total */}
                   <div className="col-span-2 text-end">
-                    <span className="text-[#848E9C] tabular-nums font-medium">
+                    <span className="text-muted-foreground tabular-nums font-medium">
                       {formatPrice(trade.total)}
                     </span>
                   </div>
 
                   {/* Fee */}
                   <div className="col-span-2 text-end">
-                    <span className="text-[#5E6673] tabular-nums">
+                    <span className="text-muted-foreground tabular-nums">
                       {trade.fee} {trade.feeAsset}
                     </span>
-                    <div className="text-[9px] text-[#3B4451] tabular-nums">
-                      {new Date(trade.createdAt).toLocaleString('en-US', {
+                    <div className="text-[10px] text-muted-foreground/70 tabular-nums">
+                      {new Date(trade.createdAt).toLocaleString(language === 'ar' ? 'ar' : undefined, {
                         month: 'short',
                         day: 'numeric',
                         hour: '2-digit',

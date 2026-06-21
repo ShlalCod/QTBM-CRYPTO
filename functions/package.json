@@ -1,0 +1,19 @@
+{
+  "name": "qtbm-crypto-functions",
+  "description": "Cloud Functions for QTBM CRYPTO — sensitive financial operations",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions"
+  },
+  "engines": { "node": "20" },
+  "dependencies": {
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^5.1.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  },
+  "private": true
+}

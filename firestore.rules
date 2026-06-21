@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // User profile — each user can read/write only their own document
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Wallet balances — read-only from client; writes only via Cloud Functions
+    match /wallets/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false;
+    }
+
+    // Trades — read own trades; writes only via Cloud Functions
+    match /trades/{tradeId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow write: if false;
+    }
+
+    // Orders — read own orders; writes only via Cloud Functions
+    match /orders/{orderId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow write: if false;
+    }
+
+    // Transactions (deposits/withdrawals/transfers)
+    match /transactions/{txId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow write: if false;
+    }
+
+    // KYC documents — user can read own; writes via Cloud Functions only
+    match /kyc/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false;
+    }
+
+    // Admin collections — only authenticated admins
+    match /admin/{document=**} {
+      allow read, write: if request.auth != null && request.auth.token.admin == true;
+    }
+
+    // Public data — market prices, announcements, etc.
+    match /public/{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Default deny — catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

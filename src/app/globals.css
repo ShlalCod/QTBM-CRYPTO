@@ -33,6 +33,14 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-success-foreground: var(--success-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info-foreground: var(--info-foreground);
+  --color-info: var(--info);
+  --color-purple-foreground: var(--purple-foreground);
+  --color-purple: var(--purple);
+  --color-gold: var(--gold);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -68,6 +76,14 @@
   --primary-foreground: #0B0E11;
   --secondary: #2B3139;
   --secondary-foreground: #EAECEF;
+  --success: #0ECB81;
+  --success-foreground: #0B0E11;
+  --warning: #F0B90B;
+  --info: #3B82F6;
+  --info-foreground: #FFFFFF;
+  --purple: #8B5CF6;
+  --purple-foreground: #FFFFFF;
+  --gold: #FFD700;
   --muted: #2B3139;
   --muted-foreground: #848E9C;
   --accent: #2B3139;
@@ -518,6 +534,8 @@
    RTL SUPPORT UTILITIES
    ══════════════════════════════════════════════════════════════════════════ */
 
+/* rtl-flip: mirrors icons horizontally in LTR, un-mirrors in RTL.
+   Used for directional icons that should point "forward" in reading direction. */
 .rtl-flip {
   transform: scaleX(-1);
 }
@@ -526,58 +544,24 @@
   transform: scaleX(1);
 }
 
-[dir="rtl"] .rtl-flip-rtl {
-  transform: scaleX(-1);
-}
-
-/* RTL margin helpers using logical properties */
-.rtl-ml-auto {
-  margin-left: auto;
-  margin-right: 0;
-}
-
-[dir="rtl"] .rtl-ml-auto {
-  margin-left: 0;
-  margin-right: auto;
-}
-
-.rtl-mr-auto {
-  margin-right: auto;
-  margin-left: 0;
-}
-
-[dir="rtl"] .rtl-mr-auto {
-  margin-right: 0;
-  margin-left: auto;
-}
-
-/* RTL padding adjustments */
-[dir="rtl"] .rtl-pl-0 { padding-left: 0; padding-right: 0; }
-[dir="rtl"] .rtl-pr-0 { padding-right: 0; padding-left: 0; }
-
-/* RTL text alignment */
-[dir="rtl"] .rtl-text-right {
-  text-align: left;
-}
-
-[dir="rtl"] .rtl-text-left {
-  text-align: right;
-}
+/* NOTE: Physical left/right RTL patchwork rules removed (RTL-001).
+   All components now use CSS logical properties (ps/pe/ms/me/start/end/border-s/border-e).
+   Tailwind CSS 4 rtl: variant is also available for direction-specific overrides. */
 
 /* RTL flex direction fixes */
-[dir="rtl"] .rtl-flex-row-reverse {
+.rtl-flex-row-reverse {
   flex-direction: row-reverse;
 }
 
 /* RTL border fixes */
-[dir="rtl"] .rtl-border-l-0 {
-  border-left: 0;
-  border-right: 1px solid #2B3139;
+.rtl-border-s-0 {
+  border-inline-start: 0;
+  border-inline-end: 1px solid var(--border);
 }
 
-[dir="rtl"] .rtl-border-r-0 {
-  border-right: 0;
-  border-left: 1px solid #2B3139;
+.rtl-border-e-0 {
+  border-inline-end: 0;
+  border-inline-start: 1px solid var(--border);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -758,7 +742,7 @@
 }
 
 [dir="rtl"] .order-book-row:hover {
-  transform: translateX(-1px);
+  transform: translateX(1px);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -782,8 +766,8 @@
 }
 
 [dir="rtl"] .sidebar-item-active::before {
-  left: auto;
-  right: 0;
+  inset-inline-start: auto;
+  inset-inline-end: 0;
   border-radius: 3px 0 0 3px;
 }
 
@@ -1629,59 +1613,8 @@
   --red: #F6465D;
 }
 
-[data-theme="light"] body,
-[data-theme="light"] .bg-\[\#0B0E11\] {
-  background-color: #FFFFFF !important;
-}
-
-[data-theme="light"] .bg-\[\#1E2329\] {
-  background-color: #F5F6F8 !important;
-}
-
-[data-theme="light"] .bg-\[\#2B3139\] {
-  background-color: #EAECEF !important;
-}
-
-[data-theme="light"] .text-\[\#EAECEF\] {
-  color: #1E2329 !important;
-}
-
-[data-theme="light"] .text-\[\#848E9C\] {
-  color: #707A8A !important;
-}
-
-[data-theme="light"] .text-\[\#5E6673\] {
-  color: #848E9C !important;
-}
-
-[data-theme="light"] .text-\[\#3B4451\] {
-  color: #B7BDC6 !important;
-}
-
-[data-theme="light"] .text-\[#F0B90B\] { color: #9A6A00 !important; }
-[data-theme="light"] .text-white { color: #1E2329 !important; }
-[data-theme="light"] .text-\[#0ECB81\] { color: #0A8B5A !important; }
-[data-theme="light"] .text-\[#F6465D\] { color: #C81E3A !important; }
-[data-theme="light"] .text-\[#5E6673\] { color: #6B7280 !important; }
-
-[data-theme="light"] .border-\[\#2B3139\] {
-  border-color: #EAECEF !important;
-}
-
-[data-theme="light"] .border-\[\#2B3139\]\/40 {
-  border-color: rgba(234, 236, 239, 0.4) !important;
-}
-
-[data-theme="light"] .glass,
-[data-theme="light"] .glass-card {
-  background: rgba(245, 246, 248, 0.85) !important;
-  border-color: rgba(234, 236, 239, 0.5) !important;
-}
-
-[data-theme="light"] .glass-header {
-  background: rgba(255, 255, 255, 0.85) !important;
-  border-color: rgba(234, 236, 239, 0.5) !important;
-}
+/* Hardcoded hex color overrides removed — colors now use CSS tokens (THEME-003).
+   Light/dark theme is controlled by next-themes via .dark class on <html>. */
 
 /* Light theme overrides for CSS custom properties */
 [data-theme="light"] {
@@ -1757,11 +1690,13 @@
 }
 
 /* Light theme sidebar border fixes */
-[data-theme="light"] [dir="rtl"] .rtl-border-l-0 {
+/* removed duplicate rtl-border-l-0 light override */
+/* .rtl-border-l-0 {
   border-right: 1px solid #EAECEF;
 }
 
-[data-theme="light"] [dir="rtl"] .rtl-border-r-0 {
+/* removed duplicate rtl-border-r-0 light override */
+/* .rtl-border-r-0 {
   border-left: 1px solid #EAECEF;
 }
 
@@ -2584,7 +2519,7 @@
 }
 
 [dir="rtl"] .setting-item-hover:hover {
-  transform: translateX(-2px);
+  transform: translateX(2px);
 }
 
 /* ── Circular Progress Indicator for Security Score ───────────────── */
@@ -3123,48 +3058,14 @@
   background: linear-gradient(90deg, #F6465D, #F0B90B, #0ECB81);
 }
 
-/* ── Notification Stripe Colors ──────────────────────────────────────── */
+/* ── Notification Stripe Colors (logical properties — auto RTL) ──────── */
 
-.notif-stripe-security {
-  border-left: 3px solid #F6465D !important;
-}
-
-.notif-stripe-trade {
-  border-left: 3px solid #0ECB81 !important;
-}
-
-.notif-stripe-deposit {
-  border-left: 3px solid #F0B90B !important;
-}
-
-.notif-stripe-withdrawal {
-  border-left: 3px solid #3B82F6 !important;
-}
-
-.notif-stripe-system {
-  border-left: 3px solid #848E9C !important;
-}
-
-.notif-stripe-promotion {
-  border-left: 3px solid #8B5CF6 !important;
-}
-
-[dir="rtl"] .notif-stripe-security,
-[dir="rtl"] .notif-stripe-trade,
-[dir="rtl"] .notif-stripe-deposit,
-[dir="rtl"] .notif-stripe-withdrawal,
-[dir="rtl"] .notif-stripe-system,
-[dir="rtl"] .notif-stripe-promotion {
-  border-left: none !important;
-  border-right: 3px solid currentColor !important;
-}
-
-[dir="rtl"] .notif-stripe-security { border-right-color: #F6465D !important; }
-[dir="rtl"] .notif-stripe-trade { border-right-color: #0ECB81 !important; }
-[dir="rtl"] .notif-stripe-deposit { border-right-color: #F0B90B !important; }
-[dir="rtl"] .notif-stripe-withdrawal { border-right-color: #3B82F6 !important; }
-[dir="rtl"] .notif-stripe-system { border-right-color: #848E9C !important; }
-[dir="rtl"] .notif-stripe-promotion { border-right-color: #8B5CF6 !important; }
+.notif-stripe-security { border-inline-start: 3px solid #F6465D; }
+.notif-stripe-trade { border-inline-start: 3px solid #0ECB81; }
+.notif-stripe-deposit { border-inline-start: 3px solid #F0B90B; }
+.notif-stripe-withdrawal { border-inline-start: 3px solid #3B82F6; }
+.notif-stripe-system { border-inline-start: 3px solid #848E9C; }
+.notif-stripe-promotion { border-inline-start: 3px solid #8B5CF6; }
 
 /* ── Flip Clock Digit (3D flip animation) ────────────────────────────── */
 
@@ -3515,20 +3416,11 @@
   border-left: 3px solid #F0B90B;
 }
 
-[dir="rtl"] .alert-stripe-above {
-  border-left: 0;
-  border-right: 3px solid #0ECB81;
-}
+.alert-stripe-above { border-inline-start: 3px solid var(--success); }
 
-[dir="rtl"] .alert-stripe-below {
-  border-left: 0;
-  border-right: 3px solid #F6465D;
-}
+.alert-stripe-below { border-inline-start: 3px solid var(--destructive); }
 
-[dir="rtl"] .alert-stripe-crosses {
-  border-left: 0;
-  border-right: 3px solid #F0B90B;
-}
+.alert-stripe-crosses { border-inline-start: 3px solid var(--primary); }
 
 /* ── Podium Glow (gold/silver/bronze) ─────────────────────────────────── */
 
@@ -3841,88 +3733,29 @@ html[lang="ar"] h4 {
   font-family: var(--font-geist-mono), "Roboto Mono", monospace;
 }
 
-/* ── RTL: auto-flip directional utilities ──────────────────────────────── */
-/* In RTL mode, Tailwind's left/right don't auto-flip.
-   These rules handle the most common patterns used in the app.
-   For NEW code, prefer CSS logical properties: ms-*, me-*, ps-*, pe-*. */
+/* ── RTL: No CSS patchwork — use logical properties (ps/pe/ms/me/start/end) ── */
+/* All physical left/right/pl/pr/ml/mr utilities have been migrated to logical
+   equivalents in the component files. No [dir="rtl"] flip rules needed. */
 
-html[dir="rtl"] .pl-9 { padding-left: 0; padding-right: 2.25rem; }
-html[dir="rtl"] .pl-3 { padding-left: 0; padding-right: 0.75rem; }
-html[dir="rtl"] .pl-2 { padding-left: 0; padding-right: 0.5rem; }
-html[dir="rtl"] .pl-4 { padding-left: 0; padding-right: 1rem; }
-
-html[dir="rtl"] .ml-1 { margin-left: 0; margin-right: 0.25rem; }
-html[dir="rtl"] .ml-2 { margin-left: 0; margin-right: 0.5rem; }
-html[dir="rtl"] .ml-3 { margin-left: 0; margin-right: 0.75rem; }
-html[dir="rtl"] .mr-1 { margin-right: 0; margin-left: 0.25rem; }
-html[dir="rtl"] .mr-2 { margin-right: 0; margin-left: 0.5rem; }
-html[dir="rtl"] .mr-1\.5 { margin-right: 0; margin-left: 0.375rem; }
-
-/* Text alignment: flip in RTL (except tabular-nums which stays LTR) */
-html[dir="rtl"] .text-left:not(.tabular-nums):not(.ltr-text) { text-align: right; }
-html[dir="rtl"] .text-right:not(.tabular-nums):not(.ltr-text) { text-align: left; }
-
-/* Absolute positioning: swap left/right in RTL */
-html[dir="rtl"] .absolute.left-0 { left: auto; right: 0; }
-html[dir="rtl"] .absolute.right-0 { right: auto; left: 0; }
-html[dir="rtl"] .fixed.left-0 { left: auto; right: 0; }
-html[dir="rtl"] .fixed.right-0 { right: auto; left: 0; }
-
-/* ── Mobile touch targets ──────────────────────────────────────────────── */
+/* ── Mobile touch targets: targeted, not global ────────────────────────── */
+/* Global 44px button rule removed (MOBILE-001). Use min-h-[44px] on primary
+   action buttons only. Back/close buttons keep h-9 w-9. */
 @media (max-width: 768px) {
-  /* Enforce minimum touch target on buttons (except in dense tables) */
-  button:not(table button):not(.order-book-row button):not([class*="grid-cols-7"] button) {
-    min-height: var(--touch-min);
-    min-width: var(--touch-min);
-  }
-  /* Inputs: minimum 40px for comfortable touch */
   input:not([type="checkbox"]):not([type="radio"]):not([class*="h-5"]):not([class*="h-6"]) {
     min-height: 40px;
   }
 }
 
-/* ── Solidify glass effects for text readability ───────────────────────── */
-.glass-card {
-  background: rgba(30, 35, 41, 0.92) !important;
-  border: 1px solid rgba(43, 49, 57, 0.8) !important;
-  backdrop-filter: blur(8px) saturate(120%);
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
-}
-.glass-header {
-  background: rgba(11, 14, 17, 0.95) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-.glass-morphism,
-.glass {
-  background: rgba(30, 35, 41, 0.88) !important;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-
-/* ── Z-index stacking (unified) ────────────────────────────────────────── */
-header.sticky, .glass-header { z-index: var(--z-header) !important; }
-nav[class*="fixed bottom-0"] { z-index: var(--z-header) !important; }
-[data-radix-popper-content-wrapper] { z-index: var(--z-dropdown) !important; }
-[class*="fixed inset-0"][class*="z-50"],
-[class*="fixed inset-0"][class*="z-[60]"] { z-index: var(--z-modal) !important; }
-
-/* ── Modal backgrounds: solid, no bleed-through ────────────────────────── */
-[class*="fixed inset-0"][class*="z-50"],
-[class*="fixed inset-0"][class*="z-[60]"] {
-  background: rgba(0, 0, 0, 0.7) !important;
-}
-[class*="fixed inset-0"][class*="z-50"] > [class*="bg-"],
-[class*="fixed inset-0"][class*="z-[60]"] > [class*="bg-"] {
-  background: #1E2329 !important;
-  border: 1px solid #2B3139 !important;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+/* ── No-scrollbar utility (MOBILE-003) ─────────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* ── Prevent text clipping on mobile ───────────────────────────────────── */
 @media (max-width: 768px) {
-  .glass-card, [class*="bg-[#1E2329]"] {
+  .glass-card {
     overflow-wrap: break-word;
     word-break: break-word;
   }
@@ -3930,20 +3763,6 @@ nav[class*="fixed bottom-0"] { z-index: var(--z-header) !important; }
     overflow-wrap: break-word;
     hyphens: auto;
   }
-}
-
-/* ── Contrast: bump secondary text for AA compliance ───────────────────── */
-.text-\[\#5E6673\] { color: #707785 !important; }
-
-/* ── Light theme overrides ─────────────────────────────────────────────── */
-html[data-theme="light"] body { background: #FFFFFF; color: #1E2329; }
-html[data-theme="light"] .glass-card {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border-color: rgba(229, 231, 235, 0.8) !important;
-  color: #1E2329 !important;
-}
-html[data-theme="light"] .glass-header {
-  background: rgba(255, 255, 255, 0.95) !important;
 }
 
 /* ── Touch feedback ────────────────────────────────────────────────────── */
@@ -3961,8 +3780,8 @@ html[data-theme="light"] .glass-header {
 
 /* ── Landscape phones: compact header ──────────────────────────────────── */
 @media (max-height: 500px) and (orientation: landscape) {
-  .glass-header > div { height: 48px !important; }
-  nav[class*="fixed bottom-0"] > div { height: 48px !important; }
+  .glass-header > div { height: 48px; }
+  nav[class*="fixed bottom-0"] > div { height: 48px; }
   nav[class*="fixed bottom-0"] span { display: none; }
 }
 
@@ -3986,8 +3805,8 @@ main {
 /* ── Reduced motion ────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+    animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
   }
 }

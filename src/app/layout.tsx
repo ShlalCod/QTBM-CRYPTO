@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Tajawal } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -12,6 +12,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const tajawal = Tajawal({
+  variable: "--font-tajawal",
+  subsets: ["arabic"],
+  weight: ["400", "500", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -36,8 +43,6 @@ export const metadata: Metadata = {
 };
 
 // Viewport optimized for Capacitor Android WebView + mobile browsers.
-// Based on research: viewport-fit=cover for notched devices,
-// user-scalable=no to prevent pinch-zoom in the app shell.
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -57,7 +62,7 @@ export default function RootLayout({
   // The inline script normalizes both 'ar' and '"ar"' localStorage forms
   // and applies the correct dir/lang BEFORE first paint to prevent flash.
   return (
-    <html lang="ar" dir="rtl" suppressHydrationWarning className="dark">
+    <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -83,7 +88,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${tajawal.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"

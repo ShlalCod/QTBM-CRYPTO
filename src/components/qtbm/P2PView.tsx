@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useAppStore } from '@/stores/app-store';
 import { useTranslation } from '@/lib/i18n';
+import { useLocaleFmt } from '@/hooks/use-locale-fmt';
 import { mockP2PListings, formatPrice } from '@/lib/mock-data';
 import {
   ArrowLeft,
@@ -50,13 +51,14 @@ const quickMessageKeys = [
 // Online status data for merchants (simulated)
 function isMerchantOnline(userId: string): boolean {
   // Deterministic: users starting with letters A-M are "online"
-  const first = userId.charAt(0).toUpperCase();
-  return first.charCodeAt(0) <= 77; // M
+  const first = userId.charAt(0);
+  return first.localeCompare('N', undefined, { sensitivity: 'base' }) < 0;
 }
 
 // ── Mini Chat Preview Component ────────────────────────────────────────────
 function MiniChatPreview({ merchantName, onClose }: { merchantName: string; onClose: () => void }) {
   const { t } = useTranslation();
+  const { isRTL } = useAppStore();
   const quickMessages = quickMessageKeys.map((k) => t(k));
   const [messages, setMessages] = useState<Array<{ text: string; isUser: boolean; time: string }>>([
     { text: t('p2p.chatWithMerchant').replace('{name}', merchantName), isUser: false, time: t('p2p.now') },
@@ -81,22 +83,22 @@ function MiniChatPreview({ merchantName, onClose }: { merchantName: string; onCl
 
   return (
     <motion.div
-      initial={{ x: 300, opacity: 0 }}
+      initial={{ x: isRTL ? -300 : 300, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 300, opacity: 0 }}
+      exit={{ x: isRTL ? -300 : 300, opacity: 0 }}
       transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-      className="absolute right-0 top-0 bottom-0 w-72 bg-[#1E2329] border-l border-[#2B3139] flex flex-col z-20 slide-in-right"
+      className="absolute end-0 top-0 bottom-0 w-72 bg-card border-s border-border flex flex-col z-20"
     >
       {/* Chat header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-[#2B3139] bg-[#0B0E11]">
+      <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-background">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-[#F0B90B]/20 flex items-center justify-center text-[10px] font-bold text-[#F0B90B]">
-            {merchantName.slice(0, 2).toUpperCase()}
+          <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary" dir="ltr">
+            {merchantName.slice(0, 2)}
           </div>
-          <span className="text-xs font-semibold text-[#EAECEF]">{merchantName}</span>
-          <div className="w-1.5 h-1.5 rounded-full bg-[#0ECB81] online-indicator" />
+          <span className="text-xs font-semibold text-foreground">{merchantName}</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-success online-indicator" />
         </div>
-        <button onClick={onClose} className="text-[#5E6673] hover:text-[#EAECEF] transition-colors">
+        <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors h-9 w-9 flex items-center justify-center rounded-md" aria-label={t('common.close')}>
           <X className="h-3.5 w-3.5" />
         </button>
       </div>
@@ -109,8 +111,8 @@ function MiniChatPreview({ merchantName, onClose }: { merchantName: string; onCl
               <div
                 className={`max-w-[85%] px-2.5 py-1.5 rounded-lg text-[11px] ${
                   msg.isUser
-                    ? 'bg-[#F0B90B]/15 text-[#F0B90B] border border-[#F0B90B]/20'
-                    : 'bg-[#2B3139] text-[#848E9C]'
+                    ? 'bg-primary/15 text-primary border border-primary/20'
+                    : 'bg-secondary text-muted-foreground'
                 }`}
               >
                 {msg.text}
@@ -127,7 +129,7 @@ function MiniChatPreview({ merchantName, onClose }: { merchantName: string; onCl
             <button
               key={qm}
               onClick={() => handleSend(qm)}
-              className="shrink-0 px-2 py-1 rounded-full bg-[#2B3139] text-[9px] text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139]/80 transition-colors border border-[#2B3139]"
+              className="shrink-0 px-2 py-1 rounded-full bg-secondary text-[10px] text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors border border-border"
             >
               {qm}
             </button>
@@ -136,19 +138,20 @@ function MiniChatPreview({ merchantName, onClose }: { merchantName: string; onCl
       </div>
 
       {/* Input */}
-      <div className="flex items-center gap-1.5 px-2 py-2 border-t border-[#2B3139]">
+      <div className="flex items-center gap-1.5 px-2 py-2 border-t border-border">
         <Input
           value={inputVal}
           onChange={(e) => setInputVal(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') handleSend(inputVal); }}
           placeholder={t('p2p.typeMessage')}
-          className="h-7 text-[11px] bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] focus:border-[#F0B90B]"
+          className="h-7 text-[11px] bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-primary"
         />
         <button
           onClick={() => handleSend(inputVal)}
-          className="w-7 h-7 rounded-md bg-[#F0B90B] flex items-center justify-center shrink-0 hover:bg-[#F0B90B]/90 transition-colors"
+          className="w-9 h-9 rounded-md bg-primary flex items-center justify-center shrink-0 hover:bg-primary/90 transition-colors"
+          aria-label={t('p2p.chat')}
         >
-          <Send className="h-3 w-3 text-[#0B0E11]" />
+          <Send className="h-3 w-3 text-background" />
         </button>
       </div>
     </motion.div>
@@ -156,8 +159,9 @@ function MiniChatPreview({ merchantName, onClose }: { merchantName: string; onCl
 }
 
 export default function P2PView() {
-  const { navigateTo } = useAppStore();
+  const { navigateTo, isRTL } = useAppStore();
   const { t } = useTranslation();
+  const { formatNum, includesCI } = useLocaleFmt();
   const [side, setSide] = useState<P2PSide>('buy');
   const [fiatCurrency, setFiatCurrency] = useState<FiatCurrency>('USD');
   const [searchQuery, setSearchQuery] = useState('');
@@ -168,7 +172,7 @@ export default function P2PView() {
     if (l.side !== side && side === 'buy' && l.side !== 'sell') return false;
     if (l.side !== side && side === 'sell' && l.side !== 'buy') return false;
     if (l.fiatCurrency !== fiatCurrency) return false;
-    if (searchQuery && !l.user.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    if (searchQuery && !includesCI(l.user, searchQuery)) return false;
     return true;
   });
 
@@ -176,32 +180,33 @@ export default function P2PView() {
   const displayListings = filteredListings;
 
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)] lg:h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-8rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="p-4 space-y-4 max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
-            className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-9 w-9 lg:hidden"
+            className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9 lg:hidden"
             onClick={() => navigateTo('more')}
+            aria-label={t('common.back')}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
           </Button>
           <div>
-            <h1 className="text-lg font-bold text-[#EAECEF]">{t('p2p.title')}</h1>
-            <p className="text-xs text-[#848E9C]">{t('p2p.subtitle')}</p>
+            <h1 className="text-lg font-bold text-foreground">{t('p2p.title')}</h1>
+            <p className="text-xs text-muted-foreground">{t('p2p.subtitle')}</p>
           </div>
         </div>
 
         {/* Buy/Sell Toggle */}
-        <div className="flex gap-0 bg-[#1E2329] rounded-lg p-1">
+        <div className="flex gap-0 bg-card rounded-lg p-1">
           <button
             onClick={() => setSide('buy')}
             className={`flex-1 py-2.5 text-sm font-semibold rounded-md transition-all duration-200 ${
               side === 'buy'
-                ? 'bg-[#0ECB81] text-[#0B0E11]'
-                : 'text-[#848E9C] hover:text-[#EAECEF]'
+                ? 'bg-success text-background'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {t('p2p.buy')}
@@ -210,8 +215,8 @@ export default function P2PView() {
             onClick={() => setSide('sell')}
             className={`flex-1 py-2.5 text-sm font-semibold rounded-md transition-all duration-200 ${
               side === 'sell'
-                ? 'bg-[#F6465D] text-[#EAECEF]'
-                : 'text-[#848E9C] hover:text-[#EAECEF]'
+                ? 'bg-destructive text-foreground'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {t('p2p.sell')}
@@ -221,24 +226,24 @@ export default function P2PView() {
         {/* Fiat Currency Selector & Search */}
         <div className="flex gap-2">
           <Select value={fiatCurrency} onValueChange={(v) => setFiatCurrency(v as FiatCurrency)}>
-            <SelectTrigger className="w-24 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] text-xs h-9">
+            <SelectTrigger className="w-24 bg-secondary border-border text-foreground text-xs h-9">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-[#2B3139] border-[#2B3139]">
+            <SelectContent className="bg-secondary border-border">
               {(['USD', 'EUR', 'SAR', 'AED'] as FiatCurrency[]).map((c) => (
-                <SelectItem key={c} value={c} className="text-[#EAECEF] text-xs">
+                <SelectItem key={c} value={c} className="text-foreground text-xs">
                   {c}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
           <div className="flex-1 relative">
-            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#5E6673]" />
+            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={t('p2p.searchMerchant')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="ps-9 bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-9 text-xs focus:border-[#F0B90B]"
+              className="ps-9 bg-secondary border-border text-foreground placeholder:text-muted-foreground h-9 text-xs focus:border-primary"
             />
           </div>
         </div>
@@ -248,10 +253,10 @@ export default function P2PView() {
           <Button
             variant="outline"
             size="sm"
-            className={`border-[#2B3139] text-[10px] h-7 shrink-0 ${
+            className={`border-border text-[10px] h-7 shrink-0 ${
               paymentFilter === 'all'
-                ? 'bg-[#2B3139] text-[#F0B90B] border-[#F0B90B]/30'
-                : 'text-[#848E9C] hover:bg-[#2B3139]'
+                ? 'bg-secondary text-primary border-primary/30'
+                : 'text-muted-foreground hover:bg-secondary'
             }`}
             onClick={() => setPaymentFilter('all')}
           >
@@ -262,10 +267,10 @@ export default function P2PView() {
               key={method}
               variant="outline"
               size="sm"
-              className={`border-[#2B3139] text-[10px] h-7 shrink-0 ${
+              className={`border-border text-[10px] h-7 shrink-0 ${
                 paymentFilter === method
-                  ? 'bg-[#2B3139] text-[#F0B90B] border-[#F0B90B]/30'
-                  : 'text-[#848E9C] hover:bg-[#2B3139]'
+                  ? 'bg-secondary text-primary border-primary/30'
+                  : 'text-muted-foreground hover:bg-secondary'
               }`}
               onClick={() => setPaymentFilter(method)}
             >
@@ -277,48 +282,48 @@ export default function P2PView() {
         {/* P2P Listings */}
         <div className="space-y-3">
           {displayListings.length === 0 ? (
-            <Card className="bg-[#1E2329] border-[#2B3139]">
+            <Card className="bg-card border-border">
               <CardContent className="p-8 text-center">
-                <p className="text-sm text-[#5E6673]">{t('p2p.noListings')} {fiatCurrency}</p>
-                <p className="text-xs text-[#3E444D] mt-1">{t('p2p.tryDifferent')}</p>
+                <p className="text-sm text-muted-foreground">{t('p2p.noListings')} {fiatCurrency}</p>
+                <p className="text-xs text-muted-foreground mt-1">{t('p2p.tryDifferent')}</p>
               </CardContent>
             </Card>
           ) : (
             displayListings.map((listing) => (
-              <Card key={listing.id} className="bg-[#1E2329] border-[#2B3139] hover:border-[#F0B90B]/20 transition-colors card-depth relative overflow-hidden">
+              <Card key={listing.id} className="bg-card border-border hover:border-primary/20 transition-colors card-depth relative overflow-hidden">
                 <CardContent className="p-4">
                   {/* Merchant Header */}
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <div className="relative">
-                        <div className="w-9 h-9 rounded-full bg-[#2B3139] flex items-center justify-center">
-                          <span className="text-xs font-bold text-[#F0B90B]">
-                            {listing.user.slice(0, 2).toUpperCase()}
+                        <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center">
+                          <span className="text-xs font-bold text-primary" dir="ltr">
+                            {listing.user.slice(0, 2)}
                           </span>
                         </div>
                         {/* Online status indicator - green/gray based on merchant */}
-                        <div className={`absolute -bottom-0.5 -end-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#1E2329] ${isMerchantOnline(listing.user) ? 'bg-[#0ECB81] online-indicator' : 'bg-[#5E6673]'}`} />
+                        <div className={`absolute -bottom-0.5 -end-0.5 w-2.5 h-2.5 rounded-full border-2 border-border ${isMerchantOnline(listing.user) ? 'bg-success online-indicator' : 'bg-muted-foreground'}`} />
                       </div>
                       <div>
                         <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-semibold text-[#EAECEF]">{listing.user}</span>
+                          <span className="text-sm font-semibold text-foreground">{listing.user}</span>
                           {/* Online/Offline status text */}
-                          <span className={`text-[9px] font-medium flex items-center gap-0.5 ${isMerchantOnline(listing.user) ? 'text-[#0ECB81]' : 'text-[#5E6673]'}`}>
-                            <span className={`w-1 h-1 rounded-full ${isMerchantOnline(listing.user) ? 'bg-[#0ECB81] online-indicator' : 'bg-[#5E6673]'}`} />
+                          <span className={`text-[10px] font-medium flex items-center gap-0.5 ${isMerchantOnline(listing.user) ? 'text-success' : 'text-muted-foreground'}`}>
+                            <span className={`w-1 h-1 rounded-full ${isMerchantOnline(listing.user) ? 'bg-success online-indicator' : 'bg-muted-foreground'}`} />
                             {isMerchantOnline(listing.user) ? t('p2p.online') : t('p2p.offline')}
                           </span>
                           {/* Verified merchant badge */}
                           {listing.completionRate >= 98 && (
-                            <div className="flex items-center gap-0.5 px-1 py-0.5 bg-[#0ECB81]/10 rounded-full badge-shimmer">
-                              <Shield className="h-3 w-3 text-[#0ECB81]" />
-                              <span className="text-[8px] text-[#0ECB81] font-bold">{t('p2p.verified')}</span>
+                            <div className="flex items-center gap-0.5 px-1 py-0.5 bg-success/10 rounded-full badge-shimmer">
+                              <Shield className="h-3 w-3 text-success" />
+                              <span className="text-[10px] text-success font-bold">{t('p2p.verified')}</span>
                             </div>
                           )}
                         </div>
-                        <div className="flex items-center gap-2 text-[10px] text-[#5E6673]">
+                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                           <span>{listing.ordersCount} {t('p2p.orders')}</span>
                           <span>·</span>
-                          <span className="text-[#0ECB81]">{listing.completionRate}% {t('p2p.completionRate')}</span>
+                          <span className="text-success">{listing.completionRate}% {t('p2p.completionRate')}</span>
                         </div>
                         {/* Completion rate progress bar */}
                         <div className="completion-rate-bar mt-1 w-24">
@@ -333,32 +338,32 @@ export default function P2PView() {
                       </div>
                     </div>
                     <div className="text-end">
-                      <p className="text-lg font-bold text-[#EAECEF] tabular-nums gradient-text-gold">
+                      <p className="text-lg font-bold text-foreground tabular-nums gradient-text-gold">
                         {listing.fiatCurrency === 'SAR' || listing.fiatCurrency === 'AED'
                           ? formatPrice(listing.price)
                           : formatPrice(listing.price)}
                       </p>
-                      <p className="text-[10px] text-[#5E6673]">{listing.fiatCurrency}/{listing.asset}</p>
+                      <p className="text-[10px] text-muted-foreground">{listing.fiatCurrency}/{listing.asset}</p>
                     </div>
                   </div>
 
                   {/* Details */}
                   <div className="grid grid-cols-3 gap-3 mb-3">
                     <div>
-                      <p className="text-[10px] text-[#5E6673]">{t('p2p.available')}</p>
-                      <p className="text-xs text-[#EAECEF] font-medium tabular-nums">
-                        {listing.available.toLocaleString()} {listing.asset}
+                      <p className="text-[10px] text-muted-foreground">{t('p2p.available')}</p>
+                      <p className="text-xs text-foreground font-medium tabular-nums">
+                        {formatNum(listing.available)} {listing.asset}
                       </p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-[#5E6673]">{t('p2p.limit')}</p>
-                      <p className="text-xs text-[#EAECEF] font-medium tabular-nums">
+                      <p className="text-[10px] text-muted-foreground">{t('p2p.limit')}</p>
+                      <p className="text-xs text-foreground font-medium tabular-nums">
                         {listing.minAmount}-{listing.maxAmount} {listing.fiatCurrency}
                       </p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-[#5E6673]">{t('p2p.payment')}</p>
-                      <p className="text-xs text-[#EAECEF] font-medium truncate">
+                      <p className="text-[10px] text-muted-foreground">{t('p2p.payment')}</p>
+                      <p className="text-xs text-foreground font-medium truncate">
                         {listing.paymentMethods.join(', ')}
                       </p>
                     </div>
@@ -371,7 +376,7 @@ export default function P2PView() {
                         <Badge
                           key={method}
                           variant="outline"
-                          className="text-[9px] border-[#2B3139] text-[#848E9C] h-5 px-1.5"
+                          className="text-[10px] border-border text-muted-foreground h-5 px-1.5"
                         >
                           {paymentMethodIcons[method] || '💳'} {method}
                         </Badge>
@@ -383,8 +388,8 @@ export default function P2PView() {
                         onClick={() => setChatOpenFor(chatOpenFor === listing.id ? null : listing.id)}
                         className={`h-8 px-3 rounded-md text-xs font-medium flex items-center gap-1 transition-all duration-200 ${
                           chatOpenFor === listing.id
-                            ? 'bg-[#F0B90B] text-[#0B0E11]'
-                            : 'bg-[#2B3139] text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139]/80'
+                            ? 'bg-primary text-background'
+                            : 'bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80'
                         }`}
                       >
                         <MessageCircle className="h-3.5 w-3.5" />
@@ -393,8 +398,8 @@ export default function P2PView() {
                       <Button
                         className={`text-xs h-8 px-5 font-semibold ${
                           listing.side === 'sell'
-                            ? 'bg-[#0ECB81] hover:bg-[#0ECB81]/90 text-[#0B0E11]'
-                            : 'bg-[#F6465D] hover:bg-[#F6465D]/90 text-white'
+                            ? 'bg-success hover:bg-success/90 text-background'
+                            : 'bg-destructive hover:bg-destructive/90 text-white'
                         }`}
                       >
                         {listing.side === 'sell' ? t('p2p.buy') : t('p2p.sell')} {listing.asset}
@@ -414,7 +419,7 @@ export default function P2PView() {
 
                   {/* Terms */}
                   {listing.terms && (
-                    <p className="text-[10px] text-[#5E6673] mt-2 pt-2 border-t border-[#2B3139]">
+                    <p className="text-[10px] text-muted-foreground mt-2 pt-2 border-t border-border">
                       💬 {listing.terms}
                     </p>
                   )}
@@ -425,9 +430,9 @@ export default function P2PView() {
         </div>
 
         {/* Disclaimer */}
-        <Card className="bg-[#1E2329]/50 border-[#2B3139]">
+        <Card className="bg-card/50 border-border">
           <CardContent className="p-3">
-            <p className="text-[10px] text-[#5E6673] text-center">
+            <p className="text-[10px] text-muted-foreground text-center">
               {t('p2p.disclaimer')}
             </p>
           </CardContent>

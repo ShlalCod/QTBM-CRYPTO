@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Slider } from '@/components/ui/slider';
+import { toast } from 'sonner';
 import type { Order, OrderBookEntry } from '@/types';
 import { useTranslation } from '@/lib/i18n';
 
@@ -124,15 +125,15 @@ function RSIChart() {
   const areaFillPath = `${linePath} L${toX(rsiValues.length - 1)},${padding.top + chartH} L${padding.left},${padding.top + chartH} Z`;
 
   return (
-    <div className="border-t border-[#2B3139] p-2 chart-grid-bg relative">
+    <div className="border-t border-border p-2 chart-grid-bg relative">
       {/* Label */}
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-[10px] text-[#848E9C]">RSI(14)</span>
+        <span className="text-[10px] text-muted-foreground">RSI(14)</span>
         <span className={`text-[10px] font-medium tabular-nums`} style={{ color: rsiColor }}>
           {currentRSI.toFixed(2)}
         </span>
       </div>
-      <svg width="100%" height={h - 16} viewBox={`0 0 ${w} ${h - 16}`} preserveAspectRatio="none" className="w-full">
+      <svg width="100%" height={h - 16} viewBox={`0 0 ${w} ${h - 16}`} preserveAspectRatio="none" className="w-full" dir="ltr">
         <defs>
           <linearGradient id="rsiAreaGrad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#F0B90B" stopOpacity="0.15" />
@@ -197,17 +198,17 @@ function MACDChart() {
   const barWidth = Math.max(chartW / macd.length * 0.7, 1);
 
   return (
-    <div className="border-t border-[#2B3139] p-2 chart-grid-bg relative">
+    <div className="border-t border-border p-2 chart-grid-bg relative">
       {/* Label */}
       <div className="flex items-center gap-3 mb-1">
-        <span className="text-[10px] text-[#848E9C]">MACD(12,26,9)</span>
-        <span className="text-[10px] font-medium text-[#F0B90B] tabular-nums">{currentMACD.toFixed(2)}</span>
+        <span className="text-[10px] text-muted-foreground">MACD(12,26,9)</span>
+        <span className="text-[10px] font-medium text-primary tabular-nums">{currentMACD.toFixed(2)}</span>
         <span className="text-[10px] font-medium text-[#627EEA] tabular-nums">{currentSignal.toFixed(2)}</span>
-        <span className={`text-[10px] font-medium tabular-nums ${currentHist >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+        <span className={`text-[10px] font-medium tabular-nums ${currentHist >= 0 ? 'text-success' : 'text-destructive'}`}>
           {currentHist.toFixed(2)}
         </span>
       </div>
-      <svg width="100%" height={h - 16} viewBox={`0 0 ${w} ${h - 16}`} preserveAspectRatio="none" className="w-full">
+      <svg width="100%" height={h - 16} viewBox={`0 0 ${w} ${h - 16}`} preserveAspectRatio="none" className="w-full" dir="ltr">
         {/* Zero line */}
         <line x1={padding.left} y1={zeroY} x2={padding.left + chartW} y2={zeroY} stroke="#5E6673" strokeWidth="0.5" strokeDasharray="4,3" opacity="0.4" />
         {/* Histogram bars */}
@@ -289,14 +290,14 @@ function BollingerBandsOverlay() {
   }).join(' ')} Z`;
 
   return (
-    <div className="border-t border-[#2B3139] p-2 chart-grid-bg relative">
+    <div className="border-t border-border p-2 chart-grid-bg relative">
       <div className="flex items-center gap-3 mb-1">
-        <span className="text-[10px] text-[#848E9C]">BB(20,2)</span>
-        <span className="text-[10px] font-medium text-[#F0B90B] tabular-nums">{t('trade.upper')}: {bands.upper[bands.upper.length - 1]?.toFixed(2)}</span>
-        <span className="text-[10px] font-medium text-[#848E9C] tabular-nums">{t('trade.sma')}: {sma[sma.length - 1]?.toFixed(2)}</span>
+        <span className="text-[10px] text-muted-foreground">BB(20,2)</span>
+        <span className="text-[10px] font-medium text-primary tabular-nums">{t('trade.upper')}: {bands.upper[bands.upper.length - 1]?.toFixed(2)}</span>
+        <span className="text-[10px] font-medium text-muted-foreground tabular-nums">{t('trade.sma')}: {sma[sma.length - 1]?.toFixed(2)}</span>
         <span className="text-[10px] font-medium text-[#627EEA] tabular-nums">{t('trade.lower')}: {bands.lower[bands.lower.length - 1]?.toFixed(2)}</span>
       </div>
-      <svg width="100%" height={h - 16} viewBox={`0 0 ${w} ${h - 16}`} preserveAspectRatio="none" className="w-full">
+      <svg width="100%" height={h - 16} viewBox={`0 0 ${w} ${h - 16}`} preserveAspectRatio="none" className="w-full" dir="ltr">
         <defs>
           <linearGradient id="bbFillGrad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#F0B90B" stopOpacity="0.08" />
@@ -476,15 +477,15 @@ function CandlestickChart({ pairSymbol, livePrice }: { pairSymbol: string; liveP
   return (
     <div className="flex flex-col h-full">
       {/* Time interval selector */}
-      <div className="flex items-center gap-1 px-2 py-1.5 bg-[#0B0E11] border-b border-[#2B3139]">
+      <div className="flex items-center gap-1 px-2 py-1.5 bg-background border-b border-border">
         {(['1m', '5m', '15m', '1h', '4h', '1D', '1W'] as TimeInterval[]).map((tf) => (
           <button
             key={tf}
             onClick={() => setIntervalState(tf)}
             className={`px-2 py-1 rounded text-[11px] font-medium transition-all duration-200 ${
               interval === tf
-                ? 'bg-[#2B3139] text-[#F0B90B] tf-breathe-glow'
-                : 'text-[#5E6673] hover:text-[#848E9C]'
+                ? 'bg-secondary text-primary tf-breathe-glow'
+                : 'text-muted-foreground hover:text-muted-foreground'
             }`}
           >
             {tf}
@@ -498,8 +499,8 @@ function CandlestickChart({ pairSymbol, livePrice }: { pairSymbol: string; liveP
         <BollingerBandsOverlay />
       )}
       {/* Indicator Tab Bar - below the chart */}
-      <div className="flex items-center gap-1 px-2 py-1.5 bg-[#0B0E11] border-t border-b border-[#2B3139]">
-        <span className="text-[10px] text-[#5E6673] me-1 flex items-center gap-1">
+      <div className="flex items-center gap-1 px-2 py-1.5 bg-background border-t border-b border-border">
+        <span className="text-[10px] text-muted-foreground me-1 flex items-center gap-1">
           <Activity className="h-3 w-3" />
           {t('trade.indicator')}
         </span>
@@ -514,8 +515,8 @@ function CandlestickChart({ pairSymbol, livePrice }: { pairSymbol: string; liveP
             onClick={() => setIndicatorTab(tab.id)}
             className={`px-3 py-1 rounded-md text-[10px] font-semibold transition-all duration-200 ${
               indicatorTab === tab.id
-                ? 'bg-gradient-to-r from-[#F0B90B] to-[#F8D12F] text-[#0B0E11] shadow-sm shadow-[#F0B90B]/20'
-                : 'bg-[#2B3139] text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139]/80'
+                ? 'bg-gradient-to-r from-primary to-[#F8D12F] text-primary-foreground shadow-sm shadow-primary/20'
+                : 'bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80'
             }`}
           >
             {tab.label}
@@ -555,6 +556,7 @@ function CandlestickChart({ pairSymbol, livePrice }: { pairSymbol: string; liveP
 
 // ── Live Price Display ──────────────────────────────────────────────────────
 function LivePriceDisplay({ price, isPositive, direction }: { price: number; isPositive: boolean; direction: 'up' | 'down' | null }) {
+  const { t } = useTranslation();
   const flashClass = direction === 'up' ? 'price-flash-up' : direction === 'down' ? 'price-flash-down' : '';
   const glowClass = isPositive ? 'glow-green' : 'glow-red';
   const priceGlowClass = isPositive ? 'price-glow-up' : 'price-glow-down';
@@ -563,14 +565,14 @@ function LivePriceDisplay({ price, isPositive, direction }: { price: number; isP
     <div className="flex items-center gap-2">
       <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md ${glowClass} price-transition`}>
         {/* Enhanced LIVE badge with prominent pulse */}
-        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[#0ECB81]/15 border border-[#0ECB81]/25 live-badge-pulse">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#0ECB81] live-dot" />
-          <span className="text-[9px] text-[#0ECB81] font-bold tracking-wider">LIVE</span>
+        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-success/15 border border-success/25 live-badge-pulse">
+          <div className="w-1.5 h-1.5 rounded-full bg-success live-dot" />
+          <span className="text-[10px] text-success font-bold tracking-wider">{t('status.live')}</span>
         </div>
         <span
           key={price}
           className={`text-xl font-bold tabular-nums price-transition ${priceGlowClass} ${flashClass} ${
-            isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'
+            isPositive ? 'text-success' : 'text-destructive'
           }`}
         >
           {formatPrice(price)}
@@ -609,7 +611,7 @@ function DepthChart({ currentPrice, isPositive }: { currentPrice: number; isPosi
   const askLine = askPoints.map(p => `${p.x},${p.y}`).join(' ');
 
   return (
-    <svg width={w} height={h} className="w-full">
+    <svg width={w} height={h} className="w-full" dir="ltr">
       <defs>
         <linearGradient id="bidDepthGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#0ECB81" stopOpacity="0.3" />
@@ -648,7 +650,7 @@ function OrderBook({ currentPrice, isPositive, livePrice }: { currentPrice: numb
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-[#2B3139] text-[10px] text-[#5E6673]">
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border text-[10px] text-muted-foreground">
         <span className="w-[38%] text-start">{t('trade.price')}(USDT)</span>
         <span className="w-[30%] text-end">{t('trade.amount')}(BTC)</span>
         <span className="w-[32%] text-end">{t('trade.total')}</span>
@@ -660,30 +662,30 @@ function OrderBook({ currentPrice, isPositive, livePrice }: { currentPrice: numb
           {asks.slice(0, 10).reverse().map((ask, i) => (
             <div key={`ask-${i}`} className="relative flex items-center px-3 py-[3px] text-[11px] order-book-row cursor-pointer">
               <div
-                className="absolute right-0 top-0 bottom-0 depth-bar-animate"
+                className="absolute end-0 top-0 bottom-0 depth-bar-animate"
                 style={{
                   width: `${(ask.total / maxAskTotal) * 100}%`,
                   background: `linear-gradient(to left, rgba(246, 70, 93, ${0.04 + (ask.total / maxAskTotal) * 0.12}), rgba(246, 70, 93, 0.02))`,
                 }}
               />
-              <span className="w-[38%] text-[#F6465D] tabular-nums relative">{formatPrice(ask.price)}</span>
-              <span className="w-[30%] text-end text-[#848E9C] tabular-nums relative">{ask.quantity.toFixed(4)}</span>
-              <span className="w-[32%] text-end text-[#5E6673] tabular-nums relative">{formatNumber(ask.total, 0)}</span>
+              <span className="w-[38%] text-destructive tabular-nums relative">{formatPrice(ask.price)}</span>
+              <span className="w-[30%] text-end text-muted-foreground tabular-nums relative">{ask.quantity.toFixed(4)}</span>
+              <span className="w-[32%] text-end text-muted-foreground tabular-nums relative">{formatNumber(ask.total, 0)}</span>
             </div>
           ))}
         </div>
 
         {/* Spread / Current Price */}
-        <div className="flex items-center justify-center gap-2 py-1.5 border-y border-[#2B3139] bg-[#0B0E11]">
-          <span className={`text-sm font-bold tabular-nums ${isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+        <div className="flex items-center justify-center gap-2 py-1.5 border-y border-border bg-background">
+          <span className={`text-sm font-bold tabular-nums ${isPositive ? 'text-success' : 'text-destructive'}`}>
             {formatPrice(displayPrice)}
           </span>
           {isPositive ? (
-            <ArrowUpRight className="h-3.5 w-3.5 text-[#0ECB81]" />
+            <ArrowUpRight className="h-3.5 w-3.5 text-success" />
           ) : (
-            <ArrowDownRight className="h-3.5 w-3.5 text-[#F6465D]" />
+            <ArrowDownRight className="h-3.5 w-3.5 text-destructive" />
           )}
-          <Badge className="text-[9px] h-4 px-1.5 bg-[#F0B90B]/10 text-[#F0B90B] border-0 font-medium spread-gradient-text">
+          <Badge className="text-[10px] h-4 px-1.5 bg-primary/10 text-primary border-0 font-medium spread-gradient-text">
             {t('trade.spread')}: {formatPrice(asks[0]?.price - bids[0]?.price || 0)}
           </Badge>
         </div>
@@ -693,15 +695,15 @@ function OrderBook({ currentPrice, isPositive, livePrice }: { currentPrice: numb
           {bids.slice(0, 10).map((bid, i) => (
             <div key={`bid-${i}`} className="relative flex items-center px-3 py-[3px] text-[11px] order-book-row cursor-pointer">
               <div
-                className="absolute right-0 top-0 bottom-0 depth-bar-animate"
+                className="absolute end-0 top-0 bottom-0 depth-bar-animate"
                 style={{
                   width: `${(bid.total / maxBidTotal) * 100}%`,
                   background: `linear-gradient(to left, rgba(14, 203, 129, ${0.04 + (bid.total / maxBidTotal) * 0.12}), rgba(14, 203, 129, 0.02))`,
                 }}
               />
-              <span className="w-[38%] text-[#0ECB81] tabular-nums relative">{formatPrice(bid.price)}</span>
-              <span className="w-[30%] text-end text-[#848E9C] tabular-nums relative">{bid.quantity.toFixed(4)}</span>
-              <span className="w-[32%] text-end text-[#5E6673] tabular-nums relative">{formatNumber(bid.total, 0)}</span>
+              <span className="w-[38%] text-success tabular-nums relative">{formatPrice(bid.price)}</span>
+              <span className="w-[30%] text-end text-muted-foreground tabular-nums relative">{bid.quantity.toFixed(4)}</span>
+              <span className="w-[32%] text-end text-muted-foreground tabular-nums relative">{formatNumber(bid.total, 0)}</span>
             </div>
           ))}
         </div>
@@ -712,7 +714,7 @@ function OrderBook({ currentPrice, isPositive, livePrice }: { currentPrice: numb
 
 // ── Trade Panel Component ─────────────────────────────────────────────────────
 function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; livePrice: number | undefined }) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [side, setSide] = useState<OrderSide>('buy');
   const [orderType, setOrderType] = useState<OrderType>('limit');
   const currentPrice = livePrice || pair.price;
@@ -763,8 +765,18 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
 
   const handlePlaceOrder = () => {
     if (!amountNum) return;
-    // Mock order placement
-    alert(`${side.toUpperCase()} ${orderType.toUpperCase()} order: ${amount} ${pair.baseAsset} at ${orderType === 'market' ? 'Market' : price} ${pair.quoteAsset}`);
+    const sideLabel = side === 'buy' ? t('orders.buy') : t('orders.sell');
+    const typeLabel = orderType === 'stop_limit' ? t('orders.stopLimit') : orderType === 'limit' ? t('trade.limit') : t('orders.market');
+    const priceLabel = orderType === 'market' ? t('orders.market') : price;
+    toast.success(
+      t('trade.orderPlaced')
+        .replace('{side}', sideLabel)
+        .replace('{type}', typeLabel)
+        .replace('{amount}', amount)
+        .replace('{asset}', pair.baseAsset)
+        .replace('{price}', priceLabel)
+        .replace('{quote}', pair.quoteAsset)
+    );
   };
 
   return (
@@ -775,8 +787,8 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
           onClick={() => setSide('buy')}
           className={`flex-1 py-2 rounded-t-md text-sm font-semibold transition-all duration-200 touch-feedback ${
             side === 'buy'
-              ? 'bg-[#0ECB81]/15 text-[#0ECB81] border-b-2 border-[#0ECB81]'
-              : 'text-[#5E6673] hover:text-[#848E9C] border-b-2 border-transparent'
+              ? 'bg-success/15 text-success border-b-2 border-success'
+              : 'text-muted-foreground hover:text-muted-foreground border-b-2 border-transparent'
           }`}
         >
           {t('trade.buy')} {pair.baseAsset}
@@ -785,8 +797,8 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
           onClick={() => setSide('sell')}
           className={`flex-1 py-2 rounded-t-md text-sm font-semibold transition-all duration-200 touch-feedback ${
             side === 'sell'
-              ? 'bg-[#F6465D]/15 text-[#F6465D] border-b-2 border-[#F6465D]'
-              : 'text-[#5E6673] hover:text-[#848E9C] border-b-2 border-transparent'
+              ? 'bg-destructive/15 text-destructive border-b-2 border-destructive'
+              : 'text-muted-foreground hover:text-muted-foreground border-b-2 border-transparent'
           }`}
         >
           {t('trade.sell')} {pair.baseAsset}
@@ -802,8 +814,8 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
               onClick={() => setOrderType(type)}
               className={`px-3 py-1.5 rounded text-[11px] font-medium transition-colors ${
                 orderType === type
-                  ? 'bg-[#2B3139] text-[#F0B90B]'
-                  : 'text-[#5E6673] hover:text-[#848E9C]'
+                  ? 'bg-secondary text-primary'
+                  : 'text-muted-foreground hover:text-muted-foreground'
               }`}
             >
               {type === 'stop_limit' ? t('trade.stopLimit') : type === 'limit' ? t('trade.limit') : t('trade.market')}
@@ -814,16 +826,16 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
         {/* Stop Price (Stop-Limit only) */}
         {orderType === 'stop_limit' && (
           <div>
-            <label className="text-[10px] text-[#5E6673]">{t('trade.stopPrice')}</label>
-            <div className="flex items-center bg-[#2B3139] rounded h-8 px-2 mt-0.5">
+            <label className="text-[10px] text-muted-foreground">{t('trade.stopPrice')}</label>
+            <div className="flex items-center bg-secondary rounded h-8 px-2 mt-0.5">
               <Input
                 type="number"
                 value={stopPrice}
                 onChange={(e) => setStopPrice(e.target.value)}
                 placeholder={t('trade.stopPrice')}
-                className="border-0 bg-transparent text-[#EAECEF] text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-[#3B4451]"
+                className="border-0 bg-transparent text-foreground text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-muted-foreground/50"
               />
-              <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">{pair.quoteAsset}</span>
+              <span className="text-[10px] text-muted-foreground shrink-0 ms-1">{pair.quoteAsset}</span>
             </div>
           </div>
         )}
@@ -831,37 +843,37 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
         {/* Price (Limit & Stop-Limit) */}
         {orderType !== 'market' && (
           <div>
-            <label className="text-[10px] text-[#5E6673]">{t('trade.price')}</label>
-            <div className="flex items-center bg-[#2B3139] rounded h-8 px-2 mt-0.5">
-              <button onClick={() => setPrice(formatPrice(Math.max(0, priceNum - (currentPrice * 0.001))))} className="text-[#5E6673] hover:text-[#EAECEF] shrink-0">
+            <label className="text-[10px] text-muted-foreground">{t('trade.price')}</label>
+            <div className="flex items-center bg-secondary rounded h-8 px-2 mt-0.5">
+              <button onClick={() => setPrice(formatPrice(Math.max(0, priceNum - (currentPrice * 0.001))))} className="text-muted-foreground hover:text-foreground shrink-0">
                 <Minus className="h-3 w-3" />
               </button>
               <Input
                 type="number"
                 value={price}
                 onChange={(e) => handlePriceChange(e.target.value)}
-                className="border-0 bg-transparent text-[#EAECEF] text-sm h-full p-0 mx-1 focus:ring-0 focus:outline-none tabular-nums text-center"
+                className="border-0 bg-transparent text-foreground text-sm h-full p-0 mx-1 focus:ring-0 focus:outline-none tabular-nums text-center"
               />
-              <button onClick={() => setPrice(formatPrice(priceNum + (currentPrice * 0.001)))} className="text-[#5E6673] hover:text-[#EAECEF] shrink-0">
+              <button onClick={() => setPrice(formatPrice(priceNum + (currentPrice * 0.001)))} className="text-muted-foreground hover:text-foreground shrink-0">
                 <Plus className="h-3 w-3" />
               </button>
-              <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">{pair.quoteAsset}</span>
+              <span className="text-[10px] text-muted-foreground shrink-0 ms-1">{pair.quoteAsset}</span>
             </div>
           </div>
         )}
 
         {/* Amount */}
         <div>
-          <label className="text-[10px] text-[#5E6673]">{t('trade.amount')}</label>
-          <div className="flex items-center bg-[#2B3139] rounded h-8 px-2 mt-0.5">
+          <label className="text-[10px] text-muted-foreground">{t('trade.amount')}</label>
+          <div className="flex items-center bg-secondary rounded h-8 px-2 mt-0.5">
             <Input
               type="number"
               value={amount}
               onChange={(e) => handleAmountChange(e.target.value)}
               placeholder="0.00"
-              className="border-0 bg-transparent text-[#EAECEF] text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-[#3B4451]"
+              className="border-0 bg-transparent text-foreground text-sm h-full p-0 focus:ring-0 focus:outline-none tabular-nums placeholder:text-muted-foreground/50"
             />
-            <span className="text-[10px] text-[#5E6673] shrink-0 ms-1">{pair.baseAsset}</span>
+            <span className="text-[10px] text-muted-foreground shrink-0 ms-1">{pair.baseAsset}</span>
           </div>
         </div>
 
@@ -872,7 +884,7 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
             onValueChange={([v]) => handlePercentChange(v)}
             max={100}
             step={1}
-            className="w-full [&_[data-slot=slider-track]]:h-1.5 [&_[data-slot=slider-track]]:bg-[#2B3139] [&_[data-slot=slider-range]]:bg-[#F0B90B] [&_[data-slot=slider-thumb]]:h-3.5 [&_[data-slot=slider-thumb]]:w-3.5 [&_[data-slot=slider-thumb]]:border-[#F0B90B]"
+            className="w-full [&_[data-slot=slider-track]]:h-1.5 [&_[data-slot=slider-track]]:bg-secondary [&_[data-slot=slider-range]]:bg-primary [&_[data-slot=slider-thumb]]:h-3.5 [&_[data-slot=slider-thumb]]:w-3.5 [&_[data-slot=slider-thumb]]:border-primary"
           />
           <div className="flex justify-between mt-1">
             {['25%', '50%', '75%', '100%'].map((pct) => (
@@ -881,8 +893,8 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
                 onClick={() => handlePercentChange(parseInt(pct))}
                 className={`text-[10px] px-2 py-0.5 rounded transition-colors ${
                   percentSlider === parseInt(pct)
-                    ? 'bg-[#2B3139] text-[#F0B90B]'
-                    : 'text-[#5E6673] hover:text-[#848E9C]'
+                    ? 'bg-secondary text-primary'
+                    : 'text-muted-foreground hover:text-muted-foreground'
                 }`}
               >
                 {pct}
@@ -893,33 +905,33 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
 
         {/* Total */}
         <div>
-          <label className="text-[10px] text-[#5E6673]">{t('trade.total')}</label>
-          <div className="flex items-center bg-[#2B3139] rounded h-8 px-2 mt-0.5">
-            <span className="text-sm text-[#EAECEF] tabular-nums flex-1">
+          <label className="text-[10px] text-muted-foreground">{t('trade.total')}</label>
+          <div className="flex items-center bg-secondary rounded h-8 px-2 mt-0.5">
+            <span className="text-sm text-foreground tabular-nums flex-1">
               {total > 0 ? formatPrice(total) : '0.00'}
             </span>
-            <span className="text-[10px] text-[#5E6673] shrink-0">{pair.quoteAsset}</span>
+            <span className="text-[10px] text-muted-foreground shrink-0">{pair.quoteAsset}</span>
           </div>
         </div>
 
         {/* Available Balance */}
         <div className="flex justify-between text-[10px]">
-          <span className="text-[#5E6673]">{t('trade.available')}</span>
-          <span className="text-[#848E9C] tabular-nums">
+          <span className="text-muted-foreground">{t('trade.available')}</span>
+          <span className="text-muted-foreground tabular-nums">
             {side === 'buy' ? `${formatPrice(availableBalance)} ${pair.quoteAsset}` : `${availableBalance.toFixed(6)} ${pair.baseAsset}`}
           </span>
         </div>
 
         {/* Order Summary */}
         {amountNum > 0 && (
-          <div className="bg-[#1E2329] rounded p-2 space-y-1">
+          <div className="bg-card rounded p-2 space-y-1">
             <div className="flex justify-between text-[10px]">
-              <span className="text-[#5E6673]">{t('trade.estFee')} ({feeAsset})</span>
-              <span className="text-[#848E9C] tabular-nums">{fee.toFixed(6)}</span>
+              <span className="text-muted-foreground">{t('trade.estFee')} ({feeAsset})</span>
+              <span className="text-muted-foreground tabular-nums">{fee.toFixed(6)}</span>
             </div>
             <div className="flex justify-between text-[10px]">
-              <span className="text-[#5E6673]">{t('trade.total')} ({pair.quoteAsset})</span>
-              <span className="text-[#EAECEF] tabular-nums font-medium">{formatPrice(total + (side === 'buy' ? 0 : -fee))}</span>
+              <span className="text-muted-foreground">{t('trade.total')} ({pair.quoteAsset})</span>
+              <span className="text-foreground tabular-nums font-medium">{formatPrice(total + (side === 'buy' ? 0 : -fee))}</span>
             </div>
           </div>
         )}
@@ -929,8 +941,8 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
           onClick={handlePlaceOrder}
           className={`w-full font-semibold h-10 text-sm ripple-effect relative overflow-hidden ${
             side === 'buy'
-              ? 'bg-[#0ECB81] hover:bg-[#0ECB81]/90 text-white hover:scale-[1.02] active:scale-[0.98]'
-              : 'bg-[#F6465D] hover:bg-[#F6465D]/90 text-white hover:scale-[1.02] active:scale-[0.98]'
+              ? 'bg-success hover:bg-success/90 text-white hover:scale-[1.02] active:scale-[0.98]'
+              : 'bg-destructive hover:bg-destructive/90 text-white hover:scale-[1.02] active:scale-[0.98]'
           } transition-transform duration-150`}
         >
           {side === 'buy' ? t('trade.buy') : t('trade.sell')} {pair.baseAsset}
@@ -942,7 +954,7 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
 
 // ── Open Orders Component ─────────────────────────────────────────────────────
 function OpenOrders({ pairSymbol }: { pairSymbol: string }) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
   const [orders, setOrders] = useState<Order[]>(mockOrders.filter(o => o.status === 'pending' || o.status === 'partially_filled'));
 
@@ -953,19 +965,19 @@ function OpenOrders({ pairSymbol }: { pairSymbol: string }) {
   if (orders.length === 0) return null;
 
   return (
-    <div className="border-t border-[#2B3139]">
+    <div className="border-t border-border">
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="w-full flex items-center justify-between px-4 py-2 hover:bg-[#1E2329]/50 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-2 hover:bg-card/50 transition-colors"
       >
-        <span className="text-xs font-semibold text-[#848E9C]">{t('trade.openOrders')} ({orders.length})</span>
-        <ChevronDown className={`h-4 w-4 text-[#5E6673] transition-transform ${collapsed ? '' : 'rotate-180'}`} />
+        <span className="text-xs font-semibold text-muted-foreground">{t('trade.openOrders')} ({orders.length})</span>
+        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${collapsed ? '' : 'rotate-180'}`} />
       </button>
       {!collapsed && (
         <ScrollArea className="max-h-48">
           <div className="px-4 pb-3">
             {/* Header */}
-            <div className="grid grid-cols-7 gap-2 text-[10px] text-[#5E6673] pb-1 border-b border-[#2B3139]/50">
+            <div className="grid grid-cols-7 gap-2 text-[10px] text-muted-foreground pb-1 border-b border-border/50">
               <span>{t('trade.pair')}</span>
               <span>{t('trade.side')}</span>
               <span className="text-end">{t('trade.price')}</span>
@@ -977,25 +989,25 @@ function OpenOrders({ pairSymbol }: { pairSymbol: string }) {
             {orders.map((order) => {
               const filledPct = order.quantity > 0 ? (order.filledQty / order.quantity) * 100 : 0;
               return (
-                <div key={order.id} className="grid grid-cols-7 gap-2 text-[11px] py-1.5 border-b border-[#2B3139]/30 items-center">
-                  <span className="text-[#EAECEF] font-medium">{order.market}</span>
-                  <span className={order.side === 'buy' ? 'text-[#0ECB81]' : 'text-[#F6465D]'}>
+                <div key={order.id} className="grid grid-cols-7 gap-2 text-[11px] py-1.5 border-b border-border/30 items-center">
+                  <span className="text-foreground font-medium">{order.market}</span>
+                  <span className={order.side === 'buy' ? 'text-success' : 'text-destructive'}>
                     {t('trade.' + order.side)}
                   </span>
-                  <span className="text-end text-[#EAECEF] tabular-nums">
+                  <span className="text-end text-foreground tabular-nums">
                     {order.price ? formatPrice(order.price) : t('trade.market')}
                   </span>
-                  <span className="text-end text-[#848E9C] tabular-nums">{order.quantity}</span>
+                  <span className="text-end text-muted-foreground tabular-nums">{order.quantity}</span>
                   <span className="text-end tabular-nums">
-                    <span className={filledPct > 0 ? 'text-[#F0B90B]' : 'text-[#848E9C]'}>{filledPct.toFixed(0)}%</span>
+                    <span className={filledPct > 0 ? 'text-primary' : 'text-muted-foreground'}>{filledPct.toFixed(0)}%</span>
                   </span>
-                  <span className="text-end text-[#5E6673]">{new Date(order.createdAt).toLocaleTimeString()}</span>
+                  <span className="text-end text-muted-foreground">{new Date(order.createdAt).toLocaleTimeString(language === 'ar' ? 'ar' : undefined)}</span>
                   <div className="flex justify-center">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => handleCancel(order.id)}
-                      className="h-5 px-2 text-[10px] text-[#F6465D] hover:text-[#F6465D] hover:bg-[#F6465D]/10"
+                      className="h-5 px-2 text-[10px] text-destructive hover:text-destructive hover:bg-destructive/10"
                     >
                       {t('trade.cancel')}
                     </Button>
@@ -1012,25 +1024,25 @@ function OpenOrders({ pairSymbol }: { pairSymbol: string }) {
 
 // ── Recent Trades Component ───────────────────────────────────────────────────
 function RecentTrades() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-[#2B3139]">
-        <span className="text-[11px] font-semibold text-[#848E9C]">{t('trade.recentTrades')}</span>
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border">
+        <span className="text-[11px] font-semibold text-muted-foreground">{t('trade.recentTrades')}</span>
       </div>
-      <div className="flex items-center justify-between px-3 py-0.5 text-[9px] text-[#5E6673]">
+      <div className="flex items-center justify-between px-3 py-0.5 text-[10px] text-muted-foreground">
         <span className="w-[35%]">{t('trade.price')}(USDT)</span>
         <span className="w-[30%] text-end">{t('trade.amount')}(BTC)</span>
         <span className="w-[35%] text-end">{t('common.time')}</span>
       </div>
       <ScrollArea className="flex-1 min-h-0">
         {mockTrades.map((trade, idx) => (
-          <div key={trade.id} className={`flex items-center justify-between px-3 py-[2px] text-[11px] hover:bg-[#1E2329]/30 ${idx === 0 ? 'flash-highlight' : ''}`}>
-            <span className={`w-[35%] tabular-nums ${trade.side === 'buy' ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+          <div key={trade.id} className={`flex items-center justify-between px-3 py-[2px] text-[11px] hover:bg-card/30 ${idx === 0 ? 'flash-highlight' : ''}`}>
+            <span className={`w-[35%] tabular-nums ${trade.side === 'buy' ? 'text-success' : 'text-destructive'}`}>
               {formatPrice(trade.price)}
             </span>
-            <span className="w-[30%] text-end text-[#848E9C] tabular-nums">{trade.quantity}</span>
-            <span className="w-[35%] text-end text-[#5E6673]">{new Date(trade.createdAt).toLocaleTimeString()}</span>
+            <span className="w-[30%] text-end text-muted-foreground tabular-nums">{trade.quantity}</span>
+            <span className="w-[35%] text-end text-muted-foreground">{new Date(trade.createdAt).toLocaleTimeString(language === 'ar' ? 'ar' : undefined)}</span>
           </div>
         ))}
       </ScrollArea>
@@ -1053,22 +1065,22 @@ function PairSelector({ currentPair, onSelect }: { currentPair: typeof mockMarke
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1 text-[#EAECEF] hover:text-[#F0B90B] transition-colors"
+        className="flex items-center gap-1 text-foreground hover:text-primary transition-colors"
       >
         <span className="text-lg font-bold">{currentPair.baseAsset}</span>
-        <span className="text-sm text-[#5E6673]">/{currentPair.quoteAsset}</span>
-        <ChevronDown className={`h-4 w-4 text-[#5E6673] transition-transform ${open ? 'rotate-180' : ''}`} />
+        <span className="text-sm text-muted-foreground">/{currentPair.quoteAsset}</span>
+        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1 w-[280px] max-w-[calc(100vw-1.5rem)] bg-[#1E2329] border border-[#2B3139] rounded-lg shadow-xl z-[60] overflow-hidden">
+        <div className="absolute top-full start-0 mt-1 w-[280px] max-w-[calc(100vw-1.5rem)] bg-card border border-border rounded-lg shadow-xl z-50 overflow-hidden">
           <div className="p-2">
             <Input
               placeholder={t('markets.search')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               autoFocus
-              className="h-7 text-xs bg-[#2B3139] border-[#2B3139] text-[#EAECEF] placeholder:text-[#3B4451] focus:border-[#F0B90B]"
+              className="h-7 text-xs bg-secondary border-border text-foreground placeholder:text-muted-foreground/50 focus:border-primary"
             />
           </div>
           <ScrollArea className="max-h-64">
@@ -1078,15 +1090,15 @@ function PairSelector({ currentPair, onSelect }: { currentPair: typeof mockMarke
                 <button
                   key={pair.symbol}
                   onClick={() => { onSelect(pair.symbol); setOpen(false); setSearch(''); }}
-                  className={`w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-[#2B3139] transition-colors ${
-                    pair.symbol === currentPair.symbol ? 'bg-[#2B3139]/50' : ''
+                  className={`w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-secondary transition-colors ${
+                    pair.symbol === currentPair.symbol ? 'bg-secondary/50' : ''
                   }`}
                 >
                   <span>
-                    <span className="text-[#EAECEF] font-medium">{pair.baseAsset}</span>
-                    <span className="text-[#5E6673]">/{pair.quoteAsset}</span>
+                    <span className="text-foreground font-medium">{pair.baseAsset}</span>
+                    <span className="text-muted-foreground">/{pair.quoteAsset}</span>
                   </span>
-                  <span className={`tabular-nums ${isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
+                  <span className={`tabular-nums ${isPositive ? 'text-success' : 'text-destructive'}`}>
                     {formatPrice(pair.price)}
                   </span>
                 </button>
@@ -1116,7 +1128,7 @@ export default function TradeView() {
   return (
     <div className="flex flex-col h-full">
       {/* ─── Pair Header (mobile-friendly: wraps stats below) ─── */}
-      <div className="px-3 py-2 border-b border-[#2B3139] bg-[#0B0E11] shrink-0">
+      <div className="px-3 py-2 border-b border-border bg-background shrink-0">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           {/* Pair selector + price + badge — tight on mobile, spaced on desktop */}
           <div className="flex items-center gap-2 sm:gap-4 flex-wrap min-w-0">
@@ -1127,26 +1139,26 @@ export default function TradeView() {
             <LivePriceDisplay price={livePrice} isPositive={isPositive} direction={direction} />
             <Badge className={`text-[10px] font-semibold shrink-0 ${
               isPositive
-                ? 'bg-[#0ECB81]/10 text-[#0ECB81] border-0'
-                : 'bg-[#F6465D]/10 text-[#F6465D] border-0'
+                ? 'bg-success/10 text-success border-0'
+                : 'bg-destructive/10 text-destructive border-0'
             }`}>
               {isPositive ? <ArrowUpRight className="h-2.5 w-2.5 me-0.5" /> : <ArrowDownRight className="h-2.5 w-2.5 me-0.5" />}
               {isPositive ? '+' : ''}{currentPair.changePercent.toFixed(2)}%
             </Badge>
           </div>
           {/* 24h stats — wraps to second row on phones */}
-          <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-[11px] text-[#848E9C] flex-wrap">
+          <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-[11px] text-muted-foreground flex-wrap">
             <div>
-              <span className="text-[#707785]">{t('trade.high24h')} </span>
-              <span className="text-[#0ECB81] tabular-nums">{formatPrice(currentPair.high)}</span>
+              <span className="text-muted-foreground">{t('trade.high24h')} </span>
+              <span className="text-success tabular-nums">{formatPrice(currentPair.high)}</span>
             </div>
             <div>
-              <span className="text-[#707785]">{t('trade.low24h')} </span>
-              <span className="text-[#F6465D] tabular-nums">{formatPrice(currentPair.low)}</span>
+              <span className="text-muted-foreground">{t('trade.low24h')} </span>
+              <span className="text-destructive tabular-nums">{formatPrice(currentPair.low)}</span>
             </div>
             <div className="hidden sm:block">
-              <span className="text-[#707785]">{t('trade.volume24h')} </span>
-              <span className="text-[#EAECEF] tabular-nums">{formatNumber(currentPair.quoteVolume)}</span>
+              <span className="text-muted-foreground">{t('trade.volume24h')} </span>
+              <span className="text-foreground tabular-nums">{formatNumber(currentPair.quoteVolume)}</span>
             </div>
           </div>
         </div>
@@ -1157,10 +1169,10 @@ export default function TradeView() {
           Desktop (lg+): side-by-side 2-column layout. */}
       <div className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
         {/* Left/top: Chart + Order Book + Open Orders */}
-        <div className="flex flex-col min-h-0 lg:flex-1 lg:border-r border-[#2B3139]">
+        <div className="flex flex-col min-h-0 lg:flex-1 lg:border-r border-border">
           {/* Chart — fixed 340px on mobile (was flex-1 which collapsed to 0),
               flex-1 on desktop */}
-          <div className="h-[340px] lg:h-auto lg:flex-1 lg:min-h-[200px] relative shrink-0">
+          <div className="h-[340px] lg:h-auto lg:flex-1 lg:min-h-[200px] relative shrink-0" dir="ltr">
             <div className="absolute inset-0 chart-grid-bg opacity-40 pointer-events-none z-0" />
             <div className="relative z-10 h-full">
               <CandlestickChart pairSymbol={currentPair.symbol} livePrice={livePrice} />
@@ -1168,8 +1180,8 @@ export default function TradeView() {
           </div>
 
           {/* Order Book + Depth Chart — fixed height on mobile */}
-          <div className="h-[280px] lg:h-56 border-t border-[#2B3139] shrink-0">
-            <div className="px-3 py-1.5 border-b border-[#2B3139]/50">
+          <div className="h-[280px] lg:h-56 border-t border-border shrink-0">
+            <div className="px-3 py-1.5 border-b border-border/50">
               <DepthChart currentPrice={livePrice} isPositive={isPositive} />
             </div>
             <OrderBook currentPrice={livePrice} isPositive={isPositive} livePrice={livePrice} />
@@ -1182,7 +1194,7 @@ export default function TradeView() {
         {/* Right/bottom: Trade Panel + Recent Trades */}
         <div className="w-full lg:w-80 xl:w-96 flex flex-col min-h-0 shrink-0">
           {/* Trade Panel */}
-          <div className="border-b border-[#2B3139] glass-morphism shrink-0">
+          <div className="border-b border-border glass-morphism shrink-0">
             <TradePanel pair={currentPair} livePrice={livePrice} />
           </div>
 

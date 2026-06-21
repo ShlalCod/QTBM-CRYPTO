@@ -20,7 +20,9 @@ const feedPosts = [
     initial: 'C',
     color: '#F0B90B',
     time: '2h ago',
+    timeAr: 'قبل ساعتين',
     text: 'BTC looking strong above $67K support. Expecting a push to $70K this week.',
+    textAr: 'البيتكوين يبدو قوياً فوق دعم 67 ألف دولار. أتوقع صعوداً نحو 70 ألف هذا الأسبوع.',
     tag: 'BTC',
     likes: 45,
     comments: 12,
@@ -32,7 +34,9 @@ const feedPosts = [
     initial: 'E',
     color: '#627EEA',
     time: '4h ago',
+    timeAr: 'قبل ٤ ساعات',
     text: 'Just closed my ETH long at +15%. Taking profits here, will re-enter on a dip.',
+    textAr: 'أغلقت للتو مركز إيثيريوم الطويل عند +15٪. جني أرباح هنا، سأعيد الدخول عند الانخفاض.',
     tag: 'ETH',
     likes: 89,
     comments: 23,
@@ -44,7 +48,9 @@ const feedPosts = [
     initial: 'S',
     color: '#0ECB81',
     time: '6h ago',
+    timeAr: 'قبل ٦ ساعات',
     text: 'SOL ecosystem is booming. Jupiter, Jito, and Marinade all showing strength.',
+    textAr: 'نظام سولانا يزدهر. جوبيتر وجيتو ومارينايد جميعها تظهر قوة.',
     tag: 'SOL',
     likes: 34,
     comments: 8,
@@ -56,7 +62,9 @@ const feedPosts = [
     initial: 'D',
     color: '#F6465D',
     time: '8h ago',
+    timeAr: 'قبل ٨ ساعات',
     text: 'Funding rates turning negative on BTC shorts. Could see a short squeeze soon.',
+    textAr: 'أسعار التمويل تنعكس سالبة على مراكز البيتكوين القصيرة. قد نشهد انضغاطاً قريباً.',
     tag: 'BTC',
     likes: 67,
     comments: 19,
@@ -68,7 +76,9 @@ const feedPosts = [
     initial: 'Q',
     color: '#F0B90B',
     time: '12h ago',
+    timeAr: 'قبل ١٢ ساعة',
     text: 'New QTBM listing announcement coming this week! Stay tuned.',
+    textAr: 'إعلان إدراج جديد لـ QTBM هذا الأسبوع! ترقبوا.',
     tag: 'QTBM',
     likes: 234,
     comments: 56,
@@ -92,12 +102,15 @@ const topTraders = [
 const assetTags = ['BTC', 'ETH', 'SOL', 'BNB', 'XRP', 'DOGE', 'QTBM'];
 
 export default function SocialFeedView() {
-  const { navigateTo } = useAppStore();
+  const { navigateTo, isRTL, language } = useAppStore();
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<FeedTab>('trending');
   const [newPostText, setNewPostText] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
+
+  const postText = (p: typeof feedPosts[number]) => (language === 'ar' && p.textAr ? p.textAr : p.text);
+  const postTime = (p: typeof feedPosts[number]) => (language === 'ar' && p.timeAr ? p.timeAr : p.time);
 
   const tabs: { id: FeedTab; label: string }[] = [
     { id: 'trending', label: t('socialFeed.trending') },
@@ -124,7 +137,7 @@ export default function SocialFeedView() {
   };
 
   return (
-    <ScrollArea className="h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-4rem)]">
       <div className="p-4 max-w-4xl mx-auto">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Main Feed Column */}
@@ -134,14 +147,15 @@ export default function SocialFeedView() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-9 w-9"
+                className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9"
                 onClick={() => navigateTo('more')}
+                aria-label={t('common.back')}
               >
-                <ArrowLeft className="h-5 w-5" />
+                <ArrowLeft className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
               </Button>
               <div className="flex items-center gap-2">
-                <MessageCircle className="h-5 w-5 text-[#F0B90B]" />
-                <h1 className="text-lg font-bold text-[#EAECEF]">{t('socialFeed.title')}</h1>
+                <MessageCircle className="h-5 w-5 text-primary" />
+                <h1 className="text-lg font-bold text-foreground">{t('socialFeed.title')}</h1>
               </div>
               <Badge className="bg-[#627EEA]/10 text-[#627EEA] border-0 text-[10px] font-semibold px-2">
                 {t('socialFeed.community')}
@@ -154,10 +168,10 @@ export default function SocialFeedView() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <Card className="bg-[#1E2329] border-[#2B3139]">
+              <Card className="bg-card border-border">
                 <CardContent className="p-4">
                   <textarea
-                    className="w-full bg-[#0B0E11] border border-[#2B3139] rounded-lg p-3 text-sm text-[#EAECEF] placeholder:text-[#5E6673] resize-none focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 transition-all"
+                    className="w-full bg-background border border-border rounded-lg p-3 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:border-primary focus:ring-primary/20 transition-all"
                     rows={3}
                     placeholder={t('socialFeed.placeholder')}
                     value={newPostText}
@@ -171,15 +185,15 @@ export default function SocialFeedView() {
                           onClick={() => toggleTag(tag)}
                           className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-all press-scale ${
                             selectedTags.includes(tag)
-                              ? 'bg-[#F0B90B] text-[#0B0E11]'
-                              : 'bg-[#2B3139] text-[#848E9C] hover:text-[#EAECEF]'
+                              ? 'bg-primary text-background'
+                              : 'bg-secondary text-muted-foreground hover:text-foreground'
                           }`}
                         >
                           {tag}
                         </button>
                       ))}
                     </div>
-                    <Button className="gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-8 px-4 text-xs press-scale shadow-md shadow-[#F0B90B]/15">
+                    <Button className="gradient-yellow hover:opacity-90 text-background font-semibold h-8 px-4 text-xs press-scale shadow-md shadow-primary/15">
                       <Send className="h-3.5 w-3.5 me-1.5" />
                       {t('socialFeed.post')}
                     </Button>
@@ -189,13 +203,13 @@ export default function SocialFeedView() {
             </motion.div>
 
             {/* Feed Tabs */}
-            <div className="relative flex gap-1 bg-[#1E2329] rounded-lg p-1">
+            <div className="relative flex gap-1 bg-card rounded-lg p-1">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`relative flex-1 py-2 text-xs font-semibold rounded-md transition-colors ${
-                    activeTab === tab.id ? 'text-[#0B0E11]' : 'text-[#848E9C] hover:text-[#EAECEF]'
+                    activeTab === tab.id ? 'text-background' : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {activeTab === tab.id && (
@@ -227,7 +241,7 @@ export default function SocialFeedView() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05, duration: 0.3 }}
                   >
-                    <Card className="bg-[#1E2329] border-[#2B3139] hover:border-[#2B3139]/80 transition-all">
+                    <Card className="bg-card border-border hover:border-border/80 transition-all">
                       <CardContent className="p-4">
                         <div className="flex items-start gap-3">
                           {/* Avatar */}
@@ -240,35 +254,36 @@ export default function SocialFeedView() {
                           {/* Content */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-sm font-semibold text-[#EAECEF]">{post.username}</span>
-                              <span className="text-[10px] text-[#5E6673]">{post.followers} {t('socialFeed.followers')}</span>
-                              <span className="text-[10px] text-[#3E444D]">·</span>
-                              <span className="text-[10px] text-[#5E6673]">{post.time}</span>
+                              <span className="text-sm font-semibold text-foreground">{post.username}</span>
+                              <span className="text-[10px] text-muted-foreground">{post.followers} {t('socialFeed.followers')}</span>
+                              <span className="text-[10px] text-muted-foreground">·</span>
+                              <span className="text-[10px] text-muted-foreground">{postTime(post)}</span>
                             </div>
-                            <p className="text-sm text-[#EAECEF] mt-1.5 leading-relaxed">{post.text}</p>
+                            <p className="text-sm text-foreground mt-1.5 leading-relaxed">{postText(post)}</p>
                             <div className="flex items-center gap-3 mt-3">
                               {/* Asset tag */}
-                              <Badge className="bg-[#2B3139] text-[#F0B90B] border-0 text-[9px] px-1.5 py-0 h-4 font-semibold">
+                              <Badge className="bg-secondary text-primary border-0 text-[10px] px-1.5 py-0 h-4 font-semibold">
                                 {post.tag}
                               </Badge>
                               <div className="flex-1" />
                               {/* Like */}
                               <button
                                 onClick={() => toggleLike(post.id)}
-                                className="flex items-center gap-1 text-[#5E6673] hover:text-[#F6465D] transition-colors"
+                                className="flex items-center gap-1 text-muted-foreground hover:text-destructive transition-colors h-9 px-2 -mx-1 rounded-md hover:bg-destructive/10"
+                                aria-label={t('socialFeed.like')}
                               >
-                                <Heart className={`h-3.5 w-3.5 ${likedPosts.has(post.id) ? 'fill-[#F6465D] text-[#F6465D]' : ''}`} />
-                                <span className={`text-[10px] ${likedPosts.has(post.id) ? 'text-[#F6465D]' : ''}`}>
+                                <Heart className={`h-3.5 w-3.5 ${likedPosts.has(post.id) ? 'fill-destructive text-destructive' : ''}`} />
+                                <span className={`text-[10px] ${likedPosts.has(post.id) ? 'text-destructive' : ''}`}>
                                   {post.likes + (likedPosts.has(post.id) ? 1 : 0)}
                                 </span>
                               </button>
                               {/* Comment */}
-                              <button className="flex items-center gap-1 text-[#5E6673] hover:text-[#0ECB81] transition-colors">
+                              <button className="flex items-center gap-1 text-muted-foreground hover:text-success transition-colors h-9 px-2 -mx-1 rounded-md hover:bg-success/10" aria-label={t('socialFeed.comment')}>
                                 <MessageCircle className="h-3.5 w-3.5" />
                                 <span className="text-[10px]">{post.comments}</span>
                               </button>
                               {/* Share */}
-                              <button className="flex items-center gap-1 text-[#5E6673] hover:text-[#F0B90B] transition-colors">
+                              <button className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors h-9 w-9 -mx-1 rounded-md hover:bg-primary/10" aria-label={t('common.share')}>
                                 <Share2 className="h-3.5 w-3.5" />
                               </button>
                             </div>
@@ -285,17 +300,17 @@ export default function SocialFeedView() {
           {/* Sidebar - Desktop Only */}
           <div className="hidden lg:block w-72 space-y-4">
             {/* Trending Topics */}
-            <Card className="bg-[#1E2329] border-[#2B3139]">
+            <Card className="bg-card border-border">
               <CardContent className="p-4">
-                <h3 className="text-sm font-semibold text-[#EAECEF] mb-3 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-[#F0B90B]" />
+                <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-primary" />
                   {t('socialFeed.trendingTopics')}
                 </h3>
                 <div className="space-y-2.5">
                   {trendingTopics.map((topic) => (
                     <div key={topic.tag} className="flex items-center justify-between">
-                      <span className="text-sm text-[#F0B90B] font-medium">{topic.tag}</span>
-                      <span className="text-[10px] text-[#5E6673]">{topic.posts} {t('socialFeed.posts')}</span>
+                      <span className="text-sm text-primary font-medium">{topic.tag}</span>
+                      <span className="text-[10px] text-muted-foreground">{topic.posts} {t('socialFeed.posts')}</span>
                     </div>
                   ))}
                 </div>
@@ -303,10 +318,10 @@ export default function SocialFeedView() {
             </Card>
 
             {/* Top Traders */}
-            <Card className="bg-[#1E2329] border-[#2B3139]">
+            <Card className="bg-card border-border">
               <CardContent className="p-4">
-                <h3 className="text-sm font-semibold text-[#EAECEF] mb-3 flex items-center gap-2">
-                  <Users className="h-4 w-4 text-[#0ECB81]" />
+                <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                  <Users className="h-4 w-4 text-success" />
                   {t('socialFeed.topTraders')}
                 </h3>
                 <div className="space-y-3">
@@ -320,13 +335,13 @@ export default function SocialFeedView() {
                           {trader.initial}
                         </div>
                         <div>
-                          <p className="text-xs font-semibold text-[#EAECEF]">{trader.name}</p>
-                          <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[8px] px-1 py-0 h-3 font-bold">
+                          <p className="text-xs font-semibold text-foreground">{trader.name}</p>
+                          <Badge className="bg-success/10 text-success border-0 text-[10px] px-1 py-0 h-3 font-bold">
                             {trader.roi}
                           </Badge>
                         </div>
                       </div>
-                      <Button className="h-6 px-2.5 text-[9px] bg-[#2B3139] hover:bg-[#3B4451] text-[#EAECEF] border-0 press-scale">
+                      <Button className="h-9 px-3 text-[10px] bg-secondary hover:bg-secondary/80 text-foreground border-0 press-scale" aria-label={t('socialFeed.follow')}>
                         {t('socialFeed.follow')}
                       </Button>
                     </div>
@@ -340,17 +355,17 @@ export default function SocialFeedView() {
         {/* Mobile: Trending & Top Traders */}
         <div className="lg:hidden space-y-4 mt-6">
           {/* Trending Topics - Mobile */}
-          <Card className="bg-[#1E2329] border-[#2B3139]">
+          <Card className="bg-card border-border">
             <CardContent className="p-4">
-              <h3 className="text-sm font-semibold text-[#EAECEF] mb-3 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-[#F0B90B]" />
+              <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-primary" />
                 {t('socialFeed.trendingTopics')}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {trendingTopics.map((topic) => (
-                  <div key={topic.tag} className="flex items-center gap-1.5 bg-[#2B3139] rounded-full px-3 py-1.5">
-                    <span className="text-xs text-[#F0B90B] font-medium">{topic.tag}</span>
-                    <span className="text-[10px] text-[#5E6673]">{topic.posts}</span>
+                  <div key={topic.tag} className="flex items-center gap-1.5 bg-secondary rounded-full px-3 py-1.5">
+                    <span className="text-xs text-primary font-medium">{topic.tag}</span>
+                    <span className="text-[10px] text-muted-foreground">{topic.posts}</span>
                   </div>
                 ))}
               </div>
@@ -358,10 +373,10 @@ export default function SocialFeedView() {
           </Card>
 
           {/* Top Traders - Mobile */}
-          <Card className="bg-[#1E2329] border-[#2B3139]">
+          <Card className="bg-card border-border">
             <CardContent className="p-4">
-              <h3 className="text-sm font-semibold text-[#EAECEF] mb-3 flex items-center gap-2">
-                <Users className="h-4 w-4 text-[#0ECB81]" />
+              <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                <Users className="h-4 w-4 text-success" />
                 {t('socialFeed.topTraders')}
               </h3>
               <div className="space-y-3">
@@ -375,13 +390,13 @@ export default function SocialFeedView() {
                         {trader.initial}
                       </div>
                       <div>
-                        <p className="text-xs font-semibold text-[#EAECEF]">{trader.name}</p>
-                        <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[8px] px-1 py-0 h-3 font-bold">
+                        <p className="text-xs font-semibold text-foreground">{trader.name}</p>
+                        <Badge className="bg-success/10 text-success border-0 text-[10px] px-1 py-0 h-3 font-bold">
                           {trader.roi}
                         </Badge>
                       </div>
                     </div>
-                    <Button className="h-6 px-2.5 text-[9px] bg-[#2B3139] hover:bg-[#3B4451] text-[#EAECEF] border-0 press-scale">
+                    <Button className="h-9 px-3 text-[10px] bg-secondary hover:bg-secondary/80 text-foreground border-0 press-scale" aria-label={t('socialFeed.follow')}>
                       {t('socialFeed.follow')}
                     </Button>
                   </div>

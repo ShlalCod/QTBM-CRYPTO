@@ -56,18 +56,18 @@ const mockTransaction = {
   explorerUrl: '#',
 };
 
-const txTypeConfig: Record<TxType, { icon: typeof ArrowUpRight; color: string; bg: string }> = {
-  Deposit: { icon: ArrowDownLeft, color: 'text-[#0ECB81]', bg: 'bg-[#0ECB81]/10' },
-  Withdraw: { icon: ArrowUpRight, color: 'text-[#F6465D]', bg: 'bg-[#F6465D]/10' },
-  Trade: { icon: Repeat, color: 'text-[#F0B90B]', bg: 'bg-[#F0B90B]/10' },
-  Transfer: { icon: ArrowLeftRight, color: 'text-[#627EEA]', bg: 'bg-[#627EEA]/10' },
+const txTypeConfig: Record<TxType, { icon: typeof ArrowUpRight; color: string; bg: string; labelKey: string }> = {
+  Deposit: { icon: ArrowDownLeft, color: 'text-success', bg: 'bg-success/10', labelKey: 'transactionDetail.typeDeposit' },
+  Withdraw: { icon: ArrowUpRight, color: 'text-destructive', bg: 'bg-destructive/10', labelKey: 'transactionDetail.typeWithdraw' },
+  Trade: { icon: Repeat, color: 'text-primary', bg: 'bg-primary/10', labelKey: 'transactionDetail.typeTrade' },
+  Transfer: { icon: ArrowLeftRight, color: 'text-[#627EEA]', bg: 'bg-[#627EEA]/10', labelKey: 'transactionDetail.typeTransfer' },
 };
 
-const statusConfig: Record<TxStatus, { color: string; bg: string }> = {
-  Completed: { color: 'text-[#0ECB81]', bg: 'bg-[#0ECB81]/10' },
-  Pending: { color: 'text-[#F0B90B]', bg: 'bg-[#F0B90B]/10' },
-  Processing: { color: 'text-[#627EEA]', bg: 'bg-[#627EEA]/10' },
-  Failed: { color: 'text-[#F6465D]', bg: 'bg-[#F6465D]/10' },
+const statusConfig: Record<TxStatus, { color: string; bg: string; labelKey: string }> = {
+  Completed: { color: 'text-success', bg: 'bg-success/10', labelKey: 'transactionDetail.statusCompleted' },
+  Pending: { color: 'text-primary', bg: 'bg-primary/10', labelKey: 'transactionDetail.statusPending' },
+  Processing: { color: 'text-[#627EEA]', bg: 'bg-[#627EEA]/10', labelKey: 'transactionDetail.statusProcessing' },
+  Failed: { color: 'text-destructive', bg: 'bg-destructive/10', labelKey: 'transactionDetail.statusFailed' },
 };
 
 // ── Animated Number ──────────────────────────────────────────────────────────
@@ -114,8 +114,8 @@ function timeAgo(dateStr: string, t: (key: string) => string): string {
 
 // ── Main Component ───────────────────────────────────────────────────────────
 export default function TransactionDetailView() {
-  const { goBack } = useAppStore();
-  const { t } = useTranslation();
+  const { goBack, isRTL } = useAppStore();
+  const { t, language } = useTranslation();
   const [copiedHash, setCopiedHash] = useState(false);
   const [copiedFrom, setCopiedFrom] = useState(false);
   const [copiedTo, setCopiedTo] = useState(false);
@@ -135,26 +135,27 @@ export default function TransactionDetailView() {
 
   const formatTimestamp = (iso: string) => {
     const d = new Date(iso);
-    return d.toLocaleString('en-US', {
+    return d.toLocaleString(language === 'ar' ? 'ar' : undefined, {
       year: 'numeric', month: 'short', day: 'numeric',
       hour: '2-digit', minute: '2-digit', second: '2-digit',
     });
   };
 
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)] lg:h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-8rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="p-4 space-y-4 max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
-            className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-9 w-9"
+            aria-label={t('actions.back')}
+            className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9"
             onClick={goBack}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
           </Button>
-          <h1 className="text-lg font-bold text-[#EAECEF]">{t('transactionDetail.title')}</h1>
+          <h1 className="text-lg font-bold text-foreground">{t('transactionDetail.title')}</h1>
         </div>
 
         {/* Transaction Type & Status Header */}
@@ -171,27 +172,27 @@ export default function TransactionDetailView() {
                     <TypeIcon className={cn('h-6 w-6', typeConfig.color)} />
                   </div>
                   <div>
-                    <h2 className="text-base font-bold text-[#EAECEF]">{tx.type}</h2>
-                    <p className="text-xs text-[#848E9C]">{tx.network}</p>
+                    <h2 className="text-base font-bold text-foreground">{t(typeConfig.labelKey)}</h2>
+                    <p className="text-xs text-muted-foreground">{tx.network}</p>
                   </div>
                 </div>
                 <Badge className={cn('text-xs border-0 px-3 py-1 font-semibold', statusConf.bg, statusConf.color)}>
-                  {tx.status}
+                  {t(statusConf.labelKey)}
                 </Badge>
               </div>
 
               {/* Amount Display */}
               <div className="text-center py-4">
                 <motion.div
-                  className="text-4xl font-bold text-[#EAECEF]"
+                  className="text-4xl font-bold text-foreground"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
                   <AnimatedNumber value={tx.amount} decimals={4} suffix={` ${tx.asset}`} />
                 </motion.div>
-                <p className="text-lg text-[#848E9C] mt-1 tabular-nums">
-                  ≈ ${tx.amountUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                <p className="text-lg text-muted-foreground mt-1 tabular-nums">
+                  ≈ ${tx.amountUsd.toLocaleString(language === 'ar' ? 'ar' : undefined, { minimumFractionDigits: 2 })}
                 </p>
               </div>
             </CardContent>
@@ -204,26 +205,26 @@ export default function TransactionDetailView() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
         >
-          <Card className="bg-[#1E2329] border-[#2B3139]">
+          <Card className="bg-card border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 min-w-0">
-                  <Hash className="h-4 w-4 text-[#F0B90B] shrink-0" />
-                  <span className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium shrink-0">{t('transactionDetail.txHash')}</span>
+                  <Hash className="h-4 w-4 text-primary shrink-0" />
+                  <span className="text-[10px] text-muted-foreground tracking-wider font-medium shrink-0">{t('transactionDetail.txHash')}</span>
                 </div>
                 <button
                   onClick={() => copyToClipboard(tx.hash, setCopiedHash)}
-                  className="flex items-center gap-1.5 text-[#F0B90B] hover:text-[#F0B90B]/80 transition-colors shrink-0"
+                  className="flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors shrink-0"
                 >
                   {copiedHash ? (
-                    <CheckCircle2 className="h-4 w-4 text-[#0ECB81]" />
+                    <CheckCircle2 className="h-4 w-4 text-success" />
                   ) : (
                     <Copy className="h-4 w-4" />
                   )}
                   <span className="text-xs font-medium">{copiedHash ? t('common.success') : t('actions.copy')}</span>
                 </button>
               </div>
-              <p className="text-xs text-[#848E9C] font-mono mt-2 break-all leading-relaxed">
+              <p dir="ltr" className="text-xs text-muted-foreground font-mono mt-2 break-all leading-relaxed text-start">
                 {tx.hash}
               </p>
             </CardContent>
@@ -236,48 +237,52 @@ export default function TransactionDetailView() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.15 }}
         >
-          <Card className="bg-[#1E2329] border-[#2B3139]">
+          <Card className="bg-card border-border">
             <CardContent className="p-4 space-y-3">
               {/* From */}
               <div>
-                <span className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium">{t('transactionDetail.from')}</span>
+                <span className="text-[10px] text-muted-foreground tracking-wider font-medium">{t('transactionDetail.from')}</span>
                 <div className="flex items-center gap-2 mt-1">
                   <p
-                    className="text-sm text-[#EAECEF] font-mono cursor-pointer hover:text-[#F0B90B] transition-colors"
+                    dir="ltr"
+                    className="text-sm text-foreground font-mono cursor-pointer hover:text-primary transition-colors text-start"
                     onClick={() => setShowFullFrom(!showFullFrom)}
                   >
                     {showFullFrom ? tx.fromFull : tx.from}
                   </p>
                   <button
                     onClick={() => copyToClipboard(tx.fromFull, setCopiedFrom)}
-                    className="text-[#848E9C] hover:text-[#F0B90B] transition-colors"
+                    aria-label={t('actions.copy')}
+                    className="text-muted-foreground hover:text-primary transition-colors"
                   >
-                    {copiedFrom ? <CheckCircle2 className="h-3.5 w-3.5 text-[#0ECB81]" /> : <Copy className="h-3.5 w-3.5" />}
+                    {copiedFrom ? <CheckCircle2 className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
                   </button>
                 </div>
               </div>
 
               <div className="flex justify-center">
-                <div className="w-8 h-8 rounded-full bg-[#2B3139] flex items-center justify-center">
-                  <ArrowDownLeft className="h-4 w-4 text-[#0ECB81]" />
+                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+                  <ArrowDownLeft className="h-4 w-4 text-success" />
                 </div>
               </div>
 
               {/* To */}
               <div>
-                <span className="text-[10px] text-[#5E6673] uppercase tracking-wider font-medium">{t('transactionDetail.to')}</span>
+                <span className="text-[10px] text-muted-foreground tracking-wider font-medium">{t('transactionDetail.to')}</span>
                 <div className="flex items-center gap-2 mt-1">
                   <p
-                    className="text-sm text-[#EAECEF] font-mono cursor-pointer hover:text-[#F0B90B] transition-colors"
+                    dir="ltr"
+                    className="text-sm text-foreground font-mono cursor-pointer hover:text-primary transition-colors text-start"
                     onClick={() => setShowFullTo(!showFullTo)}
                   >
                     {showFullTo ? tx.toFull : tx.to}
                   </p>
                   <button
                     onClick={() => copyToClipboard(tx.toFull, setCopiedTo)}
-                    className="text-[#848E9C] hover:text-[#F0B90B] transition-colors"
+                    aria-label={t('actions.copy')}
+                    className="text-muted-foreground hover:text-primary transition-colors"
                   >
-                    {copiedTo ? <CheckCircle2 className="h-3.5 w-3.5 text-[#0ECB81]" /> : <Copy className="h-3.5 w-3.5" />}
+                    {copiedTo ? <CheckCircle2 className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
                   </button>
                 </div>
               </div>
@@ -291,28 +296,28 @@ export default function TransactionDetailView() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          <Card className="bg-[#1E2329] border-[#2B3139]">
+          <Card className="bg-card border-border">
             <CardContent className="p-4">
-              <h3 className="text-xs font-semibold text-[#EAECEF] mb-3">{t('transactionDetail.feeBreakdown')}</h3>
+              <h3 className="text-xs font-semibold text-foreground mb-3">{t('transactionDetail.feeBreakdown')}</h3>
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#848E9C]">{t('transactionDetail.networkFee')}</span>
-                  <span className="text-xs text-[#EAECEF] tabular-nums">{tx.networkFee} ETH (${tx.networkFeeUsd.toFixed(2)})</span>
+                  <span className="text-xs text-muted-foreground">{t('transactionDetail.networkFee')}</span>
+                  <span className="text-xs text-foreground tabular-nums">{tx.networkFee} ETH (${tx.networkFeeUsd.toFixed(2)})</span>
                 </div>
-                <Separator className="bg-[#2B3139]/50" />
+                <Separator className="bg-border/50" />
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#848E9C]">{t('transactionDetail.platformFee')}</span>
-                  <span className="text-xs text-[#0ECB81] tabular-nums">{tx.platformFee > 0 ? `$${tx.platformFeeUsd.toFixed(2)}` : t('transactionDetail.free')}</span>
+                  <span className="text-xs text-muted-foreground">{t('transactionDetail.platformFee')}</span>
+                  <span className="text-xs text-success tabular-nums">{tx.platformFee > 0 ? `$${tx.platformFeeUsd.toFixed(2)}` : t('transactionDetail.free')}</span>
                 </div>
-                <Separator className="bg-[#2B3139]/50" />
+                <Separator className="bg-border/50" />
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#848E9C]">{t('transactionDetail.gasFee')}</span>
-                  <span className="text-xs text-[#EAECEF] tabular-nums">{tx.gasFee} ETH (${tx.gasFeeUsd.toFixed(2)})</span>
+                  <span className="text-xs text-muted-foreground">{t('transactionDetail.gasFee')}</span>
+                  <span className="text-xs text-foreground tabular-nums">{tx.gasFee} ETH (${tx.gasFeeUsd.toFixed(2)})</span>
                 </div>
-                <Separator className="bg-[#2B3139]" />
+                <Separator className="bg-border" />
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-xs font-semibold text-[#EAECEF]">{t('transactionDetail.totalFee')}</span>
-                  <span className="text-xs font-semibold text-[#F0B90B] tabular-nums">
+                  <span className="text-xs font-semibold text-foreground">{t('transactionDetail.totalFee')}</span>
+                  <span className="text-xs font-semibold text-primary tabular-nums">
                     ${(tx.networkFeeUsd + tx.platformFeeUsd + tx.gasFeeUsd).toFixed(2)}
                   </span>
                 </div>
@@ -327,27 +332,27 @@ export default function TransactionDetailView() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.25 }}
         >
-          <Card className="bg-[#1E2329] border-[#2B3139]">
+          <Card className="bg-card border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Shield className="h-4 w-4 text-[#0ECB81]" />
-                  <span className="text-xs font-semibold text-[#EAECEF]">{t('transactionDetail.confirmations')}</span>
+                  <Shield className="h-4 w-4 text-success" />
+                  <span className="text-xs font-semibold text-foreground">{t('transactionDetail.confirmations')}</span>
                 </div>
-                <Badge className="bg-[#0ECB81]/10 text-[#0ECB81] border-0 text-[10px] font-semibold">
+                <Badge className="bg-success/10 text-success border-0 text-[10px] font-semibold">
                   {tx.confirmations} / {tx.totalConfirmations}+
                 </Badge>
               </div>
 
-              <div className="h-2 bg-[#2B3139] rounded-full overflow-hidden">
+              <div className="h-2 bg-secondary rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-[#0ECB81] to-[#0ECB81]/80"
+                  className="h-full rounded-full bg-gradient-to-r from-success to-success/80"
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.min((tx.confirmations / tx.totalConfirmations) * 100, 100)}%` }}
                   transition={{ duration: 1.2, ease: 'easeOut' }}
                 />
               </div>
-              <p className="text-[10px] text-[#5E6673] mt-1.5">
+              <p className="text-[10px] text-muted-foreground mt-1.5">
                 {tx.confirmations >= tx.totalConfirmations
                   ? t('transactionDetail.fullyConfirmed')
                   : t('transactionDetail.confirming')
@@ -363,25 +368,25 @@ export default function TransactionDetailView() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.3 }}
         >
-          <Card className="bg-[#1E2329] border-[#2B3139]">
+          <Card className="bg-card border-border">
             <CardContent className="p-4 space-y-2.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-[#848E9C]" />
-                  <span className="text-xs text-[#848E9C]">{t('transactionDetail.timestamp')}</span>
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">{t('transactionDetail.timestamp')}</span>
                 </div>
                 <div className="text-end">
-                  <p className="text-xs text-[#EAECEF]">{formatTimestamp(tx.timestamp)}</p>
-                  <p className="text-[10px] text-[#5E6673]">{timeAgo(tx.timestamp, t)}</p>
+                  <p className="text-xs text-foreground">{formatTimestamp(tx.timestamp)}</p>
+                  <p className="text-[10px] text-muted-foreground">{timeAgo(tx.timestamp, t)}</p>
                 </div>
               </div>
-              <Separator className="bg-[#2B3139]/50" />
+              <Separator className="bg-border/50" />
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Link2 className="h-4 w-4 text-[#848E9C]" />
-                  <span className="text-xs text-[#848E9C]">{t('transactionDetail.blockNumber')}</span>
+                  <Link2 className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">{t('transactionDetail.blockNumber')}</span>
                 </div>
-                <span className="text-xs text-[#EAECEF] font-mono tabular-nums">#{tx.blockNumber.toLocaleString()}</span>
+                <span dir="ltr" className="text-xs text-foreground font-mono tabular-nums text-end">#{tx.blockNumber.toLocaleString(language === 'ar' ? 'ar' : undefined)}</span>
               </div>
             </CardContent>
           </Card>
@@ -393,13 +398,13 @@ export default function TransactionDetailView() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.35 }}
         >
-          <Card className="bg-[#1E2329] border-[#2B3139]">
+          <Card className="bg-card border-border">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-2">
-                <FileText className="h-4 w-4 text-[#848E9C]" />
-                <span className="text-xs text-[#848E9C]">{t('transactionDetail.memo')}</span>
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">{t('transactionDetail.memo')}</span>
               </div>
-              <p className="text-sm text-[#EAECEF]">{tx.memo}</p>
+              <p className="text-sm text-foreground">{tx.memo}</p>
             </CardContent>
           </Card>
         </motion.div>
@@ -412,7 +417,7 @@ export default function TransactionDetailView() {
         >
           <Button
             variant="outline"
-            className="w-full border-[#2B3139] text-[#F0B90B] hover:bg-[#F0B90B]/10 hover:border-[#F0B90B]/30 h-11 press-scale"
+            className="w-full border-border text-primary hover:bg-primary/10 hover:border-primary/30 h-11 press-scale"
           >
             <ExternalLink className="h-4 w-4 me-2" />
             {t('transactionDetail.viewOnExplorer')}

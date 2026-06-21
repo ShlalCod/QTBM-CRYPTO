@@ -33,10 +33,13 @@ interface NewsArticle {
   id: string;
   category: NewsCategory;
   title: string;
+  titleAr?: string;
   excerpt: string;
+  excerptAr?: string;
   source: string;
   sourceIcon: string;
   timestamp: string;
+  timestampAr?: string;
   readTime: string;
   views: number;
   comments: number;
@@ -58,14 +61,17 @@ const mockNews: NewsArticle[] = [
     id: '1',
     category: 'Breaking',
     title: 'Bitcoin Surges Past $70K as Institutional Demand Reaches Record High',
+    titleAr: 'البيتكوين يتخطى 70 ألف دولار مع وصول الطلب المؤسسي ل مستوى قياسي',
     excerpt: 'Major financial institutions continue to pour billions into Bitcoin ETFs, driving the price to new all-time highs and signaling mainstream adoption.',
+    excerptAr: 'تواصل المؤسسات المالية الكبرى ضخ مليارات الدولارات في صناديق البيتكوين، مما يدفع السعر إلى مستويات قياسية جديدة ويعكس التبني السائد.',
     source: 'CoinDesk',
     sourceIcon: '🔵',
     timestamp: '2h ago',
+    timestampAr: 'قبل ساعتين',
     readTime: '5 min',
     views: 28400,
     comments: 342,
-    gradient: 'from-[#F0B90B]/20 via-[#1E2329] to-[#0ECB81]/10',
+    gradient: 'from-primary/20 via-card to-success/10',
     featured: true,
     summary: 'Bitcoin has broken through the $70,000 resistance level for the first time, fueled by unprecedented institutional demand. BlackRock\'s IBIT ETF alone saw $2.1B in inflows this week, while Fidelity\'s FBTC recorded $1.8B. The total AUM across all spot Bitcoin ETFs now exceeds $55 billion. Analysts believe the upcoming halving event could push prices even higher as supply tightens.',
   },
@@ -73,118 +79,145 @@ const mockNews: NewsArticle[] = [
     id: '2',
     category: 'Market',
     title: 'Ethereum Layer 2 Solutions See 300% Growth in Daily Transactions',
+    titleAr: 'حلول الطبقة الثانية للإيثيريوم تسجل نمواً 300٪ في المعاملات اليومية',
     excerpt: 'Arbitrum, Optimism, and Base are leading the charge as L2 adoption accelerates across DeFi and gaming sectors.',
+    excerptAr: 'أربيترم وأوبتيميزم وبيس تتصدر القيادة مع تسارع تبني الطبقة الثانية في قطاعي DeFi والألعاب.',
     source: 'The Block',
     sourceIcon: '🟢',
     timestamp: '4h ago',
+    timestampAr: 'قبل ٤ ساعات',
     readTime: '4 min',
     views: 15600,
     comments: 189,
-    gradient: 'from-[#627EEA]/20 via-[#1E2329] to-[#1E2329]',
+    gradient: 'from-[#627EEA]/20 via-card to-card',
   },
   {
     id: '3',
     category: 'Regulation',
     title: 'SEC Approves New Framework for Crypto Asset Classification',
+    titleAr: 'هيئة الأوراق المالية تعتمد إطاراً جديداً لتصنيف الأصول الرقمية',
     excerpt: 'The new regulatory framework provides clearer guidelines for distinguishing between securities and commodities in the crypto space.',
+    excerptAr: 'يوفر الإطار التنظيمي الجديد إرشادات أوضح للتمييز بين الأوراق المالية والسلع في فضاء العملات الرقمية.',
     source: 'Bloomberg',
     sourceIcon: '🟡',
     timestamp: '6h ago',
+    timestampAr: 'قبل ٦ ساعات',
     readTime: '6 min',
     views: 12300,
     comments: 267,
-    gradient: 'from-[#F6465D]/20 via-[#1E2329] to-[#1E2329]',
+    gradient: 'from-destructive/20 via-card to-card',
   },
   {
     id: '4',
     category: 'Tech',
     title: 'Solana Launches Game-Changing State Compression for NFTs',
+    titleAr: 'سولانا تطلق ضغط الحالة الثوري لـ NFTs',
     excerpt: 'The new compression technology reduces NFT minting costs by 100x, making large-scale NFT projects economically viable on Solana.',
+    excerptAr: 'تقنية الضغط الجديدة تقلل تكاليف سك NFT بمقدار 100 مرة، مما يجعل مشاريع NFT واسعة النطاق مجدية اقتصادياً على سولانا.',
     source: 'Decrypt',
     sourceIcon: '🟣',
     timestamp: '8h ago',
+    timestampAr: 'قبل ٨ ساعات',
     readTime: '3 min',
     views: 9800,
     comments: 145,
-    gradient: 'from-[#9945FF]/20 via-[#1E2329] to-[#1E2329]',
+    gradient: 'from-[#9945FF]/20 via-card to-card',
   },
   {
     id: '5',
     category: 'Market',
     title: 'DeFi Total Value Locked Surpasses $200B Milestone',
+    titleAr: 'إجمالي القيمة المقفلة في DeFi يتخطى حاجز 200 مليار دولار',
     excerpt: 'The DeFi ecosystem reaches a new milestone as lending protocols and DEXs see renewed interest from institutional players.',
+    excerptAr: 'يبلغ نظام DeFi معلماً جديداً مع عودة اهتمام المؤسسات ببروتوكولات الإقراض والبورصات اللامركزية.',
     source: 'DeFi Pulse',
     sourceIcon: '🔵',
     timestamp: '10h ago',
+    timestampAr: 'قبل ١٠ ساعات',
     readTime: '4 min',
     views: 7600,
     comments: 98,
-    gradient: 'from-[#0ECB81]/20 via-[#1E2329] to-[#1E2329]',
+    gradient: 'from-success/20 via-card to-card',
   },
   {
     id: '6',
     category: 'Breaking',
     title: 'Major Bank Announces Crypto Custody Services for Retail Clients',
+    titleAr: 'بنك كبير يعلن خدمات حفظ العملات الرقمية للعملاء الأفراد',
     excerpt: 'One of the world\'s largest banks will offer Bitcoin and Ethereum custody directly to retail customers starting Q2.',
+    excerptAr: 'سيقدم أحد أكبر بنوك العالم خدمات حفظ البيتكوين والإيثيريوم مباشرة للعملاء الأفراد بدءاً من الربع الثاني.',
     source: 'Reuters',
     sourceIcon: '🟠',
     timestamp: '12h ago',
+    timestampAr: 'قبل ١٢ ساعة',
     readTime: '5 min',
     views: 34200,
     comments: 456,
-    gradient: 'from-[#F0B90B]/20 via-[#1E2329] to-[#1E2329]',
+    gradient: 'from-primary/20 via-card to-card',
   },
   {
     id: '7',
     category: 'Tech',
     title: 'Zero-Knowledge Proofs Enable Privacy-Preserving DeFi on Ethereum',
+    titleAr: 'أدلة المعرفة الصفرية تمكن DeFi الخاص على الإيثيريوم',
     excerpt: 'New ZK-rollup technology allows private transactions without compromising on security or decentralization.',
+    excerptAr: 'تقنية ZK-rollup الجديدة تسمح بمعاملات خاصة دون المساومة على الأمان أو اللامركزية.',
     source: 'CoinTelegraph',
     sourceIcon: '🔵',
     timestamp: '14h ago',
+    timestampAr: 'قبل ١٤ ساعة',
     readTime: '7 min',
     views: 5400,
     comments: 76,
-    gradient: 'from-[#8B5CF6]/20 via-[#1E2329] to-[#1E2329]',
+    gradient: 'from-[#8B5CF6]/20 via-card to-card',
   },
   {
     id: '8',
     category: 'Regulation',
     title: 'EU MiCA Regulations Take Effect: What It Means for Crypto Exchanges',
+    titleAr: 'لوائح MiCA الأوروبية تدخل حيز التنفيذ: ماذا يعني ذلك للبورصات؟',
     excerpt: 'Comprehensive crypto regulations now apply across all EU member states, setting a global benchmark for crypto oversight.',
+    excerptAr: 'لوائح شاملة للعملات الرقمية أصبحت سارية في جميع دول الاتحاد الأوروبي، مما يضع معياراً عالمياً للرقابة.',
     source: 'Financial Times',
     sourceIcon: '🟤',
     timestamp: '16h ago',
+    timestampAr: 'قبل ١٦ ساعة',
     readTime: '8 min',
     views: 8900,
     comments: 234,
-    gradient: 'from-[#F6465D]/20 via-[#1E2329] to-[#1E2329]',
+    gradient: 'from-destructive/20 via-card to-card',
   },
   {
     id: '9',
     category: 'Market',
     title: 'Memecoin Market Cap Reaches $80B as Retail Traders Return',
+    titleAr: 'القيمة السوقية للعملات الميمية تبلغ 80 مليار دولار مع عودة المتداولين الأفراد',
     excerpt: 'Dogecoin, Shiba Inu, and newer entrants like PEPE and WIF drive a memecoin renaissance that has divided the crypto community.',
+    excerptAr: 'دوجكوين وشيبا إينو ووافدون جدد مثل PEPE و WIF تقود نهضة العملات الميمية التي شقّت مجتمع العملات الرقمية.',
     source: 'CoinDesk',
     sourceIcon: '🔵',
     timestamp: '18h ago',
+    timestampAr: 'قبل ١٨ ساعة',
     readTime: '4 min',
     views: 19800,
     comments: 567,
-    gradient: 'from-[#F0B90B]/20 via-[#1E2329] to-[#1E2329]',
+    gradient: 'from-primary/20 via-card to-card',
   },
   {
     id: '10',
     category: 'Tech',
     title: 'Cardano Completes Chang Hard Fork, Enables On-Chain Governance',
+    titleAr: 'كاردانو تكمل هارد فورك تشانج وتفعّل الحوكمة على السلسلة',
     excerpt: 'The Chang upgrade marks Cardano\'s transition to a fully decentralized governance model with on-chain voting capabilities.',
+    excerptAr: 'يحدّث تشانج انتقال كاردانو إلى نموذج حوكمة لامركزي بالكامل مع إمكانيات التصويت على السلسلة.',
     source: 'Decrypt',
     sourceIcon: '🟣',
     timestamp: '20h ago',
+    timestampAr: 'قبل ٢٠ ساعة',
     readTime: '5 min',
     views: 6200,
     comments: 112,
-    gradient: 'from-[#0ECB81]/20 via-[#1E2329] to-[#1E2329]',
+    gradient: 'from-success/20 via-card to-card',
   },
 ];
 
@@ -197,16 +230,16 @@ const mockTrendingTopics: TrendingTopic[] = [
 ];
 
 const newsCategoryStripes: Record<NewsCategory, string> = {
-  Breaking: 'border-l-[3px] border-l-[#F6465D]',
-  Market: 'border-l-[3px] border-l-[#0ECB81]',
-  Regulation: 'border-l-[3px] border-l-[#848E9C]',
-  Tech: 'border-l-[3px] border-l-[#627EEA]',
+  Breaking: 'border-s-[3px] border-s-destructive',
+  Market: 'border-s-[3px] border-s-[#0ECB81]',
+  Regulation: 'border-s-[3px] border-s-muted-foreground',
+  Tech: 'border-s-[3px] border-s-[#627EEA]',
 };
 
 const categoryColors: Record<NewsCategory, string> = {
-  Breaking: 'bg-[#F6465D]/10 text-[#F6465D]',
-  Market: 'bg-[#0ECB81]/10 text-[#0ECB81]',
-  Regulation: 'bg-[#F0B90B]/10 text-[#F0B90B]',
+  Breaking: 'bg-destructive/10 text-destructive',
+  Market: 'bg-success/10 text-success',
+  Regulation: 'bg-primary/10 text-primary',
   Tech: 'bg-[#627EEA]/10 text-[#627EEA]',
 };
 
@@ -321,12 +354,21 @@ function FearGreedGauge({ value }: { value: number }) {
 }
 
 export default function NewsFeedView() {
-  const { goBack } = useAppStore();
+  const { goBack, isRTL, language } = useAppStore();
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'latest' | 'trending' | 'analysis'>('latest');
   const [expandedArticle, setExpandedArticle] = useState<string | null>(null);
   const [bookmarkedArticles, setBookmarkedArticles] = useState<Set<string>>(new Set());
   const [sentimentValue] = useState(72);
+
+  const articleTitle = (a: NewsArticle) => (language === 'ar' && a.titleAr ? a.titleAr : a.title);
+  const articleExcerpt = (a: NewsArticle) => (language === 'ar' && a.excerptAr ? a.excerptAr : a.excerpt);
+  const articleTime = (a: NewsArticle) => (language === 'ar' && a.timestampAr ? a.timestampAr : a.timestamp);
+  const categoryLabel = (c: NewsCategory) =>
+    c === 'Breaking' ? t('newsFeed.catBreaking')
+    : c === 'Market' ? t('newsFeed.catMarket')
+    : c === 'Regulation' ? t('newsFeed.catRegulation')
+    : t('newsFeed.catTech');
 
   const toggleBookmark = (id: string) => {
     setBookmarkedArticles(prev => {
@@ -343,22 +385,22 @@ export default function NewsFeedView() {
   };
 
   return (
-    <ScrollArea className="h-[calc(100vh-4rem)] lg:h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="p-4 max-w-2xl mx-auto">
         {/* Breaking News Banner */}
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 bg-[#F6465D]/10 border border-[#F6465D]/20 rounded-xl p-3 flex items-center gap-3 overflow-hidden"
+          className="mb-4 bg-destructive/10 border border-destructive/20 rounded-xl p-3 flex items-center gap-3 overflow-hidden"
         >
           <div className="flex items-center gap-2 shrink-0">
-            <div className="w-2 h-2 rounded-full bg-[#F6465D] animate-pulse" />
-            <span className="text-[10px] font-bold text-[#F6465D] uppercase tracking-wider">{t('newsFeed.breaking')}</span>
+            <div className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
+            <span className="text-[10px] font-bold text-destructive uppercase tracking-wider">{t('newsFeed.breaking')}</span>
           </div>
-          <div className="overflow-hidden flex-1">
+          <div className="overflow-hidden flex-1" dir="ltr">
             <motion.p
-              className="text-xs text-[#EAECEF] whitespace-nowrap"
-              animate={{ x: ['0%', '-50%'] }}
+              className="text-xs text-foreground whitespace-nowrap"
+              animate={{ x: isRTL ? ['0%', '50%'] : ['0%', '-50%'] }}
               transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
             >
               {t('newsFeed.breakingText')} • {t('newsFeed.breakingText')}
@@ -371,34 +413,35 @@ export default function NewsFeedView() {
           <Button
             variant="ghost"
             size="icon"
-            className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-9 w-9"
+            className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9"
             onClick={goBack}
+            aria-label={t('common.back')}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
           </Button>
           <div className="flex items-center gap-2">
-            <Newspaper className="h-5 w-5 text-[#F0B90B]" />
-            <h1 className="text-lg font-bold text-[#EAECEF]">{t('newsFeed.title')}</h1>
+            <Newspaper className="h-5 w-5 text-primary" />
+            <h1 className="text-lg font-bold text-foreground">{t('newsFeed.title')}</h1>
           </div>
         </div>
 
         {/* Market Sentiment Widget */}
-        <Card className="bg-[#1E2329]/80 backdrop-blur border-[#2B3139] mb-4">
+        <Card className="bg-card/80 backdrop-blur border-border mb-4">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <Activity className="h-4 w-4 text-[#F0B90B]" />
-                <span className="text-xs font-semibold text-[#EAECEF]">{t('newsFeed.marketSentiment')}</span>
+                <Activity className="h-4 w-4 text-primary" />
+                <span className="text-xs font-semibold text-foreground">{t('newsFeed.marketSentiment')}</span>
               </div>
               <div className="flex items-center gap-1">
-                <TrendingUp className="h-3 w-3 text-[#0ECB81]" />
-                <span className="text-[10px] text-[#0ECB81]">+5 (24h)</span>
+                <TrendingUp className="h-3 w-3 text-success" />
+                <span className="text-[10px] text-success">+5 (24h)</span>
               </div>
             </div>
             <div className="flex items-center justify-center">
               <FearGreedGauge value={sentimentValue} />
             </div>
-            <div className="flex justify-between text-[9px] text-[#5E6673] mt-1 px-4">
+            <div className="flex justify-between text-[10px] text-muted-foreground mt-1 px-4">
               <span>{t('newsFeed.extremeFear')}</span>
               <span>{t('newsFeed.neutral')}</span>
               <span>{t('newsFeed.extremeGreed')}</span>
@@ -407,7 +450,7 @@ export default function NewsFeedView() {
         </Card>
 
         {/* Tab Selector */}
-        <div className="flex bg-[#1E2329] rounded-lg p-1 mb-4">
+        <div className="flex bg-card rounded-lg p-1 mb-4">
           {([
             { id: 'latest' as const, label: t('newsFeed.latest') },
             { id: 'trending' as const, label: t('newsFeed.trending') },
@@ -417,8 +460,8 @@ export default function NewsFeedView() {
               key={tab.id}
               className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
                 activeTab === tab.id
-                  ? 'bg-[#2B3139] text-[#F0B90B]'
-                  : 'text-[#848E9C] hover:text-[#EAECEF]'
+                  ? 'bg-secondary text-primary'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
               onClick={() => setActiveTab(tab.id)}
             >
@@ -445,40 +488,41 @@ export default function NewsFeedView() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <Card className="bg-[#1E2329]/80 backdrop-blur border-[#2B3139] mb-4 overflow-hidden news-featured-overlay">
+                    <Card className="bg-card/80 backdrop-blur border-border mb-4 overflow-hidden news-featured-overlay">
                       <div className={`h-32 bg-gradient-to-r ${article.gradient} relative`}>
                         <div className="absolute inset-0 flex items-center justify-center">
                           <Newspaper className="h-12 w-12 text-white/10" />
                         </div>
-                        <div className="absolute top-3 left-3 flex items-center gap-2">
+                        <div className="absolute top-3 start-3 flex items-center gap-2">
                           <span className={`text-[10px] font-semibold px-2 py-0.5 rounded ${categoryColors[article.category]}`}>
-                            {article.category}
+                            {categoryLabel(article.category)}
                           </span>
-                          <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-[#F0B90B]/20 text-[#F0B90B] border border-[#F0B90B]/30">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/30">
                             {t('newsFeed.featuredLabel')}
                           </span>
                         </div>
                       </div>
                       <CardContent className="p-4">
-                        <h2 className="text-base font-bold text-[#EAECEF] mb-2 leading-tight">{article.title}</h2>
-                        <p className="text-xs text-[#848E9C] mb-3 line-clamp-2">{article.excerpt}</p>
+                        <h2 className="text-base font-bold text-foreground mb-2 leading-tight">{articleTitle(article)}</h2>
+                        <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{articleExcerpt(article)}</p>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <span className="text-sm">{article.sourceIcon}</span>
-                            <span className="text-[11px] text-[#848E9C]">{article.source}</span>
-                            <span className="text-[10px] text-[#5E6673]">•</span>
-                            <span className="text-[10px] text-[#5E6673] animate-fade-scale">{article.timestamp}</span>
-                            <span className="text-[10px] text-[#5E6673]">•</span>
-                            <span className="text-[10px] text-[#5E6673]">{article.readTime}</span>
+                            <span className="text-[11px] text-muted-foreground">{article.source}</span>
+                            <span className="text-[10px] text-muted-foreground">•</span>
+                            <span className="text-[10px] text-muted-foreground animate-fade-scale">{articleTime(article)}</span>
+                            <span className="text-[10px] text-muted-foreground">•</span>
+                            <span className="text-[10px] text-muted-foreground">{article.readTime}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => toggleBookmark(article.id)}
-                              className="p-1.5 text-[#5E6673] hover:text-[#F0B90B] transition-colors"
+                              className="p-1.5 text-muted-foreground hover:text-primary transition-colors rounded-md hover:bg-primary/10 h-9 w-9 flex items-center justify-center"
+                              aria-label={t('common.bookmark')}
                             >
-                              <Bookmark className={`h-4 w-4 transition-transform ${bookmarkedArticles.has(article.id) ? 'fill-[#F0B90B] text-[#F0B90B] bookmark-fill-anim' : ''}`} />
+                              <Bookmark className={`h-4 w-4 transition-transform ${bookmarkedArticles.has(article.id) ? 'fill-primary text-primary bookmark-fill-anim' : ''}`} />
                             </button>
-                            <button className="p-1.5 text-[#5E6673] hover:text-[#0ECB81] transition-all hover:-translate-y-0.5">
+                            <button className="p-1.5 text-muted-foreground hover:text-success transition-all hover:-translate-y-0.5 rounded-md hover:bg-success/10 h-9 w-9 flex items-center justify-center" aria-label={t('common.share')}>
                               <Share2 className="h-4 w-4" />
                             </button>
                           </div>
@@ -500,7 +544,7 @@ export default function NewsFeedView() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.04 }}
                     >
-                      <Card className={`bg-[#1E2329]/80 backdrop-blur border-[#2B3139] ${newsCategoryStripes[article.category] || ''}`}>
+                      <Card className={`bg-card/80 backdrop-blur border-border ${newsCategoryStripes[article.category] || ''}`}>
                         <CardContent className="p-4">
                           <div className="flex gap-3">
                             {/* Thumbnail */}
@@ -510,28 +554,28 @@ export default function NewsFeedView() {
                             {/* Content */}
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded ${categoryColors[article.category]}`}>
-                                  {article.category}
+                                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${categoryColors[article.category]}`}>
+                                  {categoryLabel(article.category)}
                                 </span>
                               </div>
-                              <h3 className="text-sm font-semibold text-[#EAECEF] leading-tight mb-1 line-clamp-2">
-                                {article.title}
+                              <h3 className="text-sm font-semibold text-foreground leading-tight mb-1 line-clamp-2">
+                                {articleTitle(article)}
                               </h3>
                               <div className="flex items-center gap-1.5">
                                 <span className="text-[10px]">{article.sourceIcon}</span>
-                                <span className="text-[10px] text-[#848E9C]">{article.source}</span>
-                                <span className="text-[10px] text-[#5E6673]">•</span>
-                                <span className="text-[10px] text-[#5E6673]">{article.timestamp}</span>
+                                <span className="text-[10px] text-muted-foreground">{article.source}</span>
+                                <span className="text-[10px] text-muted-foreground">•</span>
+                                <span className="text-[10px] text-muted-foreground">{articleTime(article)}</span>
                               </div>
                               {/* Stats */}
                               <div className="flex items-center gap-3 mt-2">
                                 <div className="flex items-center gap-1">
-                                  <Eye className="h-3 w-3 text-[#5E6673]" />
-                                  <span className="text-[10px] text-[#5E6673]">{formatViews(article.views)}</span>
+                                  <Eye className="h-3 w-3 text-muted-foreground" />
+                                  <span className="text-[10px] text-muted-foreground">{formatViews(article.views)}</span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                  <MessageSquare className="h-3 w-3 text-[#5E6673]" />
-                                  <span className="text-[10px] text-[#5E6673]">{article.comments}</span>
+                                  <MessageSquare className="h-3 w-3 text-muted-foreground" />
+                                  <span className="text-[10px] text-muted-foreground">{article.comments}</span>
                                 </div>
                               </div>
                             </div>
@@ -548,8 +592,8 @@ export default function NewsFeedView() {
                                   transition={{ duration: 0.2 }}
                                   className="overflow-hidden"
                                 >
-                                  <Separator className="bg-[#2B3139] my-3" />
-                                  <p className="text-xs text-[#848E9C] leading-relaxed">{article.summary}</p>
+                                  <Separator className="bg-secondary my-3" />
+                                  <p className="text-xs text-muted-foreground leading-relaxed">{article.summary}</p>
                                 </motion.div>
                               )}
                             </AnimatePresence>
@@ -559,7 +603,7 @@ export default function NewsFeedView() {
                           <div className="flex items-center justify-between mt-3">
                             <button
                               onClick={() => setExpandedArticle(expandedArticle === article.id ? null : article.id)}
-                              className="flex items-center gap-1 text-[10px] text-[#F0B90B] hover:text-[#F0B90B]/80 transition-colors"
+                              className="flex items-center gap-1 text-[10px] text-primary hover:text-primary/80 transition-colors"
                             >
                               {expandedArticle === article.id ? (
                                 <> <ChevronUp className="h-3 w-3" /> {t('newsFeed.showLess')}</>
@@ -570,11 +614,12 @@ export default function NewsFeedView() {
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => toggleBookmark(article.id)}
-                                className="p-1.5 text-[#5E6673] hover:text-[#F0B90B] transition-colors"
+                                className="p-1.5 text-muted-foreground hover:text-primary transition-colors rounded-md hover:bg-primary/10 h-9 w-9 flex items-center justify-center"
+                                aria-label={t('common.bookmark')}
                               >
-                                <Bookmark className={`h-3.5 w-3.5 transition-transform ${bookmarkedArticles.has(article.id) ? 'fill-[#F0B90B] text-[#F0B90B] bookmark-fill-anim' : ''}`} />
+                                <Bookmark className={`h-3.5 w-3.5 transition-transform ${bookmarkedArticles.has(article.id) ? 'fill-primary text-primary bookmark-fill-anim' : ''}`} />
                               </button>
-                              <button className="p-1.5 text-[#5E6673] hover:text-[#0ECB81] transition-all hover:-translate-y-0.5">
+                              <button className="p-1.5 text-muted-foreground hover:text-success transition-all hover:-translate-y-0.5 rounded-md hover:bg-success/10 h-9 w-9 flex items-center justify-center" aria-label={t('common.share')}>
                                 <Share2 className="h-3.5 w-3.5" />
                               </button>
                             </div>
@@ -590,37 +635,37 @@ export default function NewsFeedView() {
             {activeTab === 'trending' && (
               <div>
                 {/* Trending Topics */}
-                <Card className="bg-[#1E2329]/80 backdrop-blur border-[#2B3139] mb-4">
+                <Card className="bg-card/80 backdrop-blur border-border mb-4">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <Flame className="h-4 w-4 text-[#F6465D]" />
-                      <h3 className="text-sm font-semibold text-[#EAECEF]">{t('newsFeed.trendingTopics')}</h3>
+                      <Flame className="h-4 w-4 text-destructive" />
+                      <h3 className="text-sm font-semibold text-foreground">{t('newsFeed.trendingTopics')}</h3>
                     </div>
                     <div className="space-y-2">
                       {mockTrendingTopics.map((topic, index) => (
                         <motion.div
                           key={topic.tag}
-                          initial={{ opacity: 0, x: -12 }}
+                          initial={{ opacity: 0, x: isRTL ? 12 : -12 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.08 }}
-                          className="flex items-center justify-between p-2.5 rounded-lg bg-[#0B0E11]/40 hover:bg-[#2B3139]/60 transition-colors cursor-pointer"
+                          className="flex items-center justify-between p-2.5 rounded-lg bg-background/40 hover:bg-secondary/60 transition-colors cursor-pointer"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-7 h-7 rounded-full bg-[#2B3139] flex items-center justify-center">
-                              <Hash className="h-3.5 w-3.5 text-[#F0B90B]" />
+                            <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center">
+                              <Hash className="h-3.5 w-3.5 text-primary" />
                             </div>
                             <div>
-                              <p className="text-sm font-semibold text-[#EAECEF]">{topic.tag}</p>
-                              <p className="text-[10px] text-[#5E6673]">{formatViews(topic.posts)} {t('newsFeed.posts')}</p>
+                              <p className="text-sm font-semibold text-foreground">{topic.tag}</p>
+                              <p className="text-[10px] text-muted-foreground">{formatViews(topic.posts)} {t('newsFeed.posts')}</p>
                             </div>
                           </div>
                           {topic.coin && topic.priceChange !== undefined && (
                             <div className="flex items-center gap-1">
-                              <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-[#2B3139] text-[#848E9C]">
+                              <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-border text-muted-foreground">
                                 {topic.coin}
                               </Badge>
                               <span className={`text-[11px] font-semibold flex items-center gap-0.5 ${
-                                topic.priceChange >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'
+                                topic.priceChange >= 0 ? 'text-success' : 'text-destructive'
                               }`}>
                                 {topic.priceChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                                 {topic.priceChange >= 0 ? '+' : ''}{topic.priceChange}%
@@ -634,7 +679,7 @@ export default function NewsFeedView() {
                 </Card>
 
                 {/* Trending news (same list but sorted by views) */}
-                <h3 className="text-xs font-semibold text-[#5E6673] uppercase tracking-wider mb-2">{t('newsFeed.trendingNews')}</h3>
+                <h3 className="text-xs font-semibold text-muted-foreground tracking-wider mb-2">{t('newsFeed.trendingNews')}</h3>
                 <div className="space-y-3">
                   {[...mockNews].sort((a, b) => b.views - a.views).slice(0, 5).map((article, index) => (
                     <motion.div
@@ -643,7 +688,7 @@ export default function NewsFeedView() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
                     >
-                      <Card className={`bg-[#1E2329]/80 backdrop-blur border-[#2B3139] ${newsCategoryStripes[article.category] || ''}`}>
+                      <Card className={`bg-card/80 backdrop-blur border-border ${newsCategoryStripes[article.category] || ''}`}>
                         <CardContent className="p-4">
                           <div className="flex gap-3">
                             <div className={`w-16 h-16 rounded-lg bg-gradient-to-br ${article.gradient} flex items-center justify-center shrink-0`}>
@@ -651,20 +696,20 @@ export default function NewsFeedView() {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded ${categoryColors[article.category]}`}>
-                                  {article.category}
+                                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${categoryColors[article.category]}`}>
+                                  {categoryLabel(article.category)}
                                 </span>
                                 <div className="flex items-center gap-1 ms-auto">
-                                  <Eye className="h-3 w-3 text-[#5E6673]" />
-                                  <span className="text-[10px] text-[#5E6673]">{formatViews(article.views)}</span>
+                                  <Eye className="h-3 w-3 text-muted-foreground" />
+                                  <span className="text-[10px] text-muted-foreground">{formatViews(article.views)}</span>
                                 </div>
                               </div>
-                              <h3 className="text-sm font-semibold text-[#EAECEF] leading-tight line-clamp-2">{article.title}</h3>
+                              <h3 className="text-sm font-semibold text-foreground leading-tight line-clamp-2">{articleTitle(article)}</h3>
                               <div className="flex items-center gap-1.5 mt-1">
                                 <span className="text-[10px]">{article.sourceIcon}</span>
-                                <span className="text-[10px] text-[#848E9C]">{article.source}</span>
-                                <span className="text-[10px] text-[#5E6673]">•</span>
-                                <span className="text-[10px] text-[#5E6673]">{article.timestamp}</span>
+                                <span className="text-[10px] text-muted-foreground">{article.source}</span>
+                                <span className="text-[10px] text-muted-foreground">•</span>
+                                <span className="text-[10px] text-muted-foreground">{articleTime(article)}</span>
                               </div>
                             </div>
                           </div>

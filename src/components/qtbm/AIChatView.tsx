@@ -26,12 +26,12 @@ interface ChatMessage {
 }
 
 const quickQuestions = [
-  { key: 'whatIsBitcoin', label: 'What is Bitcoin?' },
-  { key: 'howToTrade', label: 'How to trade?' },
-  { key: 'securityTips', label: 'Security tips' },
-  { key: 'whatIsDeFi', label: 'What is DeFi?' },
-  { key: 'howToEarn', label: 'How to earn?' },
-  { key: 'feesExplained', label: 'Fees explained' },
+  { key: 'q1', labelKey: 'aiChat.q1' },
+  { key: 'q2', labelKey: 'aiChat.q2' },
+  { key: 'q3', labelKey: 'aiChat.q3' },
+  { key: 'q4', labelKey: 'aiChat.q4' },
+  { key: 'q5', labelKey: 'aiChat.q5' },
+  { key: 'q6', labelKey: 'aiChat.q6' },
 ];
 
 const SYSTEM_CONTEXT = `You are QTBM AI, a helpful assistant for the QTBM BANK crypto exchange platform. You help users with:
@@ -121,8 +121,8 @@ export default function AIChatView() {
     sendMessage(inputValue);
   };
 
-  const handleQuickQuestion = (question: string) => {
-    sendMessage(question);
+  const handleQuickQuestion = (questionKey: string) => {
+    sendMessage(t(questionKey));
   };
 
   const clearChat = () => {
@@ -139,29 +139,29 @@ export default function AIChatView() {
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
-
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] lg:h-[calc(100vh-4rem)]">
+    <div className="flex flex-col h-[calc(100dvh-7rem)] lg:h-[calc(100dvh-4rem)]">
       {/* Header */}
-      <div className="shrink-0 flex items-center justify-between px-4 py-3 border-b border-[#2B3139] bg-[#0B0E11]/80 backdrop-blur-sm">
+      <div className="shrink-0 flex items-center justify-between px-4 py-3 border-b border-border bg-background/80 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
-            className="text-[#848E9C] hover:text-[#EAECEF] hover:bg-[#2B3139] h-8 w-8"
+            aria-label={t('actions.back')}
+            className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 w-9"
             onClick={goBack}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="rtl:scale-x-[-1] h-5 w-5 [dir=rtl]:rotate-180" />
           </Button>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#F0B90B] to-[#F0B90B]/60 flex items-center justify-center">
-              <Sparkles className="h-4 w-4 text-[#0B0E11]" />
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+              <Sparkles className="h-4 w-4 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-sm font-semibold text-[#EAECEF]">{t('aiChat.title')}</h1>
+              <h1 className="text-sm font-semibold text-foreground">{t('aiChat.title')}</h1>
               <div className="flex items-center gap-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#0ECB81] animate-pulse" />
-                <span className="text-[10px] text-[#0ECB81]">{t('aiChat.online')}</span>
+                <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                <span className="text-[10px] text-success">{t('aiChat.online')}</span>
               </div>
             </div>
           </div>
@@ -169,7 +169,8 @@ export default function AIChatView() {
         <Button
           variant="ghost"
           size="icon"
-          className="text-[#848E9C] hover:text-[#F6465D] hover:bg-[#F6465D]/10 h-8 w-8"
+          aria-label={t('aiChat.clearChat')}
+          className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-9 w-9"
           onClick={clearChat}
           title={t('aiChat.clearChat')}
         >
@@ -190,29 +191,29 @@ export default function AIChatView() {
               className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {msg.role === 'assistant' && (
-                <div className="w-7 h-7 shrink-0 rounded-full bg-gradient-to-br from-[#F0B90B] to-[#F0B90B]/60 flex items-center justify-center mt-1">
-                  <Bot className="h-3.5 w-3.5 text-[#0B0E11]" />
+                <div className="w-7 h-7 shrink-0 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mt-1">
+                  <Bot className="h-3.5 w-3.5 text-primary-foreground" />
                 </div>
               )}
               <div
                 className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
                   msg.role === 'user'
-                    ? 'bg-[#F0B90B] text-[#0B0E11] rounded-br-md'
-                    : 'bg-[#1E2329] border border-[#2B3139]/60 text-[#EAECEF] rounded-bl-md glass-card'
+                    ? 'bg-primary text-primary-foreground rounded-br-md'
+                    : 'bg-card border border-border/60 text-foreground rounded-bl-md glass-card'
                 }`}
               >
                 <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                 <p
                   className={`text-[10px] mt-1 ${
-                    msg.role === 'user' ? 'text-[#0B0E11]/50' : 'text-[#5E6673]'
+                    msg.role === 'user' ? 'text-primary-foreground/50' : 'text-muted-foreground'
                   }`}
                 >
                   {formatTime(msg.timestamp)}
                 </p>
               </div>
               {msg.role === 'user' && (
-                <div className="w-7 h-7 shrink-0 rounded-full bg-[#2B3139] flex items-center justify-center mt-1">
-                  <User className="h-3.5 w-3.5 text-[#848E9C]" />
+                <div className="w-7 h-7 shrink-0 rounded-full bg-secondary flex items-center justify-center mt-1">
+                  <User className="h-3.5 w-3.5 text-muted-foreground" />
                 </div>
               )}
             </motion.div>
@@ -226,14 +227,14 @@ export default function AIChatView() {
             animate={{ opacity: 1, y: 0 }}
             className="flex gap-2 justify-start"
           >
-            <div className="w-7 h-7 shrink-0 rounded-full bg-gradient-to-br from-[#F0B90B] to-[#F0B90B]/60 flex items-center justify-center mt-1">
-              <Bot className="h-3.5 w-3.5 text-[#0B0E11]" />
+            <div className="w-7 h-7 shrink-0 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mt-1">
+              <Bot className="h-3.5 w-3.5 text-primary-foreground" />
             </div>
-            <div className="bg-[#1E2329] border border-[#2B3139]/60 rounded-2xl rounded-bl-md px-4 py-3 glass-card">
+            <div className="bg-card border border-border/60 rounded-2xl rounded-bl-md px-4 py-3 glass-card">
               <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-[#F0B90B] animate-bounce" style={{ animationDelay: '0ms' }} />
-                <div className="w-2 h-2 rounded-full bg-[#F0B90B] animate-bounce" style={{ animationDelay: '150ms' }} />
-                <div className="w-2 h-2 rounded-full bg-[#F0B90B] animate-bounce" style={{ animationDelay: '300ms' }} />
+                <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
             </div>
           </motion.div>
@@ -247,17 +248,17 @@ export default function AIChatView() {
             transition={{ delay: 0.3 }}
             className="pt-2"
           >
-            <p className="text-[10px] text-[#5E6673] uppercase tracking-wider mb-2 font-semibold">
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2 font-semibold">
               {t('aiChat.quickQuestions')}
             </p>
             <div className="flex flex-wrap gap-2">
               {quickQuestions.map((q) => (
                 <button
                   key={q.key}
-                  onClick={() => handleQuickQuestion(q.label)}
-                  className="text-xs px-3 py-1.5 rounded-full bg-[#1E2329] border border-[#2B3139] text-[#848E9C] hover:text-[#F0B90B] hover:border-[#F0B90B]/30 transition-all duration-200 hover:bg-[#2B3139]"
+                  onClick={() => handleQuickQuestion(q.labelKey)}
+                  className="text-xs px-3 py-1.5 rounded-full bg-card border border-border text-muted-foreground hover:text-primary hover:border-primary/30 transition-all duration-200 hover:bg-secondary"
                 >
-                  {q.label}
+                  {t(q.labelKey)}
                 </button>
               ))}
             </div>
@@ -266,7 +267,7 @@ export default function AIChatView() {
       </div>
 
       {/* Input Area */}
-      <div className="shrink-0 border-t border-[#2B3139] bg-[#0B0E11]/80 backdrop-blur-sm p-3">
+      <div className="shrink-0 border-t border-border bg-background/80 backdrop-blur-sm p-3">
         <form onSubmit={handleSubmit} className="flex items-center gap-2">
           <div className="flex-1 relative">
             <Input
@@ -275,13 +276,14 @@ export default function AIChatView() {
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={t('aiChat.placeholder')}
               disabled={isLoading}
-              className="bg-[#1E2329] border-[#2B3139] text-[#EAECEF] placeholder:text-[#5E6673] h-10 text-sm pe-10 focus:border-[#F0B90B] focus:ring-[#F0B90B]/20 rounded-xl"
+              className="bg-card border-border text-foreground placeholder:text-muted-foreground h-10 text-sm pe-10 focus:border-primary focus:ring-primary/20 rounded-xl"
             />
           </div>
           <Button
             type="submit"
             disabled={!inputValue.trim() || isLoading}
-            className="gradient-yellow hover:opacity-90 text-[#0B0E11] font-semibold h-10 w-10 p-0 rounded-xl shadow-md shadow-[#F0B90B]/20 transition-all duration-200"
+            aria-label={t('actions.send')}
+            className="gradient-yellow hover:opacity-90 text-primary-foreground font-semibold h-10 w-10 p-0 rounded-xl shadow-md shadow-primary/20 transition-all duration-200"
           >
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -290,7 +292,7 @@ export default function AIChatView() {
             )}
           </Button>
         </form>
-        <p className="text-[9px] text-[#3E444D] mt-1.5 text-center">
+        <p className="text-[10px] text-muted-foreground mt-1.5 text-center">
           {t('aiChat.disclaimer')}
         </p>
       </div>
