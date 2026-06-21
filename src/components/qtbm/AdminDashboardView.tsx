@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useAuth } from '@/lib/auth-context';
 import { useTranslation } from '@/lib/i18n';
 import { formatNumber } from '@/lib/mock-data';
 import {
@@ -12,7 +13,6 @@ import {
   DollarSign,
   Shield,
   Search,
-  ChevronDown,
   CheckCircle2,
   XCircle,
   Clock,
@@ -30,77 +30,321 @@ import {
   Ban,
   FileText,
   Megaphone,
+  X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { toast } from 'sonner';
+import {
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  addDoc,
+  query,
+  where,
+  limit,
+  serverTimestamp,
+} from 'firebase/firestore';
+import { firestore } from '@/lib/firestore';
 
-// Mock data for admin dashboard
-const statsCards = [
-  { titleKey: 'admin.totalUsers', value: '284,592', change: '+12.5%', positive: true, icon: Users, color: 'text-success', bgGradient: 'from-success/10 to-success/5' },
-  { titleKey: 'admin.volume24h', value: '$1.82B', change: '+8.3%', positive: true, icon: TrendingUp, color: 'text-primary', bgGradient: 'from-primary/10 to-primary/5' },
-  { titleKey: 'admin.activeOrders', value: '42,891', change: '-2.1%', positive: false, icon: Activity, color: 'text-success', bgGradient: 'from-success/10 to-success/5' },
-  { titleKey: 'admin.platformRevenue', value: '$4.2M', change: '+18.7%', positive: true, icon: DollarSign, color: 'text-primary', bgGradient: 'from-primary/10 to-primary/5' },
-];
+// Types for real data
+interface AdminUser {
+  uid: string;
+  email: string;
+  displayName: string | null;
+  role: string;
+  status: string;
+  kycStatus: string;
+  createdAt: any;
+}
 
-const mockUsers = [
-  { id: '1', name: 'Ahmed Al-Rashid', email: 'ahmed@example.com', avatar: 'A', kycStatus: 'verified', role: 'user', status: 'active', lastActive: '2 min ago' },
-  { id: '2', name: 'Sarah Chen', email: 'sarah.chen@example.com', avatar: 'S', kycStatus: 'pending', role: 'user', status: 'active', lastActive: '15 min ago' },
-  { id: '3', name: 'Mohammed Hassan', email: 'mohammed@example.com', avatar: 'M', kycStatus: 'verified', role: 'user', status: 'suspended', lastActive: '3 days ago' },
-  { id: '4', name: 'Elena Popov', email: 'elena.p@example.com', avatar: 'E', kycStatus: 'rejected', role: 'user', status: 'active', lastActive: '1 hour ago' },
-  { id: '5', name: 'James Wilson', email: 'j.wilson@example.com', avatar: 'J', kycStatus: 'verified', role: 'moderator', status: 'active', lastActive: '5 min ago' },
-  { id: '6', name: 'Yuki Tanaka', email: 'yuki.t@example.com', avatar: 'Y', kycStatus: 'pending', role: 'user', status: 'active', lastActive: '30 min ago' },
-];
+interface AdminKYC {
+  id: string;
+  uid: string;
+  status: string;
+  level: string;
+  [key: string]: any;
+}
 
-const mockFlaggedOrders = [
-  { id: 'FO1', user: 'Ahmed Al-Rashid', pair: 'BTCUSDT', side: 'buy', amount: '$2.5M', reasonKey: 'admin.reasonLargeVolume', time: '10 min ago' },
-  { id: 'FO2', user: 'Elena Popov', pair: 'ETHUSDT', side: 'sell', amount: '$890K', reasonKey: 'admin.reasonRapidSuccessive', time: '25 min ago' },
-  { id: 'FO3', user: 'Yuki Tanaka', pair: 'SOLUSDT', side: 'buy', amount: '$450K', reasonKey: 'admin.reasonNewAccount', time: '1 hour ago' },
-];
+interface AdminAnnouncement {
+  id: string;
+  title: string;
+  titleAr?: string;
+  body?: string;
+  bodyAr?: string;
+  type: string;
+  status: string;
+  createdAt: any;
+}
 
-const mockKYCQueue = [
-  { id: 'K1', name: 'Fatima Al-Zahra', docType: 'National ID + Selfie', submittedDate: '2024-01-15', country: 'Saudi Arabia' },
-  { id: 'K2', name: 'Chen Wei Ming', docType: 'Passport + Proof of Address', submittedDate: '2024-01-15', country: 'Singapore' },
-  { id: 'K3', name: 'Alex Petrov', docType: 'Driver License + Selfie', submittedDate: '2024-01-14', country: 'Russia' },
-  { id: 'K4', name: 'Maria Garcia', docType: 'National ID + Selfie', submittedDate: '2024-01-14', country: 'Spain' },
-];
+interface AdminTrade {
+  tradeId: string;
+  userId: string;
+  symbol: string;
+  side: string;
+  quantity: number;
+  price: number;
+  status: string;
+  createdAt: any;
+}
 
-const systemHealth = [
-  { nameKey: 'admin.metricApiUptime', value: 99.97, unit: '%', status: 'healthy' as const, icon: Server },
-  { nameKey: 'admin.metricAvgResponse', value: 42, unit: 'ms', status: 'healthy' as const, icon: Zap },
-  { nameKey: 'admin.metricWebsocket', value: 12847, unit: '', status: 'healthy' as const, icon: Wifi },
-  { nameKey: 'admin.metricDatabaseSize', value: 78, unit: '%', status: 'warning' as const, icon: Database },
-];
-
-const mockAuditLogs = [
-  { id: 'AL1', timestamp: '2024-01-15 12:30:15', admin: 'Admin_QTBM', actionKey: 'admin.actionSuspendUser', target: 'mohammed@example.com', result: 'success' },
-  { id: 'AL2', timestamp: '2024-01-15 12:15:08', admin: 'Admin_QTBM', actionKey: 'admin.actionApproveKyc', target: 'ahmed@example.com', result: 'success' },
-  { id: 'AL3', timestamp: '2024-01-15 11:45:22', admin: 'Mod_James', actionKey: 'admin.actionFlagOrder', target: 'Order #FO2', result: 'success' },
-  { id: 'AL4', timestamp: '2024-01-15 11:30:00', admin: 'Admin_QTBM', actionKey: 'admin.actionUpdateAnnouncement', target: 'ANN-003', result: 'success' },
-  { id: 'AL5', timestamp: '2024-01-15 10:00:00', admin: 'Admin_QTBM', actionKey: 'admin.actionRejectKyc', target: 'elena.p@example.com', result: 'success' },
-  { id: 'AL6', timestamp: '2024-01-14 18:22:10', admin: 'Mod_James', actionKey: 'admin.actionFreezeWithdrawal', target: 'user_x8f2k', result: 'success' },
-  { id: 'AL7', timestamp: '2024-01-14 16:45:33', admin: 'Admin_QTBM', actionKey: 'admin.actionSystemConfig', target: 'Trading Fee', result: 'success' },
-  { id: 'AL8', timestamp: '2024-01-14 14:10:00', admin: 'Admin_QTBM', actionKey: 'admin.actionCreateAnnouncement', target: 'ANN-004', result: 'success' },
-];
-
-const mockAnnouncements = [
-  { id: 'ANN-001', title: 'Scheduled Maintenance - Jan 20', type: 'system', date: '2024-01-15', status: 'active' },
-  { id: 'ANN-002', title: 'New Trading Pairs Available', type: 'promotion', date: '2024-01-14', status: 'active' },
-  { id: 'ANN-003', title: 'Enhanced Security Measures', type: 'security', date: '2024-01-13', status: 'active' },
-  { id: 'ANN-004', title: 'QTBM Earn - 12% APY on BNB', type: 'promotion', date: '2024-01-12', status: 'expired' },
-];
+interface AuditLog {
+  id: string;
+  admin: string;
+  action: string;
+  target: string;
+  result: string;
+  timestamp: any;
+}
 
 export default function AdminDashboardView() {
   const { goBack } = useAppStore();
+  const { firebaseUser, profile } = useAuth();
   const { t } = useTranslation();
+
+  // State
   const [userSearch, setUserSearch] = useState('');
   const [orderFilter, setOrderFilter] = useState<'all' | 'pending' | 'flagged'>('all');
+  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [kycQueue, setKycQueue] = useState<AdminKYC[]>([]);
+  const [announcements, setAnnouncements] = useState<AdminAnnouncement[]>([]);
+  const [recentTrades, setRecentTrades] = useState<AdminTrade[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [stats, setStats] = useState({ totalUsers: 0, totalTrades: 0, pendingKYC: 0, activeAnnouncements: 0 });
+  const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
+  const [newAnnouncement, setNewAnnouncement] = useState({ title: '', body: '', type: 'system' });
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  const filteredUsers = mockUsers.filter(u =>
-    u.name.toLowerCase().includes(userSearch.toLowerCase()) ||
-    u.email.toLowerCase().includes(userSearch.toLowerCase())
+  // Load all admin data from Firestore
+  const loadAdminData = useCallback(async () => {
+    if (!firebaseUser || profile?.role !== 'admin') return;
+    setLoading(true);
+    try {
+      // Load users
+      const usersSnap = await getDocs(query(collection(firestore, 'users'), limit(100)));
+      const usersData = usersSnap.docs.map(d => ({ uid: d.id, ...d.data() } as AdminUser));
+      setUsers(usersData);
+
+      // Load pending KYC
+      const kycSnap = await getDocs(query(collection(firestore, 'kyc'), where('status', '==', 'pending'), limit(50)));
+      const kycData = kycSnap.docs.map(d => ({ id: d.id, ...d.data() } as AdminKYC));
+      setKycQueue(kycData);
+
+      // Load announcements
+      const annSnap = await getDocs(query(collection(firestore, 'public'), where('type', '==', 'announcement'), limit(50)));
+      const annData = annSnap.docs.map(d => ({ id: d.id, ...d.data() } as AdminAnnouncement));
+      setAnnouncements(annData);
+
+      // Load recent trades
+      const tradesSnap = await getDocs(query(collection(firestore, 'trades'), limit(20)));
+      const tradesData = tradesSnap.docs.map(d => ({ tradeId: d.id, ...d.data() } as AdminTrade));
+      setRecentTrades(tradesData);
+
+      // Load audit logs
+      const logsSnap = await getDocs(query(collection(firestore, 'admin'), limit(50)));
+      const logsData = logsSnap.docs.map(d => ({ id: d.id, ...d.data() } as AuditLog));
+      setAuditLogs(logsData);
+
+      // Calculate stats
+      setStats({
+        totalUsers: usersData.length,
+        totalTrades: tradesData.length,
+        pendingKYC: kycData.length,
+        activeAnnouncements: annData.filter(a => a.status === 'active').length,
+      });
+    } catch (err) {
+      console.error('Admin data load failed:', err);
+      toast.error('فشل تحميل بيانات الأدمن');
+    } finally {
+      setLoading(false);
+    }
+  }, [firebaseUser, profile]);
+
+  useEffect(() => {
+    loadAdminData();
+  }, [loadAdminData]);
+
+  // ─── Real admin actions ─────────────────────────────────────────────
+
+  const writeAuditLog = async (action: string, target: string, result: 'success' | 'failed') => {
+    if (!firebaseUser) return;
+    try {
+      await addDoc(collection(firestore, 'admin'), {
+        admin: firebaseUser.uid,
+        adminEmail: profile?.email || 'unknown',
+        action,
+        target,
+        result,
+        timestamp: serverTimestamp(),
+      });
+    } catch (err) {
+      console.error('Failed to write audit log:', err);
+    }
+  };
+
+  const handleSuspendUser = async (user: AdminUser) => {
+    setActionLoading(user.uid);
+    try {
+      await updateDoc(doc(firestore, 'users', user.uid), {
+        status: 'suspended',
+        updatedAt: serverTimestamp(),
+      });
+      await writeAuditLog('suspend_user', user.email || user.uid, 'success');
+      toast.success(`تم تعليق المستخدم: ${user.displayName || user.email}`);
+      loadAdminData(); // refresh
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'فشل التعليق';
+      toast.error(msg);
+      await writeAuditLog('suspend_user', user.email || user.uid, 'failed');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleReactivateUser = async (user: AdminUser) => {
+    setActionLoading(user.uid);
+    try {
+      await updateDoc(doc(firestore, 'users', user.uid), {
+        status: 'active',
+        updatedAt: serverTimestamp(),
+      });
+      await writeAuditLog('reactivate_user', user.email || user.uid, 'success');
+      toast.success(`تم إعادة تفعيل المستخدم: ${user.displayName || user.email}`);
+      loadAdminData();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'فشل إعادة التفعيل';
+      toast.error(msg);
+      await writeAuditLog('reactivate_user', user.email || user.uid, 'failed');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleApproveKYC = async (kyc: AdminKYC) => {
+    setActionLoading(kyc.id);
+    try {
+      // Update KYC document
+      await updateDoc(doc(firestore, 'kyc', kyc.id), {
+        status: 'approved',
+        reviewedBy: firebaseUser?.uid,
+        reviewedAt: serverTimestamp(),
+      });
+      // Update user profile
+      await updateDoc(doc(firestore, 'users', kyc.uid), {
+        kycStatus: 'approved',
+        status: 'kyc_approved',
+        updatedAt: serverTimestamp(),
+      });
+      await writeAuditLog('approve_kyc', kyc.id, 'success');
+      toast.success(`تم اعتماد KYC: ${kyc.id}`);
+      loadAdminData();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'فشل الاعتماد';
+      toast.error(msg);
+      await writeAuditLog('approve_kyc', kyc.id, 'failed');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleRejectKYC = async (kyc: AdminKYC) => {
+    setActionLoading(kyc.id);
+    try {
+      await updateDoc(doc(firestore, 'kyc', kyc.id), {
+        status: 'rejected',
+        reviewedBy: firebaseUser?.uid,
+        reviewedAt: serverTimestamp(),
+      });
+      await updateDoc(doc(firestore, 'users', kyc.uid), {
+        kycStatus: 'rejected',
+        updatedAt: serverTimestamp(),
+      });
+      await writeAuditLog('reject_kyc', kyc.id, 'success');
+      toast.success(`تم رفض KYC: ${kyc.id}`);
+      loadAdminData();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'فشل الرفض';
+      toast.error(msg);
+      await writeAuditLog('reject_kyc', kyc.id, 'failed');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleCreateAnnouncement = async () => {
+    if (!newAnnouncement.title.trim()) {
+      toast.error('العنوان مطلوب');
+      return;
+    }
+    setActionLoading('create-ann');
+    try {
+      await addDoc(collection(firestore, 'public'), {
+        title: newAnnouncement.title,
+        body: newAnnouncement.body,
+        type: 'announcement',
+        announcementType: newAnnouncement.type,
+        status: 'active',
+        createdAt: serverTimestamp(),
+        createdBy: firebaseUser?.uid,
+      });
+      await writeAuditLog('create_announcement', newAnnouncement.title, 'success');
+      toast.success('تم إنشاء الإعلان بنجاح');
+      setShowAnnouncementModal(false);
+      setNewAnnouncement({ title: '', body: '', type: 'system' });
+      loadAdminData();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'فشل الإنشاء';
+      toast.error(msg);
+      await writeAuditLog('create_announcement', newAnnouncement.title, 'failed');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleDeleteAnnouncement = async (ann: AdminAnnouncement) => {
+    if (!confirm(`حذف الإعلان: ${ann.title}؟`)) return;
+    setActionLoading(ann.id);
+    try {
+      await deleteDoc(doc(firestore, 'public', ann.id));
+      await writeAuditLog('delete_announcement', ann.id, 'success');
+      toast.success('تم حذف الإعلان');
+      loadAdminData();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'فشل الحذف';
+      toast.error(msg);
+      await writeAuditLog('delete_announcement', ann.id, 'failed');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  // Filtered users based on search
+  const filteredUsers = users.filter(u =>
+    (u.displayName || '').toLowerCase().includes(userSearch.toLowerCase()) ||
+    (u.email || '').toLowerCase().includes(userSearch.toLowerCase())
   );
+
+  // Stats cards (real data)
+  const statsCards = [
+    { titleKey: 'admin.totalUsers', value: formatNumber(stats.totalUsers), change: '', positive: true, icon: Users, color: 'text-success', bgGradient: 'from-success/10 to-success/5' },
+    { titleKey: 'admin.activeOrders', value: formatNumber(stats.totalTrades), change: '', positive: true, icon: Activity, color: 'text-primary', bgGradient: 'from-primary/10 to-primary/5' },
+    { titleKey: 'admin.pendingCount', value: formatNumber(stats.pendingKYC), change: '', positive: false, icon: Shield, color: 'text-primary', bgGradient: 'from-primary/10 to-primary/5' },
+    { titleKey: 'admin.announcements', value: formatNumber(stats.activeAnnouncements), change: '', positive: true, icon: Megaphone, color: 'text-primary', bgGradient: 'from-primary/10 to-primary/5' },
+  ];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -118,13 +362,10 @@ export default function AdminDashboardView() {
             </Badge>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground hover:bg-secondary h-9 text-xs">
-            <Bell className="h-4 w-4 me-1" />
-            <span className="hidden sm:inline">{t('admin.alerts')}</span>
-            <Badge className="ms-1 bg-destructive text-white text-[10px] px-1 py-0 h-3 min-w-3 border-0">3</Badge>
-          </Button>
-        </div>
+        <Button variant="ghost" size="sm" onClick={loadAdminData} className="text-xs">
+          <Bell className="h-4 w-4 me-1" />
+          {t('admin.alerts')}
+        </Button>
       </div>
 
       <ScrollArea className="flex-1">
@@ -134,17 +375,9 @@ export default function AdminDashboardView() {
             {statsCards.map((stat) => {
               const Icon = stat.icon;
               return (
-                <div
-                  key={stat.titleKey}
-                  className={`bg-gradient-to-br ${stat.bgGradient} from-30% border border-border rounded-lg p-4`}
-                >
+                <div key={stat.titleKey} className={`bg-gradient-to-br ${stat.bgGradient} from-30% border border-border rounded-lg p-4`}>
                   <div className="flex items-center justify-between mb-2">
                     <Icon className={`h-5 w-5 ${stat.color}`} />
-                    <Badge className={`text-[10px] px-1.5 py-0 h-4 border-0 font-medium ${
-                      stat.positive ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
-                    }`}>
-                      {stat.change}
-                    </Badge>
                   </div>
                   <p className="text-xl font-bold text-foreground tabular-nums">{stat.value}</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">{t(stat.titleKey)}</p>
@@ -159,7 +392,7 @@ export default function AdminDashboardView() {
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-muted-foreground" />
                 <span className="text-xs font-semibold text-muted-foreground">{t('admin.usersManagement')}</span>
-                <Badge className="bg-secondary text-muted-foreground border-0 text-[10px] px-1.5 py-0 h-4">{mockUsers.length}</Badge>
+                <Badge className="bg-secondary text-muted-foreground border-0 text-[10px] px-1.5 py-0 h-4">{users.length}</Badge>
               </div>
               <div className="relative w-48">
                 <Search className="absolute start-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
@@ -180,147 +413,123 @@ export default function AdminDashboardView() {
                     <th className="text-center py-2 px-3 font-medium">{t('admin.kyc')}</th>
                     <th className="text-center py-2 px-3 font-medium">{t('admin.role')}</th>
                     <th className="text-center py-2 px-3 font-medium">{t('admin.status')}</th>
-                    <th className="text-end py-2 px-3 font-medium">{t('admin.lastActive')}</th>
                     <th className="text-center py-2 px-3 font-medium">{t('admin.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map((user) => (
-                    <tr key={user.id} className="border-b border-border/30 hover:bg-secondary/30">
-                      <td className="py-2.5 px-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 bg-primary rounded-full flex items-center justify-center shrink-0">
-                            <span className="text-primary-foreground text-[10px] font-bold">{user.avatar}</span>
+                  {filteredUsers.length === 0 ? (
+                    <tr><td colSpan={6} className="text-center py-4 text-muted-foreground">{t('admin.noUsers')}</td></tr>
+                  ) : (
+                    filteredUsers.map((user) => (
+                      <tr key={user.uid} className="border-b border-border/30 hover:bg-secondary/30">
+                        <td className="py-2.5 px-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 bg-primary rounded-full flex items-center justify-center shrink-0">
+                              <span className="text-primary-foreground text-[10px] font-bold">{(user.displayName || user.email || '?')[0].toUpperCase()}</span>
+                            </div>
+                            <span className="text-foreground font-medium">{user.displayName || '—'}</span>
                           </div>
-                          <span className="text-foreground font-medium">{user.name}</span>
-                        </div>
-                      </td>
-                      <td className="py-2.5 px-3 text-muted-foreground">{user.email}</td>
-                      <td className="py-2.5 px-3 text-center">
-                        <Badge className={`text-[10px] px-1.5 py-0 h-4 border-0 font-medium ${
-                          user.kycStatus === 'verified' ? 'bg-success/10 text-success' :
-                          user.kycStatus === 'pending' ? 'bg-primary/10 text-primary' :
-                          'bg-destructive/10 text-destructive'
-                        }`}>
-                          {user.kycStatus === 'verified' ? <CheckCircle2 className="h-2.5 w-2.5 me-0.5" /> :
-                           user.kycStatus === 'pending' ? <Clock className="h-2.5 w-2.5 me-0.5" /> :
-                           <XCircle className="h-2.5 w-2.5 me-0.5" />}
-                          {user.kycStatus === 'verified' ? t('admin.kycStatusVerified') :
-                           user.kycStatus === 'pending' ? t('admin.kycStatusPending') :
-                           t('admin.kycStatusRejected')}
-                        </Badge>
-                      </td>
-                      <td className="py-2.5 px-3 text-center">
-                        <Badge className={`text-[10px] px-1.5 py-0 h-4 border-0 font-medium ${
-                          user.role === 'moderator' ? 'bg-primary/10 text-primary' : 'bg-secondary text-muted-foreground'
-                        }`}>
-                          {user.role === 'moderator' ? t('admin.roleModerator') :
-                           user.role === 'admin' ? t('admin.roleAdmin') :
-                           t('admin.roleUser')}
-                        </Badge>
-                      </td>
-                      <td className="py-2.5 px-3 text-center">
-                        <Badge className={`text-[10px] px-1.5 py-0 h-4 border-0 font-medium ${
-                          user.status === 'active' ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
-                        }`}>
-                          {user.status === 'active' ? t('admin.userStatusActive') : t('admin.userStatusSuspended')}
-                        </Badge>
-                      </td>
-                      <td className="py-2.5 px-3 text-end text-muted-foreground">{user.lastActive}</td>
-                      <td className="py-2.5 px-3">
-                        <div className="flex items-center justify-center gap-1">
-                          {user.status === 'active' ? (
-                            <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-destructive hover:text-destructive hover:bg-destructive/10">
-                              <Ban className="h-3 w-3 me-0.5" />
-                              {t('admin.suspend')}
-                            </Button>
-                          ) : (
-                            <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-success hover:text-success hover:bg-success/10">
-                              <UserCheck className="h-3 w-3 me-0.5" />
-                              {t('admin.reactivate')}
-                            </Button>
-                          )}
-                          {user.kycStatus === 'pending' && (
-                            <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-primary hover:text-primary hover:bg-primary/10">
-                              <Eye className="h-3 w-3 me-0.5" />
-                              {t('admin.verify')}
-                            </Button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="py-2.5 px-3 text-muted-foreground">{user.email}</td>
+                        <td className="py-2.5 px-3 text-center">
+                          <Badge className={`text-[10px] px-1.5 py-0 h-4 border-0 font-medium ${
+                            user.kycStatus === 'approved' ? 'bg-success/10 text-success' :
+                            user.kycStatus === 'pending' ? 'bg-primary/10 text-primary' :
+                            'bg-destructive/10 text-destructive'
+                          }`}>
+                            {user.kycStatus === 'approved' ? <CheckCircle2 className="h-2.5 w-2.5 me-0.5" /> :
+                             user.kycStatus === 'pending' ? <Clock className="h-2.5 w-2.5 me-0.5" /> :
+                             <XCircle className="h-2.5 w-2.5 me-0.5" />}
+                            {user.kycStatus === 'approved' ? t('admin.kycStatusVerified') :
+                             user.kycStatus === 'pending' ? t('admin.kycStatusPending') :
+                             t('admin.kycStatusRejected')}
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 px-3 text-center">
+                          <Badge className={`text-[10px] px-1.5 py-0 h-4 border-0 font-medium ${
+                            user.role === 'admin' ? 'bg-destructive/10 text-destructive' :
+                            user.role === 'moderator' ? 'bg-primary/10 text-primary' :
+                            'bg-secondary text-muted-foreground'
+                          }`}>
+                            {user.role === 'admin' ? t('admin.roleAdmin') :
+                             user.role === 'moderator' ? t('admin.roleModerator') :
+                             t('admin.roleUser')}
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 px-3 text-center">
+                          <Badge className={`text-[10px] px-1.5 py-0 h-4 border-0 font-medium ${
+                            user.status === 'suspended' ? 'bg-destructive/10 text-destructive' : 'bg-success/10 text-success'
+                          }`}>
+                            {user.status === 'suspended' ? t('admin.userStatusSuspended') : t('admin.userStatusActive')}
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 px-3">
+                          <div className="flex items-center justify-center gap-1">
+                            {user.status === 'suspended' ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={actionLoading === user.uid}
+                                onClick={() => handleReactivateUser(user)}
+                                className="h-6 px-2 text-[10px] text-success hover:text-success hover:bg-success/10"
+                              >
+                                <UserCheck className="h-3 w-3 me-0.5" />
+                                {t('admin.reactivate')}
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={actionLoading === user.uid || user.role === 'admin'}
+                                onClick={() => handleSuspendUser(user)}
+                                className="h-6 px-2 text-[10px] text-destructive hover:text-destructive hover:bg-destructive/10"
+                              >
+                                <Ban className="h-3 w-3 me-0.5" />
+                                {t('admin.suspend')}
+                              </Button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
 
-          {/* Orders Overview + KYC Queue */}
+          {/* Recent Trades + KYC Queue */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            {/* Orders Overview */}
+            {/* Recent Trades */}
             <div className="bg-card rounded-lg">
               <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
                 <div className="flex items-center gap-2">
                   <Activity className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-xs font-semibold text-muted-foreground">{t('admin.ordersOverview')}</span>
-                </div>
-                <div className="flex gap-0.5">
-                  {(['all', 'pending', 'flagged'] as const).map((filter) => (
-                    <button
-                      key={filter}
-                      onClick={() => setOrderFilter(filter)}
-                      className={`px-2 py-1 rounded text-[10px] font-medium transition-colors ${
-                        orderFilter === filter
-                          ? 'bg-secondary text-primary'
-                          : 'text-muted-foreground hover:text-muted-foreground'
-                      }`}
-                    >
-                      {filter === 'all' ? t('admin.filterAll') : filter === 'pending' ? t('admin.filterPending') : t('admin.filterFlagged')}
-                    </button>
-                  ))}
+                  <span className="text-xs font-semibold text-muted-foreground">آخر الصفقات</span>
                 </div>
               </div>
-
-              {/* Mini chart placeholder */}
-              <div className="px-3 py-3">
-                <div className="h-20 bg-background rounded flex items-center justify-center relative overflow-hidden">
-                  <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 80" preserveAspectRatio="none">
-                    <defs>
-                      <linearGradient id="adminChartGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#F0B90B" stopOpacity="0.3" />
-                        <stop offset="100%" stopColor="#F0B90B" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-                    <path d="M0,60 Q40,50 80,35 T160,40 T240,25 T320,30 T400,15" fill="none" stroke="#F0B90B" strokeWidth="2" />
-                    <path d="M0,60 Q40,50 80,35 T160,40 T240,25 T320,30 T400,15 L400,80 L0,80 Z" fill="url(#adminChartGrad)" />
-                  </svg>
-                  <span className="relative z-10 text-[10px] text-muted-foreground">{t('admin.orderVolume24h')}</span>
-                </div>
-              </div>
-
-              {/* Flagged Orders */}
-              <div className="px-3 pb-3">
-                <p className="text-[10px] text-muted-foreground font-semibold mb-2">{t('admin.flaggedOrders')}</p>
-                <div className="space-y-2">
-                  {mockFlaggedOrders.map((order) => (
-                    <div key={order.id} className="flex items-center justify-between bg-background rounded p-2">
+              <div className="p-3 space-y-2 max-h-64 overflow-y-auto">
+                {recentTrades.length === 0 ? (
+                  <p className="text-center text-muted-foreground text-xs py-4">لا توجد صفقات</p>
+                ) : (
+                  recentTrades.map((trade) => (
+                    <div key={trade.tradeId} className="flex items-center justify-between bg-background rounded p-2">
                       <div className="flex items-center gap-2">
                         <AlertTriangle className="h-3.5 w-3.5 text-primary shrink-0" />
                         <div>
                           <div className="flex items-center gap-1.5">
-                            <span className="text-[10px] text-foreground font-medium">{order.user}</span>
-                            <span className={`text-[10px] font-semibold ${order.side === 'buy' ? 'text-success' : 'text-destructive'}`}>
-                              {order.side === 'buy' ? t('orders.buy') : t('orders.sell')}
+                            <span className="text-[10px] text-foreground font-medium">{trade.symbol}</span>
+                            <span className={`text-[10px] font-semibold ${trade.side === 'buy' ? 'text-success' : 'text-destructive'}`}>
+                              {trade.side === 'buy' ? t('orders.buy') : t('orders.sell')}
                             </span>
-                            <span className="text-[10px] text-muted-foreground">{order.pair}</span>
+                            <span className="text-[10px] text-muted-foreground">{trade.quantity} @ ${trade.price}</span>
                           </div>
-                          <span className="text-[10px] text-muted-foreground">{t(order.reasonKey)} · {order.time}</span>
+                          <span className="text-[10px] text-muted-foreground">{trade.status}</span>
                         </div>
                       </div>
-                      <span className="text-[10px] text-foreground font-medium tabular-nums">{order.amount}</span>
                     </div>
-                  ))}
-                </div>
+                  ))
+                )}
               </div>
             </div>
 
@@ -331,126 +540,87 @@ export default function AdminDashboardView() {
                   <Shield className="h-4 w-4 text-muted-foreground" />
                   <span className="text-xs font-semibold text-muted-foreground">{t('admin.kycQueue')}</span>
                   <Badge className="bg-primary/10 text-primary border-0 text-[10px] px-1.5 py-0 h-4 font-medium">
-                    {mockKYCQueue.length} {t('admin.pendingCount')}
+                    {kycQueue.length} {t('admin.pendingCount')}
                   </Badge>
                 </div>
               </div>
-              <div className="p-3 space-y-2">
-                {mockKYCQueue.map((kyc) => (
-                  <div key={kyc.id} className="bg-background rounded p-3">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 bg-secondary rounded-full flex items-center justify-center shrink-0">
-                          <span className="text-muted-foreground text-[10px] font-bold">{kyc.name[0]}</span>
-                        </div>
+              <div className="p-3 space-y-2 max-h-64 overflow-y-auto">
+                {kycQueue.length === 0 ? (
+                  <p className="text-center text-muted-foreground text-xs py-4">لا توجد طلبات KYC معلقة</p>
+                ) : (
+                  kycQueue.map((kyc) => (
+                    <div key={kyc.id} className="bg-background rounded p-3">
+                      <div className="flex items-center justify-between mb-1.5">
                         <div>
-                          <p className="text-[11px] text-foreground font-medium">{kyc.name}</p>
-                          <p className="text-[10px] text-muted-foreground">{kyc.country}</p>
+                          <p className="text-[11px] text-foreground font-medium">{kyc.uid}</p>
+                          <p className="text-[10px] text-muted-foreground">المستوى: {kyc.level || 'standard'}</p>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            disabled={actionLoading === kyc.id}
+                            onClick={() => handleApproveKYC(kyc)}
+                            className="h-6 px-2 text-[10px] text-success hover:text-success hover:bg-success/10"
+                          >
+                            <CheckCircle2 className="h-3 w-3 me-0.5" />
+                            {t('admin.approve')}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            disabled={actionLoading === kyc.id}
+                            onClick={() => handleRejectKYC(kyc)}
+                            className="h-6 px-2 text-[10px] text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <XCircle className="h-3 w-3 me-0.5" />
+                            {t('admin.reject')}
+                          </Button>
                         </div>
                       </div>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-success hover:text-success hover:bg-success/10">
-                          <CheckCircle2 className="h-3 w-3 me-0.5" />
-                          {t('admin.approve')}
-                        </Button>
-                        <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-destructive hover:text-destructive hover:bg-destructive/10">
-                          <XCircle className="h-3 w-3 me-0.5" />
-                          {t('admin.reject')}
-                        </Button>
-                      </div>
                     </div>
-                    <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-                      <span className="flex items-center gap-0.5"><FileText className="h-2.5 w-2.5" />{kyc.docType}</span>
-                      <span>{t('admin.submitted')}: {kyc.submittedDate}</span>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </div>
 
-          {/* System Health + Audit Logs */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            {/* System Health */}
-            <div className="bg-card rounded-lg">
-              <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
-                <div className="flex items-center gap-2">
-                  <Server className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-xs font-semibold text-muted-foreground">{t('admin.systemHealth')}</span>
-                </div>
-                <Badge className="bg-success/10 text-success border-0 text-[10px] px-1.5 py-0 h-4 font-medium">
-                  {t('admin.operational')}
-                </Badge>
-              </div>
-              <div className="p-3 space-y-3">
-                {systemHealth.map((item) => {
-                  const Icon = item.icon;
-                  const barValue = item.nameKey === 'admin.metricApiUptime' ? item.value :
-                                   item.nameKey === 'admin.metricAvgResponse' ? Math.max(0, 100 - (item.value / 200 * 100)) :
-                                   item.nameKey === 'admin.metricWebsocket' ? Math.min(100, (item.value / 20000 * 100)) :
-                                   item.value;
-                  return (
-                    <div key={item.nameKey}>
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-1.5">
-                          <Icon className={`h-3.5 w-3.5 ${
-                            item.status === 'healthy' ? 'text-success' : 'text-primary'
-                          }`} />
-                          <span className="text-[11px] text-muted-foreground">{t(item.nameKey)}</span>
-                        </div>
-                        <span className={`text-[11px] font-medium tabular-nums ${
-                          item.status === 'healthy' ? 'text-success' : 'text-primary'
-                        }`}>
-                          {typeof item.value === 'number' && item.value > 999 ? formatNumber(item.value) : item.value}{item.unit}
-                        </span>
-                      </div>
-                      <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-700 ${
-                            item.status === 'healthy' ? 'bg-success' : 'bg-primary'
-                          }`}
-                          style={{ width: `${barValue}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
+          {/* Audit Logs */}
+          <div className="bg-card rounded-lg">
+            <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                <span className="text-xs font-semibold text-muted-foreground">{t('admin.recentAuditLogs')}</span>
               </div>
             </div>
-
-            {/* Audit Logs */}
-            <div className="bg-card rounded-lg">
-              <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-xs font-semibold text-muted-foreground">{t('admin.recentAuditLogs')}</span>
-                </div>
-              </div>
-              <ScrollArea className="h-64">
-                <div className="p-3 space-y-0">
-                  {mockAuditLogs.map((log) => (
+            <ScrollArea className="h-64">
+              <div className="p-3 space-y-0">
+                {auditLogs.length === 0 ? (
+                  <p className="text-center text-muted-foreground text-xs py-4">لا توجد سجلات</p>
+                ) : (
+                  auditLogs.map((log) => (
                     <div key={log.id} className="flex items-start gap-2 py-2 border-b border-border/30 last:border-0">
-                      <div className="w-1.5 h-1.5 rounded-full bg-success mt-1.5 shrink-0" />
+                      <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${log.result === 'success' ? 'bg-success' : 'bg-destructive'}`} />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[10px] text-foreground font-medium">{t(log.actionKey)}</span>
+                          <span className="text-[10px] text-foreground font-medium">{log.action}</span>
                           <span className="text-[10px] text-muted-foreground">{t('admin.by')}</span>
                           <span className="text-[10px] text-primary">{log.admin}</span>
                         </div>
                         <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                           <span>{t('admin.target')}: {log.target}</span>
-                          <span>·</span>
-                          <span>{log.timestamp}</span>
                         </div>
                       </div>
-                      <Badge className="bg-success/10 text-success border-0 text-[10px] px-1 py-0 h-3.5 shrink-0">
-                        {t('admin.resultSuccess')}
+                      <Badge className={`text-[10px] px-1 py-0 h-3.5 shrink-0 border-0 ${
+                        log.result === 'success' ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
+                      }`}>
+                        {log.result === 'success' ? t('admin.resultSuccess') : 'فشل'}
                       </Badge>
                     </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </div>
+                  ))
+                )}
+              </div>
+            </ScrollArea>
           </div>
 
           {/* Announcements Management */}
@@ -459,9 +629,13 @@ export default function AdminDashboardView() {
               <div className="flex items-center gap-2">
                 <Megaphone className="h-4 w-4 text-muted-foreground" />
                 <span className="text-xs font-semibold text-muted-foreground">{t('admin.announcements')}</span>
-                <Badge className="bg-secondary text-muted-foreground border-0 text-[10px] px-1.5 py-0 h-4">{mockAnnouncements.length}</Badge>
+                <Badge className="bg-secondary text-muted-foreground border-0 text-[10px] px-1.5 py-0 h-4">{announcements.length}</Badge>
               </div>
-              <Button size="sm" className="h-9 bg-primary hover:bg-primary/90 text-primary-foreground text-[10px] font-semibold px-3">
+              <Button
+                size="sm"
+                onClick={() => setShowAnnouncementModal(true)}
+                className="h-9 bg-primary hover:bg-primary/90 text-primary-foreground text-[10px] font-semibold px-3"
+              >
                 <Plus className="h-3 w-3 me-1" />
                 {t('admin.newAnnouncement')}
               </Button>
@@ -470,56 +644,111 @@ export default function AdminDashboardView() {
               <table className="w-full text-[11px]">
                 <thead>
                   <tr className="text-muted-foreground border-b border-border/50">
-                    <th className="text-start py-2 px-3 font-medium">{t('admin.id')}</th>
                     <th className="text-start py-2 px-3 font-medium">{t('admin.annTitle')}</th>
                     <th className="text-center py-2 px-3 font-medium">{t('admin.type')}</th>
-                    <th className="text-end py-2 px-3 font-medium">{t('admin.date')}</th>
                     <th className="text-center py-2 px-3 font-medium">{t('admin.status')}</th>
                     <th className="text-center py-2 px-3 font-medium">{t('admin.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {mockAnnouncements.map((ann) => (
-                    <tr key={ann.id} className="border-b border-border/30 hover:bg-secondary/30">
-                      <td className="py-2.5 px-3 text-muted-foreground font-mono">{ann.id}</td>
-                      <td className="py-2.5 px-3 text-foreground font-medium">{ann.title}</td>
-                      <td className="py-2.5 px-3 text-center">
-                        <Badge className={`text-[10px] px-1.5 py-0 h-4 border-0 font-medium ${
-                          ann.type === 'system' ? 'bg-success/10 text-success' :
-                          ann.type === 'security' ? 'bg-destructive/10 text-destructive' :
-                          'bg-primary/10 text-primary'
-                        }`}>
-                          {ann.type === 'system' ? t('admin.annTypeSystem') :
-                           ann.type === 'security' ? t('admin.annTypeSecurity') :
-                           t('admin.annTypePromotion')}
-                        </Badge>
-                      </td>
-                      <td className="py-2.5 px-3 text-end text-muted-foreground">{ann.date}</td>
-                      <td className="py-2.5 px-3 text-center">
-                        <Badge className={`text-[10px] px-1.5 py-0 h-4 border-0 font-medium ${
-                          ann.status === 'active' ? 'bg-success/10 text-success' : 'bg-muted-foreground/10 text-muted-foreground'
-                        }`}>
-                          {ann.status === 'active' ? t('admin.annStatusActive') : t('admin.annStatusExpired')}
-                        </Badge>
-                      </td>
-                      <td className="py-2.5 px-3">
-                        <div className="flex items-center justify-center gap-1">
-                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-muted-foreground hover:text-primary hover:bg-primary/10">
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10">
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {announcements.length === 0 ? (
+                    <tr><td colSpan={4} className="text-center py-4 text-muted-foreground">لا توجد إعلانات</td></tr>
+                  ) : (
+                    announcements.map((ann) => (
+                      <tr key={ann.id} className="border-b border-border/30 hover:bg-secondary/30">
+                        <td className="py-2.5 px-3 text-foreground font-medium">{ann.title || '—'}</td>
+                        <td className="py-2.5 px-3 text-center">
+                          <Badge className="text-[10px] px-1.5 py-0 h-4 border-0 font-medium bg-primary/10 text-primary">
+                            {ann.announcementType || ann.type || 'system'}
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 px-3 text-center">
+                          <Badge className={`text-[10px] px-1.5 py-0 h-4 border-0 font-medium ${
+                            ann.status === 'active' ? 'bg-success/10 text-success' : 'bg-muted-foreground/10 text-muted-foreground'
+                          }`}>
+                            {ann.status === 'active' ? t('admin.annStatusActive') : t('admin.annStatusExpired')}
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 px-3">
+                          <div className="flex items-center justify-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              disabled={actionLoading === ann.id}
+                              onClick={() => handleDeleteAnnouncement(ann)}
+                              className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         </div>
       </ScrollArea>
+
+      {/* New Announcement Modal */}
+      {showAnnouncementModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={() => setShowAnnouncementModal(false)}>
+          <div className="bg-card rounded-2xl border border-border max-w-md w-full p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-foreground">إعلان جديد</h2>
+              <Button variant="ghost" size="icon" onClick={() => setShowAnnouncementModal(false)} className="h-8 w-8">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">العنوان</label>
+                <Input
+                  value={newAnnouncement.title}
+                  onChange={(e) => setNewAnnouncement({ ...newAnnouncement, title: e.target.value })}
+                  placeholder="عنوان الإعلان"
+                  className="bg-background"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">المحتوى</label>
+                <textarea
+                  value={newAnnouncement.body}
+                  onChange={(e) => setNewAnnouncement({ ...newAnnouncement, body: e.target.value })}
+                  placeholder="محتوى الإعلان"
+                  className="w-full bg-background border border-border rounded-md p-2 text-sm text-foreground min-h-20"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">النوع</label>
+                <select
+                  value={newAnnouncement.type}
+                  onChange={(e) => setNewAnnouncement({ ...newAnnouncement, type: e.target.value })}
+                  className="w-full bg-background border border-border rounded-md p-2 text-sm text-foreground"
+                >
+                  <option value="system">نظام</option>
+                  <option value="promotion">ترويجي</option>
+                  <option value="security">أمان</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={handleCreateAnnouncement}
+                disabled={actionLoading === 'create-ann'}
+                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+              >
+                {actionLoading === 'create-ann' ? 'جاري الإنشاء...' : 'إنشاء'}
+              </Button>
+              <Button variant="outline" onClick={() => setShowAnnouncementModal(false)} className="flex-1">
+                إلغاء
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
