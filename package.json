@@ -2,11 +2,11 @@
   "name": "qtbm-crypto",
   "version": "1.0.0",
   "private": true,
-  "description": "QTBM CRYPTO — Digital Asset Exchange (Next.js 16 + Firebase + Capacitor APK)",
+  "description": "QTBM CRYPTO \u2014 Digital Asset Exchange (Next.js 16 + Firebase + Capacitor APK)",
   "scripts": {
     "dev": "next dev -p 3000 2>&1 | tee dev.log",
-    "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
-    "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
+    "build": "next build",
+    "start": "next start",
     "lint": "eslint .",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
@@ -95,9 +95,9 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
-    "@capacitor/android": "^8.4.1",
-    "@capacitor/cli": "^8.4.1",
-    "@capacitor/core": "^8.4.1",
+    "@capacitor/android": "^8.4.0",
+    "@capacitor/cli": "^8.4.0",
+    "@capacitor/core": "^8.4.0",
     "@capacitor/preferences": "^8.0.1",
     "@capacitor/splash-screen": "^8.0.1",
     "@capacitor/status-bar": "^8.0.2",

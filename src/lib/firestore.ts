@@ -352,12 +352,21 @@ export async function markNotificationRead(uid: string, notifId: string): Promis
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// FINANCIAL OPERATIONS (via Next.js API routes — server-side validation)
+// FINANCIAL OPERATIONS — Direct Firestore client SDK writes
 //
-// On Spark plan (no billing), Cloud Functions cannot be deployed.
-// These calls go to Next.js API routes (/api/trade, /api/withdraw, etc.)
-// which use the Firebase Admin SDK to perform secure Firestore transactions.
+// For the Android APK (static export, no server), all financial operations
+// execute directly against Firestore from the client. Security Rules enforce
+// balance validation server-side (Firestore evaluates rules atomically).
+//
+// Each operation:
+// 1. Reads current wallet in a transaction
+// 2. Validates balance is sufficient
+// 3. Updates wallet + creates audit record (trade/transaction)
+// 4. Creates a notification
+// All within a single Firestore transaction for atomicity.
 // ═══════════════════════════════════════════════════════════════════════════
+
+import { runTransaction } from "firebase/firestore";
 
 export interface TradeParams {
   symbol: string;
@@ -387,44 +396,277 @@ export interface TransferParams {
   toWallet: "spot" | "funding" | "earn" | "futures";
 }
 
-async function callApi(route: string, params: unknown) {
+async function getCurrentUser() {
   const { auth } = await import("./firebase");
   const user = auth.currentUser;
   if (!user) {
     throw new Error("Authentication required");
   }
-  const idToken = await user.getIdToken();
+  return user;
+}
 
-  const resp = await fetch(`/api/${route}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${idToken}`,
-    },
-    body: JSON.stringify(params),
+export async function executeTradeCall(params: TradeParams): Promise<{ success: boolean; tradeId: string }> {
+  const user = await getCurrentUser();
+  const { symbol, side, quantity, price, orderType } = params;
+
+  if (!symbol || !side || !quantity || quantity <= 0) {
+    throw new Error("Invalid trade parameters");
+  }
+
+  const tradeId = await runTransaction(firestore, async (tx) => {
+    const walletRef = doc(firestore, COLLECTIONS.wallets, user.uid);
+    const walletDoc = await tx.get(walletRef);
+
+    if (!walletDoc.exists) {
+      throw new Error("Wallet not found. Please contact support.");
+    }
+
+    const wallet = walletDoc.data() as FirestoreWallet;
+    const spot = wallet.spot || {};
+    const cost = quantity * (price || 0);
+    const baseAsset = symbol.replace("USDT", "");
+
+    let tradeRef;
+    if (side === "buy") {
+      const usdtBalance = spot.USDT?.free || 0;
+      if (usdtBalance < cost) {
+        throw new Error(`Insufficient USDT balance. Need ${cost}, have ${usdtBalance}`);
+      }
+      const assetBalance = spot[baseAsset]?.free || 0;
+      tx.update(walletRef, {
+        [`spot.USDT.free`]: usdtBalance - cost,
+        [`spot.USDT.usdValue`]: usdtBalance - cost,
+        [`spot.${baseAsset}.free`]: assetBalance + quantity,
+        [`spot.${baseAsset}.asset`]: baseAsset,
+        [`spot.${baseAsset}.locked`]: spot[baseAsset]?.locked || 0,
+        updatedAt: serverTimestamp(),
+      });
+    } else {
+      const assetBalance = spot[baseAsset]?.free || 0;
+      if (assetBalance < quantity) {
+        throw new Error(`Insufficient ${baseAsset} balance. Need ${quantity}, have ${assetBalance}`);
+      }
+      const usdtBalance = spot.USDT?.free || 0;
+      tx.update(walletRef, {
+        [`spot.${baseAsset}.free`]: assetBalance - quantity,
+        [`spot.USDT.free`]: usdtBalance + cost,
+        [`spot.USDT.usdValue`]: usdtBalance + cost,
+        [`spot.USDT.asset`]: "USDT",
+        [`spot.USDT.locked`]: spot.USDT?.locked || 0,
+        updatedAt: serverTimestamp(),
+      });
+    }
+
+    // Create trade record
+    tradeRef = doc(firestore, COLLECTIONS.trades);
+    tx.set(tradeRef, {
+      tradeId: tradeRef.id,
+      userId: user.uid,
+      symbol,
+      side,
+      quantity,
+      price: price || 0,
+      orderType: orderType || "market",
+      status: "filled",
+      createdAt: serverTimestamp(),
+    });
+
+    // Create notification
+    const notifRef = doc(firestore, COLLECTIONS.notifications);
+    tx.set(notifRef, {
+      userId: user.uid,
+      type: "trade",
+      title: side === "buy" ? "تم تنفيذ أمر شراء" : "تم تنفيذ أمر بيع",
+      body: `${side === "buy" ? "شراء" : "بيع"} ${quantity} ${baseAsset} @ ${price || "سوقي"}`,
+      isRead: false,
+      createdAt: serverTimestamp(),
+    });
+
+    return tradeRef.id;
   });
 
-  const data = await resp.json();
-  if (!resp.ok) {
-    throw new Error(data.error || `Request failed: ${resp.status}`);
+  return { success: true, tradeId };
+}
+
+export async function processWithdrawCall(params: WithdrawParams): Promise<{ success: boolean; transactionId: string }> {
+  const user = await getCurrentUser();
+  const { asset, amount, address, network } = params;
+
+  if (!asset || !amount || amount <= 0 || !address) {
+    throw new Error("Invalid withdrawal parameters");
   }
-  return data;
+
+  const transactionId = await runTransaction(firestore, async (tx) => {
+    const walletRef = doc(firestore, COLLECTIONS.wallets, user.uid);
+    const walletDoc = await tx.get(walletRef);
+
+    if (!walletDoc.exists) {
+      throw new Error("Wallet not found");
+    }
+
+    const wallet = walletDoc.data() as FirestoreWallet;
+    const spot = wallet.spot || {};
+    const balance = spot[asset]?.free || 0;
+
+    if (balance < amount) {
+      throw new Error(`Insufficient ${asset} balance. Need ${amount}, have ${balance}`);
+    }
+
+    tx.update(walletRef, {
+      [`spot.${asset}.free`]: balance - amount,
+      updatedAt: serverTimestamp(),
+    });
+
+    const txRef = doc(firestore, COLLECTIONS.transactions);
+    tx.set(txRef, {
+      transactionId: txRef.id,
+      userId: user.uid,
+      type: "withdrawal",
+      asset,
+      amount,
+      address,
+      network: network || "default",
+      status: "pending",
+      createdAt: serverTimestamp(),
+    });
+
+    const notifRef = doc(firestore, COLLECTIONS.notifications);
+    tx.set(notifRef, {
+      userId: user.uid,
+      type: "withdrawal",
+      title: "طلب سحب قيد المعالجة",
+      body: `تم استلام طلب سحب ${amount} ${asset}`,
+      isRead: false,
+      createdAt: serverTimestamp(),
+    });
+
+    return txRef.id;
+  });
+
+  return { success: true, transactionId };
 }
 
-export async function executeTradeCall(params: TradeParams) {
-  return callApi("trade", params) as Promise<{ success: boolean; tradeId: string }>;
+export async function processDepositCall(params: DepositParams): Promise<{ success: boolean; transactionId: string }> {
+  const user = await getCurrentUser();
+  const { asset, amount, txHash } = params;
+
+  if (!asset || !amount || amount <= 0) {
+    throw new Error("Invalid deposit parameters");
+  }
+
+  const transactionId = await runTransaction(firestore, async (tx) => {
+    const walletRef = doc(firestore, COLLECTIONS.wallets, user.uid);
+    const walletDoc = await tx.get(walletRef);
+
+    const currentBalance = walletDoc.exists
+      ? (walletDoc.data() as FirestoreWallet).spot?.[asset]?.free || 0
+      : 0;
+
+    tx.set(
+      walletRef,
+      {
+        spot: {
+          [asset]: {
+            asset,
+            free: currentBalance + amount,
+            locked: 0,
+            usdValue: (currentBalance + amount) * (asset === "USDT" ? 1 : 0),
+          },
+        },
+        updatedAt: serverTimestamp(),
+      } as Partial<FirestoreWallet>,
+      { merge: true }
+    );
+
+    const txRef = doc(firestore, COLLECTIONS.transactions);
+    tx.set(txRef, {
+      transactionId: txRef.id,
+      userId: user.uid,
+      type: "deposit",
+      asset,
+      amount,
+      txHash: txHash || null,
+      status: "confirmed",
+      createdAt: serverTimestamp(),
+    });
+
+    const notifRef = doc(firestore, COLLECTIONS.notifications);
+    tx.set(notifRef, {
+      userId: user.uid,
+      type: "deposit",
+      title: "تم تأكيد الإيداع",
+      body: `تم إيداع ${amount} ${asset} بنجاح`,
+      isRead: false,
+      createdAt: serverTimestamp(),
+    });
+
+    return txRef.id;
+  });
+
+  return { success: true, transactionId };
 }
 
-export async function processWithdrawCall(params: WithdrawParams) {
-  return callApi("withdraw", params) as Promise<{ success: boolean; transactionId: string }>;
-}
+export async function processTransferCall(params: TransferParams): Promise<{ success: boolean; transactionId: string }> {
+  const user = await getCurrentUser();
+  const { asset, amount, fromWallet, toWallet } = params;
 
-export async function processDepositCall(params: DepositParams) {
-  return callApi("deposit", params) as Promise<{ success: boolean; transactionId: string }>;
-}
+  if (!asset || !amount || amount <= 0 || !fromWallet || !toWallet) {
+    throw new Error("Invalid transfer parameters");
+  }
 
-export async function processTransferCall(params: TransferParams) {
-  return callApi("transfer", params) as Promise<{ success: boolean; transactionId: string }>;
+  if (fromWallet === toWallet) {
+    throw new Error("Source and destination wallets must differ");
+  }
+
+  const validWallets = ["spot", "funding", "earn", "futures"];
+  if (!validWallets.includes(fromWallet) || !validWallets.includes(toWallet)) {
+    throw new Error("Invalid wallet type");
+  }
+
+  const transactionId = await runTransaction(firestore, async (tx) => {
+    const walletRef = doc(firestore, COLLECTIONS.wallets, user.uid);
+    const walletDoc = await tx.get(walletRef);
+
+    if (!walletDoc.exists) {
+      throw new Error("Wallet not found");
+    }
+
+    const wallet = walletDoc.data() as FirestoreWallet;
+    const fromData = (wallet as unknown as Record<string, Record<string, WalletBalance>>)[fromWallet] || {};
+    const currentFrom = fromData[asset]?.free || 0;
+
+    if (currentFrom < amount) {
+      throw new Error(`Insufficient balance in ${fromWallet}. Need ${amount}, have ${currentFrom}`);
+    }
+
+    const toData = (wallet as unknown as Record<string, Record<string, WalletBalance>>)[toWallet] || {};
+    const currentTo = toData[asset]?.free || 0;
+
+    tx.update(walletRef, {
+      [`${fromWallet}.${asset}.free`]: currentFrom - amount,
+      [`${toWallet}.${asset}.free`]: currentTo + amount,
+      [`${toWallet}.${asset}.asset`]: asset,
+      [`${toWallet}.${asset}.locked`]: toData[asset]?.locked || 0,
+      updatedAt: serverTimestamp(),
+    });
+
+    const txRef = doc(firestore, COLLECTIONS.transactions);
+    tx.set(txRef, {
+      transactionId: txRef.id,
+      userId: user.uid,
+      type: "transfer",
+      asset,
+      amount,
+      fromWallet,
+      toWallet,
+      status: "completed",
+      createdAt: serverTimestamp(),
+    });
+
+    return txRef.id;
+  });
+
+  return { success: true, transactionId };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

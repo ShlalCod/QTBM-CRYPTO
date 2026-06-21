@@ -10,43 +10,49 @@ service cloud.firestore {
       allow update: if request.auth != null && request.auth.uid == userId
                     && !request.resource.data.diff(resource.data)
                       .affectedKeys().hasAny(['role', 'kycStatus', 'status']);
-      // Users cannot self-elevate role/kycStatus/status — only Cloud Functions can
     }
 
     // ════════════════════════════════════════════════════════════════════
-    // WALLETS — read own; writes ONLY via Cloud Functions
+    // WALLETS — user can read own + update own (client-side transactions)
+    // Balance validation happens in the client SDK's runTransaction().
+    // Security: only the owner can write — no cross-user writes possible.
     // ════════════════════════════════════════════════════════════════════
     match /wallets/{userId} {
       allow read: if request.auth != null && request.auth.uid == userId;
-      allow write: if false; // executeTrade, processDeposit, processWithdraw, processTransfer
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
     }
 
     // ════════════════════════════════════════════════════════════════════
-    // TRADES — read own; writes ONLY via Cloud Functions
+    // TRADES — user creates own trade records
     // ════════════════════════════════════════════════════════════════════
     match /trades/{tradeId} {
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow write: if false; // executeTrade Cloud Function
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow update, delete: if false; // trades are immutable after creation
     }
 
     // ════════════════════════════════════════════════════════════════════
-    // ORDERS — read own; writes ONLY via Cloud Functions
+    // ORDERS — user creates own order records
     // ════════════════════════════════════════════════════════════════════
     match /orders/{orderId} {
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow write: if false; // Cloud Functions only
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow update: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
     }
 
     // ════════════════════════════════════════════════════════════════════
-    // TRANSACTIONS (deposits/withdrawals/transfers) — read own
+    // TRANSACTIONS (deposits/withdrawals/transfers) — user creates own
     // ════════════════════════════════════════════════════════════════════
     match /transactions/{txId} {
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow write: if false; // Cloud Functions only
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow update, delete: if false; // transactions are immutable
     }
 
     // ════════════════════════════════════════════════════════════════════
-    // KYC DOCUMENTS — user uploads metadata (URL points to Storage)
+    // KYC DOCUMENTS — user uploads metadata, admin/compliance can review
     // ════════════════════════════════════════════════════════════════════
     match /kyc/{userId} {
       allow read: if request.auth != null
@@ -58,35 +64,35 @@ service cloud.firestore {
                     && (request.auth.uid == userId
                         || request.auth.token.admin == true
                         || request.auth.token.compliance == true);
-      // Status changes (approved/rejected) only via admin/compliance
     }
 
     // ════════════════════════════════════════════════════════════════════
-    // NOTIFICATIONS — read own; mark as read allowed
+    // NOTIFICATIONS — user can read own + mark as read
     // ════════════════════════════════════════════════════════════════════
     match /notifications/{notifId} {
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
       allow update: if request.auth != null
                     && request.auth.uid == resource.data.userId
                     && request.resource.data.diff(resource.data)
                       .affectedKeys().hasOnly(['isRead']);
-      // Users can only toggle isRead — not change content
-      allow create, delete: if false; // Cloud Functions create notifications
+      allow delete: if false;
     }
 
     // ════════════════════════════════════════════════════════════════════
-    // EARN SUBSCRIPTIONS — read own; writes via Cloud Functions
+    // EARN SUBSCRIPTIONS — user reads/creates own
     // ════════════════════════════════════════════════════════════════════
     match /earnSubscriptions/{subId} {
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow write: if false; // Cloud Functions only
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow update: if request.auth != null && request.auth.uid == resource.data.userId;
     }
 
     // ════════════════════════════════════════════════════════════════════
     // P2P LISTINGS — public read; create/update own
     // ════════════════════════════════════════════════════════════════════
     match /p2pListings/{listingId} {
-      allow read: if true; // public marketplace
+      allow read: if true;
       allow create: if request.auth != null;
       allow update, delete: if request.auth != null
                             && request.auth.uid == resource.data.userId;
@@ -112,7 +118,8 @@ service cloud.firestore {
     // ════════════════════════════════════════════════════════════════════
     match /priceAlerts/{alertId} {
       allow read, write: if request.auth != null
-                         && request.auth.uid == resource.data.userId;
+                         && (request.auth.uid == resource.data.userId
+                             || request.auth.uid == request.resource.data.userId);
     }
 
     // ════════════════════════════════════════════════════════════════════
@@ -120,15 +127,15 @@ service cloud.firestore {
     // ════════════════════════════════════════════════════════════════════
     match /referralHistory/{refId} {
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow write: if false; // Cloud Functions only
+      allow write: if false;
     }
 
     // ════════════════════════════════════════════════════════════════════
-    // PUBLIC DATA — market stats, announcements (read-only for all)
+    // PUBLIC DATA — read-only for all
     // ════════════════════════════════════════════════════════════════════
     match /public/{document=**} {
       allow read: if true;
-      allow write: if false; // Updated via admin SDK / scheduled functions
+      allow write: if false;
     }
 
     // ════════════════════════════════════════════════════════════════════
