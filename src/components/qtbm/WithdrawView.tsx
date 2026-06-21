@@ -140,20 +140,35 @@ export default function WithdrawView() {
     setVerificationType('email');
   };
 
-  const handleVerifyAndSubmit = () => {
+  const handleVerifyAndSubmit = async () => {
     if (verificationCode.length < 6) {
       toast.error(t('wallet.enterFullCode'));
       return;
     }
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      // Execute via Cloud Function (real Firestore transaction)
+      const { processWithdrawCall } = await import('@/lib/firestore');
+      const result = await processWithdrawCall({
+        asset: selectedSymbol,
+        amount: numAmount,
+        address,
+        network: selectedNetwork?.name ?? 'default',
+      });
       setShowVerification(false);
       setVerificationCode('');
       setAddress('');
       setAmount('');
-      toast.success(t('wallet.withdrawSubmitted').replace('{amount}', String(numAmount)).replace('{asset}', selectedSymbol));
-    }, 1500);
+      toast.success(
+        t('wallet.withdrawSubmitted').replace('{amount}', String(numAmount)).replace('{asset}', selectedSymbol),
+        { description: `ID: ${result.transactionId}` }
+      );
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Withdrawal failed';
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useAuth } from '@/lib/auth-context';
+import { getWallet, getUserTransactions, type FirestoreWallet, type FirestoreTransaction } from '@/lib/firestore';
 import {
   mockWalletBalances,
   mockTransactions,
@@ -308,20 +310,81 @@ function AllocationRing({ allocations }: { allocations: { label: string; value: 
 export default function WalletView() {
   const { t, isRTL, language } = useTranslation();
   const { navigateTo } = useAppStore();
+  const { firebaseUser } = useAuth();
   const [showBalance, setShowBalance] = useState(true);
   const [activeTab, setActiveTab] = useState<WalletTab>('spot');
   const [expandedAsset, setExpandedAsset] = useState<string | null>(null);
   const [showSmallAssets, setShowSmallAssets] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [realWallet, setRealWallet] = useState<FirestoreWallet | null>(null);
+  const [realTransactions, setRealTransactions] = useState<FirestoreTransaction[]>([]);
+  const [loadingWallet, setLoadingWallet] = useState(true);
 
-  const totalBalance = mockWalletBalances.reduce((sum, b) => sum + b.usdValue, 0);
-  const totalBtc = mockWalletBalances.reduce((sum, b) => sum + b.btcValue, 0);
+  // Load real wallet + transactions from Firestore
+  useEffect(() => {
+    if (!firebaseUser) {
+      setLoadingWallet(false);
+      return;
+    }
+    let mounted = true;
+    (async () => {
+      try {
+        const [wallet, txs] = await Promise.all([
+          getWallet(firebaseUser.uid),
+          getUserTransactions(firebaseUser.uid, 20),
+        ]);
+        if (mounted) {
+          setRealWallet(wallet);
+          setRealTransactions(txs);
+          setLoadingWallet(false);
+        }
+      } catch (err) {
+        console.error('Failed to load wallet:', err);
+        if (mounted) setLoadingWallet(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [firebaseUser]);
+
+  // Build display balances: real wallet if available, else mock fallback
+  const walletBalances = useMemo(() => {
+    if (realWallet && realWallet.spot) {
+      return Object.entries(realWallet.spot).map(([asset, bal]) => ({
+        asset,
+        free: bal.free,
+        locked: bal.locked,
+        usdValue: bal.usdValue,
+        btcValue: bal.usdValue / 67000, // approximate BTC conversion
+      }));
+    }
+    return mockWalletBalances;
+  }, [realWallet]);
+
+  const transactions = useMemo(() => {
+    if (realTransactions.length > 0) {
+      return realTransactions.map(tx => ({
+        id: tx.transactionId,
+        type: tx.type,
+        asset: tx.asset,
+        amount: tx.amount,
+        status: tx.status,
+        timestamp: tx.createdAt?.toMillis?.() ?? Date.now(),
+        address: tx.address,
+        network: tx.network,
+        txHash: tx.txHash ?? undefined,
+      }));
+    }
+    return mockTransactions;
+  }, [realTransactions]);
+
+  const totalBalance = walletBalances.reduce((sum, b) => sum + b.usdValue, 0);
+  const totalBtc = walletBalances.reduce((sum, b) => sum + b.btcValue, 0);
   const pnl24h = totalBalance * 0.0234;
   const pnlPercent = 2.34;
 
   const smallAssetThreshold = 10;
-  const majorAssets = mockWalletBalances.filter((b) => b.usdValue >= smallAssetThreshold);
-  const smallAssets = mockWalletBalances.filter((b) => b.usdValue < smallAssetThreshold);
+  const majorAssets = walletBalances.filter((b) => b.usdValue >= smallAssetThreshold);
+  const smallAssets = walletBalances.filter((b) => b.usdValue < smallAssetThreshold);
   const displayAssets = showSmallAssets ? [...majorAssets, ...smallAssets] : majorAssets;
 
   // Find the active tab config for coloring
@@ -667,7 +730,7 @@ export default function WalletView() {
                 <Card className="bg-card border-border">
                   <CardContent className="p-0">
                     <div className="divide-y divide-border">
-                      {mockTransactions.map((tx) => {
+                      {transactions.map((tx) => {
                         const TypeIcon = typeConfig[tx.type]?.icon || CreditCard;
                         const typeColor = typeConfig[tx.type]?.color || 'text-muted-foreground';
                         const typeBg = typeConfig[tx.type]?.bgColor || 'bg-muted-foreground/10';

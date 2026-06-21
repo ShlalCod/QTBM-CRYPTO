@@ -90,16 +90,30 @@ export default function TransferView() {
     }
   };
 
-  const handleTransfer = () => {
+  const handleTransfer = async () => {
     if (!isValid) return;
     setIsTransferring(true);
-    setTimeout(() => {
-      setIsTransferring(false);
+    try {
+      const { processTransferCall } = await import('@/lib/firestore');
+      const result = await processTransferCall({
+        asset: selectedAsset,
+        amount: numAmount,
+        fromWallet: fromWallet as 'spot' | 'funding' | 'earn' | 'futures',
+        toWallet: toWallet as 'spot' | 'funding' | 'earn' | 'futures',
+      });
       setAmount('');
       const fromLabel = t(walletOptions.find(w => w.id === fromWallet)?.labelKey || '');
       const toLabel = t(walletOptions.find(w => w.id === toWallet)?.labelKey || '');
-      toast.success(t('wallet.transferSuccess').replace('{amount}', String(numAmount)).replace('{asset}', selectedAsset).replace('{from}', fromLabel).replace('{to}', toLabel));
-    }, 1200);
+      toast.success(
+        t('wallet.transferSuccess').replace('{amount}', String(numAmount)).replace('{asset}', selectedAsset).replace('{from}', fromLabel).replace('{to}', toLabel),
+        { description: `ID: ${result.transactionId}` }
+      );
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Transfer failed';
+      toast.error(message);
+    } finally {
+      setIsTransferring(false);
+    }
   };
 
   return (

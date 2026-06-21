@@ -1,54 +1,147 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // User profile — each user can read/write only their own document
+    // ════════════════════════════════════════════════════════════════════
+    // USER PROFILES — each user reads/writes their own profile
+    // ════════════════════════════════════════════════════════════════════
     match /users/{userId} {
       allow read: if request.auth != null && request.auth.uid == userId;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId
+                    && !request.resource.data.diff(resource.data)
+                      .affectedKeys().hasAny(['role', 'kycStatus', 'status']);
+      // Users cannot self-elevate role/kycStatus/status — only Cloud Functions can
     }
 
-    // Wallet balances — read-only from client; writes only via Cloud Functions
+    // ════════════════════════════════════════════════════════════════════
+    // WALLETS — read own; writes ONLY via Cloud Functions
+    // ════════════════════════════════════════════════════════════════════
     match /wallets/{userId} {
       allow read: if request.auth != null && request.auth.uid == userId;
-      allow write: if false;
+      allow write: if false; // executeTrade, processDeposit, processWithdraw, processTransfer
     }
 
-    // Trades — read own trades; writes only via Cloud Functions
+    // ════════════════════════════════════════════════════════════════════
+    // TRADES — read own; writes ONLY via Cloud Functions
+    // ════════════════════════════════════════════════════════════════════
     match /trades/{tradeId} {
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow write: if false;
+      allow write: if false; // executeTrade Cloud Function
     }
 
-    // Orders — read own orders; writes only via Cloud Functions
+    // ════════════════════════════════════════════════════════════════════
+    // ORDERS — read own; writes ONLY via Cloud Functions
+    // ════════════════════════════════════════════════════════════════════
     match /orders/{orderId} {
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow write: if false;
+      allow write: if false; // Cloud Functions only
     }
 
-    // Transactions (deposits/withdrawals/transfers)
+    // ════════════════════════════════════════════════════════════════════
+    // TRANSACTIONS (deposits/withdrawals/transfers) — read own
+    // ════════════════════════════════════════════════════════════════════
     match /transactions/{txId} {
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow write: if false;
+      allow write: if false; // Cloud Functions only
     }
 
-    // KYC documents — user can read own; writes via Cloud Functions only
+    // ════════════════════════════════════════════════════════════════════
+    // KYC DOCUMENTS — user uploads metadata (URL points to Storage)
+    // ════════════════════════════════════════════════════════════════════
     match /kyc/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow write: if false;
+      allow read: if request.auth != null
+                  && (request.auth.uid == userId
+                      || request.auth.token.admin == true
+                      || request.auth.token.compliance == true);
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null
+                    && (request.auth.uid == userId
+                        || request.auth.token.admin == true
+                        || request.auth.token.compliance == true);
+      // Status changes (approved/rejected) only via admin/compliance
     }
 
-    // Admin collections — only authenticated admins
-    match /admin/{document=**} {
-      allow read, write: if request.auth != null && request.auth.token.admin == true;
+    // ════════════════════════════════════════════════════════════════════
+    // NOTIFICATIONS — read own; mark as read allowed
+    // ════════════════════════════════════════════════════════════════════
+    match /notifications/{notifId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow update: if request.auth != null
+                    && request.auth.uid == resource.data.userId
+                    && request.resource.data.diff(resource.data)
+                      .affectedKeys().hasOnly(['isRead']);
+      // Users can only toggle isRead — not change content
+      allow create, delete: if false; // Cloud Functions create notifications
     }
 
-    // Public data — market prices, announcements, etc.
+    // ════════════════════════════════════════════════════════════════════
+    // EARN SUBSCRIPTIONS — read own; writes via Cloud Functions
+    // ════════════════════════════════════════════════════════════════════
+    match /earnSubscriptions/{subId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow write: if false; // Cloud Functions only
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // P2P LISTINGS — public read; create/update own
+    // ════════════════════════════════════════════════════════════════════
+    match /p2pListings/{listingId} {
+      allow read: if true; // public marketplace
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null
+                            && request.auth.uid == resource.data.userId;
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // SUPPORT TICKETS — read/create own; admin can read all
+    // ════════════════════════════════════════════════════════════════════
+    match /supportTickets/{ticketId} {
+      allow read: if request.auth != null
+                  && (request.auth.uid == resource.data.userId
+                      || request.auth.token.admin == true
+                      || request.auth.token.support == true);
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow update: if request.auth != null
+                    && (request.auth.uid == resource.data.userId
+                        || request.auth.token.admin == true
+                        || request.auth.token.support == true);
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // PRICE ALERTS — full CRUD on own
+    // ════════════════════════════════════════════════════════════════════
+    match /priceAlerts/{alertId} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == resource.data.userId;
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // REFERRAL HISTORY — read own
+    // ════════════════════════════════════════════════════════════════════
+    match /referralHistory/{refId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow write: if false; // Cloud Functions only
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // PUBLIC DATA — market stats, announcements (read-only for all)
+    // ════════════════════════════════════════════════════════════════════
     match /public/{document=**} {
       allow read: if true;
-      allow write: if false;
+      allow write: if false; // Updated via admin SDK / scheduled functions
     }
 
-    // Default deny — catch-all
+    // ════════════════════════════════════════════════════════════════════
+    // ADMIN COLLECTIONS — admin token required
+    // ════════════════════════════════════════════════════════════════════
+    match /admin/{document=**} {
+      allow read, write: if request.auth != null
+                         && request.auth.token.admin == true;
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // DEFAULT DENY — catch-all
+    // ════════════════════════════════════════════════════════════════════
     match /{document=**} {
       allow read, write: if false;
     }

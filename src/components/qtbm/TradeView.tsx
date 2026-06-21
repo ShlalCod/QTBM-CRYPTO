@@ -763,20 +763,37 @@ function TradePanel({ pair, livePrice }: { pair: typeof mockMarketPairs[0]; live
     setPercentSlider(0);
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     if (!amountNum) return;
     const sideLabel = side === 'buy' ? t('orders.buy') : t('orders.sell');
     const typeLabel = orderType === 'stop_limit' ? t('orders.stopLimit') : orderType === 'limit' ? t('trade.limit') : t('orders.market');
     const priceLabel = orderType === 'market' ? t('orders.market') : price;
-    toast.success(
-      t('trade.orderPlaced')
-        .replace('{side}', sideLabel)
-        .replace('{type}', typeLabel)
-        .replace('{amount}', amount)
-        .replace('{asset}', pair.baseAsset)
-        .replace('{price}', priceLabel)
-        .replace('{quote}', pair.quoteAsset)
-    );
+
+    // Execute via Cloud Function (real Firestore transaction)
+    try {
+      toast.loading(t('trade.placingOrder'), { id: 'trade-order' });
+      const { executeTradeCall } = await import('@/lib/firestore');
+      const result = await executeTradeCall({
+        symbol: pair.symbol,
+        side,
+        quantity: amountNum,
+        price: orderType === 'market' ? undefined : parseFloat(price),
+        orderType,
+      });
+      toast.success(
+        t('trade.orderPlaced')
+          .replace('{side}', sideLabel)
+          .replace('{type}', typeLabel)
+          .replace('{amount}', amount)
+          .replace('{asset}', pair.baseAsset)
+          .replace('{price}', priceLabel)
+          .replace('{quote}', pair.quoteAsset),
+        { id: 'trade-order', description: `ID: ${result.tradeId}` }
+      );
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Trade failed';
+      toast.error(message, { id: 'trade-order' });
+    }
   };
 
   return (

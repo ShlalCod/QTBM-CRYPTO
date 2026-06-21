@@ -109,24 +109,16 @@ export default function AuthView() {
 
     setIsLoading(true);
     try {
-      const appUser = await signIn(loginEmail.trim(), loginPassword);
-      setUser({
-        id: appUser.uid,
-        email: appUser.email,
-        name: appUser.displayName,
-        isAuthenticated: true,
-        twoFactorEnabled: false,
-        kycStatus: 'not_started',
-        role: 'user',
-        status: 'registered',
-      });
+      await signIn(loginEmail.trim(), loginPassword);
+      // AuthContext will pick up the auth state change via onAuthStateChanged
+      // and sync to app-store. Navigation happens via the redirect logic in QTBMApp.
       navigateTo('home');
     } catch (err) {
       setError(t(firebaseErrorToMessage(err, 'auth.errLoginFailed')));
     } finally {
       setIsLoading(false);
     }
-  }, [loginEmail, loginPassword, setUser, navigateTo, t]);
+  }, [loginEmail, loginPassword, navigateTo, t]);
 
   const handleRegister = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -156,24 +148,16 @@ export default function AuthView() {
 
     setIsLoading(true);
     try {
-      const appUser = await register(regEmail.trim(), regPassword, regEmail.split('@')[0]);
-      setUser({
-        id: appUser.uid,
-        email: appUser.email,
-        name: appUser.displayName,
-        isAuthenticated: true,
-        twoFactorEnabled: false,
-        kycStatus: 'not_started',
-        role: 'user',
-        status: 'registered',
-      });
+      await register(regEmail.trim(), regPassword, regEmail.split('@')[0]);
+      // AuthContext picks up the new user via onAuthStateChanged,
+      // creates Firestore profile, and syncs to app-store.
       navigateTo('home');
     } catch (err) {
       setError(t(firebaseErrorToMessage(err, 'auth.errRegisterFailed')));
     } finally {
       setIsLoading(false);
     }
-  }, [regEmail, regPhone, regPassword, regConfirmPassword, agreeTerms, setUser, navigateTo, t]);
+  }, [regEmail, regPhone, regPassword, regConfirmPassword, agreeTerms, navigateTo, t]);
 
   const goBack = useCallback(() => {
     setError('');

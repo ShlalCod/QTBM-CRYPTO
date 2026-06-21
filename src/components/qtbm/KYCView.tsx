@@ -2,7 +2,9 @@
 
 import React, { useState } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useAuth } from '@/lib/auth-context';
 import { useTranslation } from '@/lib/i18n';
+import { toast } from 'sonner';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -71,16 +73,55 @@ const verificationSteps = [
 export default function KYCView() {
   const { navigateTo, user } = useAppStore();
   const { t } = useTranslation();
+  const { firebaseUser } = useAuth();
   const [selectedLevel, setSelectedLevel] = useState<KYCLevel>('intermediate');
   const [uploadState, setUploadState] = useState<Record<string, string>>({});
+  const [uploading, setUploading] = useState<string | null>(null);
 
   const currentLevelIndex = kycLevels.findIndex((l) => l.id === selectedLevel);
   const completedSteps = verificationSteps.filter((s) => s.status === 'completed').length;
   const totalSteps = verificationSteps.length;
   const progressPercent = (completedSteps / totalSteps) * 100;
 
-  const handleFileUpload = (field: string) => {
-    setUploadState((prev) => ({ ...prev, [field]: 'uploaded' }));
+  // Real file upload to Firebase Storage + Firestore KYC document
+  const handleFileUpload = async (field: string, file: File) => {
+    if (!firebaseUser) {
+      toast.error('Authentication required');
+      return;
+    }
+    setUploading(field);
+    try {
+      const { ref, uploadBytes, getDownloadURL } = await import('firebase/storage');
+      const { storage } = await import('@/lib/firebase');
+      const { doc, setDoc, serverTimestamp } = await import('firebase/firestore');
+      const { firestore } = await import('@/lib/firestore');
+
+      // Upload to Firebase Storage: /users/{uid}/kyc/{field}
+      const storageRef = ref(storage, `users/${firebaseUser.uid}/kyc/${field}-${Date.now()}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+
+      // Save metadata to Firestore KYC document
+      await setDoc(doc(firestore, 'kyc', firebaseUser.uid), {
+        uid: firebaseUser.uid,
+        [field]: {
+          url: downloadURL,
+          fileName: file.name,
+          uploadedAt: serverTimestamp(),
+        },
+        status: 'pending',
+        level: selectedLevel,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+
+      setUploadState((prev) => ({ ...prev, [field]: 'uploaded' }));
+      toast.success(`${field} uploaded successfully`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Upload failed';
+      toast.error(message);
+    } finally {
+      setUploading(null);
+    }
   };
 
   return (

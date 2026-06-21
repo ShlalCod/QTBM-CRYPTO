@@ -20,7 +20,9 @@ import {
 } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
 import { useTheme } from 'next-themes';
+import { useAuth } from '@/lib/auth-context';
 import { useTranslation } from '@/lib/i18n';
+import { subscribeToNotifications } from '@/lib/firestore';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -192,18 +194,61 @@ function ViewRenderer({ view }: { view: string }) {
 }
 
 export default function QTBMApp() {
-  const { currentView, navigateTo, searchQuery, setSearchQuery, user, unreadCount, setNotifications, isRTL, language, wsConnected } = useAppStore();
+  const { currentView, navigateTo, searchQuery, setSearchQuery, user, unreadCount, setNotifications, isRTL, language, wsConnected, setUser } = useAppStore();
   const { theme, setTheme } = useTheme();
+  const { firebaseUser, profile, loading, isAuthenticated, signOut } = useAuth();
   const { t } = useTranslation();
   const [searchOpen, setSearchOpen] = React.useState(false);
 
   // Initialize price simulator
   usePriceSimulator();
 
-  // Load mock notifications on mount
+  // Sync Firebase auth profile → app-store user state
   useEffect(() => {
-    setNotifications(mockNotifications);
-  }, [setNotifications]);
+    if (profile) {
+      setUser({
+        id: profile.uid,
+        email: profile.email,
+        name: profile.displayName ?? undefined,
+        avatar: profile.photoURL ?? undefined,
+        role: profile.role,
+        status: profile.status,
+        isAuthenticated: true,
+        twoFactorEnabled: profile.twoFactorEnabled,
+        kycStatus: profile.kycStatus,
+      });
+    } else if (!loading) {
+      setUser({
+        id: '',
+        email: '',
+        name: '',
+        role: 'user',
+        status: 'registered',
+        isAuthenticated: false,
+        twoFactorEnabled: false,
+        kycStatus: 'not_started',
+      });
+    }
+  }, [profile, loading, setUser]);
+
+  // Subscribe to real notifications from Firestore when authenticated
+  useEffect(() => {
+    if (!firebaseUser) {
+      setNotifications([]);
+      return;
+    }
+    const unsub = subscribeToNotifications(firebaseUser.uid, (notifs) => {
+      setNotifications(notifs.map(n => ({
+        id: n.id,
+        type: n.type,
+        title: n.title,
+        body: n.body,
+        timestamp: Date.now(),
+        isRead: n.isRead,
+      })));
+    });
+    return () => unsub();
+  }, [firebaseUser, setNotifications]);
 
   // Update document direction and lang attribute
   useEffect(() => {
@@ -218,14 +263,28 @@ export default function QTBMApp() {
     navigateTo(view);
   };
 
+  // Auth protection: screens that require authentication
+  const protectedViews = ['wallet', 'deposit', 'withdraw', 'transfer', 'asset-detail', 'trade', 'futures', 'margin', 'earn', 'p2p', 'staking', 'swap', 'convert', 'copy-trading', 'portfolio-analytics', 'order-history', 'trade-history', 'transaction-detail', 'kyc', 'admin', 'referral', 'price-alerts', 'savings-goals', 'gift-cards', 'tax-report', 'strategy-bot', 'launchpad', 'voting', 'leaderboard', 'news-feed', 'social-feed', 'trade-challenge', 'nft-gallery', 'defi-dashboard', 'settings', 'support'];
+  const authViews = ['login', 'register'];
+
+  // Redirect: if loading, show nothing (prevents flash)
+  // If not authenticated and trying to access protected view → redirect to login
+  // If authenticated and on auth view → redirect to home
+  const effectiveView = (() => {
+    if (loading) return currentView; // don't redirect during load
+    if (!isAuthenticated && protectedViews.includes(currentView)) return 'login';
+    if (isAuthenticated && authViews.includes(currentView)) return 'home';
+    return currentView;
+  })();
+
   // Determine which view is "active" in the sidebar/nav
   const getActiveNavId = () => {
-    if (['home'].includes(currentView)) return 'home';
-    if (['markets'].includes(currentView)) return 'markets';
-    if (['trade'].includes(currentView)) return 'trade';
-    if (['futures'].includes(currentView)) return 'futures';
-    if (['margin'].includes(currentView)) return 'margin';
-    if (['wallet', 'deposit', 'withdraw', 'transfer', 'asset-detail'].includes(currentView)) return 'wallet';
+    if (['home'].includes(effectiveView)) return 'home';
+    if (['markets'].includes(effectiveView)) return 'markets';
+    if (['trade'].includes(effectiveView)) return 'trade';
+    if (['futures'].includes(effectiveView)) return 'futures';
+    if (['margin'].includes(effectiveView)) return 'margin';
+    if (['wallet', 'deposit', 'withdraw', 'transfer', 'asset-detail'].includes(effectiveView)) return 'wallet';
     // Everything else maps to "more"
     return 'more';
   };
@@ -468,19 +527,25 @@ export default function QTBMApp() {
         )}
 
         {/* Main View Content */}
-        <main className={`flex-1 ${currentView === 'trade' ? 'overflow-hidden' : 'overflow-y-auto'} ${authViews.includes(currentView) ? '' : 'pb-16 lg:pb-0'}`}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentView}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className={currentView === 'trade' ? 'h-full view-transition' : 'view-transition'}
-            >
-              <ViewRenderer view={currentView} />
-            </motion.div>
-          </AnimatePresence>
+        <main className={`flex-1 ${effectiveView === 'trade' ? 'overflow-hidden' : 'overflow-y-auto'} ${authViews.includes(effectiveView) ? '' : 'pb-16 lg:pb-0'}`}>
+          {loading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={effectiveView}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className={effectiveView === 'trade' ? 'h-full view-transition' : 'view-transition'}
+              >
+                <ViewRenderer view={effectiveView} />
+              </motion.div>
+            </AnimatePresence>
+          )}
         </main>
       </div>
 
