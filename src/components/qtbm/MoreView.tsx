@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useAuth } from '@/lib/auth-context';
 import { useTranslation } from '@/lib/i18n';
 import {
   User,
@@ -69,7 +70,9 @@ interface MenuItem {
 
 export default function MoreView() {
   const { navigateTo, user } = useAppStore();
+  const { profile } = useAuth();
   const { t } = useTranslation();
+  const isAdmin = profile?.role === 'admin';
 
   const featureItems: MenuItem[] = [
     { icon: TrendingUp, labelKey: 'more.earn', view: 'earn', color: 'text-primary', badgeKey: 'more.badgeUpTo12APR', badgeColor: 'bg-success/10 text-success' },
@@ -284,7 +287,7 @@ export default function MoreView() {
 
         {/* Sections */}
         {renderSection(t('more.sectionAccount'), accountItems)}
-        {renderSection(t('more.sectionAdministration'), adminItems)}
+        {isAdmin && renderSection(t('more.sectionAdministration'), adminItems)}
         {renderSection(t('more.sectionSupport'), supportItems)}
         {renderSection(t('more.sectionSettings'), settingsItems)}
         {renderSection(t('more.sectionAbout'), aboutItems)}

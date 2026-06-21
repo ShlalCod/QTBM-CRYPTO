@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAppStore } from '@/stores/app-store';
+import { useAuth } from '@/lib/auth-context';
+import { getWallet } from '@/lib/firestore';
 import { useTranslation } from '@/lib/i18n';
 import { mockAssets, mockWalletBalances, formatPrice, formatNumber } from '@/lib/mock-data';
 import {
@@ -241,9 +243,37 @@ function HomeSkeleton() {
 
 export default function HomeView() {
   const { navigateTo, favorites, toggleFavorite, user, livePrices, priceDirection, isRTL } = useAppStore();
+  const { firebaseUser, profile } = useAuth();
   const { t } = useTranslation();
   const [showBalance, setShowBalance] = useState(true);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [realWalletBalances, setRealWalletBalances] = useState<Array<{asset: string; total: number; usdValue: number; btcValue: number}>>([]);
+  const [previousTotalBalance, setPreviousTotalBalance] = useState<number | null>(null);
+
+  // Load real wallet from Firestore
+  useEffect(() => {
+    if (!firebaseUser) {
+      setRealWalletBalances([]);
+      return;
+    }
+    let mounted = true;
+    (async () => {
+      try {
+        const wallet = await getWallet(firebaseUser.uid);
+        if (!mounted || !wallet?.spot) return;
+        const balances = Object.entries(wallet.spot).map(([asset, bal]) => ({
+          asset,
+          total: bal.free,
+          usdValue: bal.usdValue,
+          btcValue: bal.usdValue / (livePrices['BTCUSDT'] || 67000),
+        })).filter(b => b.total > 0);
+        setRealWalletBalances(balances);
+      } catch (err) {
+        console.error('Failed to load wallet:', err);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [firebaseUser, livePrices]);
 
   // Show shimmer on first render
   useEffect(() => {
@@ -251,18 +281,41 @@ export default function HomeView() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Portfolio calculations - use live prices when available
+  // Portfolio calculations - use REAL wallet + live prices
+  const walletBalances = realWalletBalances.length > 0 ? realWalletBalances : mockWalletBalances;
+
   const totalBalance = useMemo(() => {
-    return mockWalletBalances.reduce((sum, b) => {
+    return walletBalances.reduce((sum, b) => {
       const liveKey = b.asset + 'USDT';
-      const livePrice = livePrices[liveKey] || b.usdValue / b.total;
+      const livePrice = livePrices[liveKey] || (b.asset === 'USDT' ? 1 : b.usdValue / b.total);
       return sum + b.total * livePrice;
     }, 0);
-  }, [livePrices]);
+  }, [walletBalances, livePrices]);
 
-  const totalBtc = mockWalletBalances.reduce((sum, b) => sum + b.btcValue, 0);
-  const change24h = totalBalance * 0.0186;
-  const changePercent = 1.86;
+  // Track previous balance to calculate real change percentage
+  useEffect(() => {
+    if (totalBalance > 0 && previousTotalBalance === null) {
+      setPreviousTotalBalance(totalBalance);
+    }
+  }, [totalBalance, previousTotalBalance]);
+
+  // Real change percentage: compare current total to previous
+  // On first load, use sum of (asset.changePercent24h * asset.usdValue) / totalBalance
+  const changePercent = useMemo(() => {
+    if (previousTotalBalance && previousTotalBalance > 0 && totalBalance !== previousTotalBalance) {
+      return ((totalBalance - previousTotalBalance) / previousTotalBalance) * 100;
+    }
+    // Fallback: weighted average of asset 24h changes from Binance
+    if (walletBalances.length === 0 || totalBalance === 0) return 0;
+    const weightedChange = walletBalances.reduce((sum, b) => {
+      const asset = mockAssets.find(a => a.symbol === b.asset);
+      return sum + (asset?.changePercent24h || 0) * (b.usdValue / totalBalance);
+    }, 0);
+    return weightedChange;
+  }, [walletBalances, totalBalance, previousTotalBalance]);
+
+  const change24h = totalBalance * (changePercent / 100);
+  const totalBtc = walletBalances.reduce((sum, b) => sum + b.btcValue, 0);
 
   // Get live-enhanced assets
   const liveAssets = useMemo(() => {
@@ -315,7 +368,7 @@ export default function HomeView() {
             <span key={dup} className="inline-flex items-center gap-6 text-[10px] text-muted-foreground font-medium px-4">
               <span className="flex items-center gap-1">
                 <span className="text-primary">{t('home.spotVolume')}:</span>
-                <span className="text-foreground tabular-nums">$2.4B</span>
+                <span className="text-foreground tabular-nums">${formatPrice(totalBalance)}</span>
               </span>
               <span className="text-[#2B3139]">|</span>
               <span className="flex items-center gap-1">

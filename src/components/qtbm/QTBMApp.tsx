@@ -269,11 +269,14 @@ export default function QTBMApp() {
 
   // Redirect: if loading, show nothing (prevents flash)
   // If not authenticated and trying to access protected view → redirect to login
-  // If authenticated and on auth view → redirect to home
+  // If authenticated and on auth view → redirect admin to 'admin', regular users to 'home'
   const effectiveView = (() => {
     if (loading) return currentView; // don't redirect during load
     if (!isAuthenticated && protectedViews.includes(currentView)) return 'login';
-    if (isAuthenticated && authViews.includes(currentView)) return 'home';
+    if (isAuthenticated && authViews.includes(currentView)) {
+      // Admin users land on admin dashboard; regular users on home
+      return profile?.role === 'admin' ? 'admin' : 'home';
+    }
     return currentView;
   })();
 
