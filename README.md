@@ -1,141 +1,119 @@
 # QTBM CRYPTO — Digital Asset Exchange
 
-A production-grade, Binance-style crypto banking & trading platform built with Next.js 16, React 19, Tailwind CSS 4, Prisma, and Firebase.
+A production-grade, Binance-style crypto trading platform built with Next.js 16, Firebase, and Capacitor (Android APK).
 
-![QTBM CRYPTO](https://img.shields.io/badge/version-1.0.0-F0B90B) ![Next.js 16](https://img.shields.io/badge/Next.js-16-black) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![License](https://img.shields.io/badge/License-MIT-green)
+![Version](https://img.shields.io/badge/version-1.0.0-F0B90B) ![Next.js](https://img.shields.io/badge/Next.js-16-black) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Firebase](https://img.shields.io/badge/Firebase-12-orange)
 
-![CI](https://github.com/ShlalCod/QTBM-CRYPTO/actions/workflows/ci.yml/badge.svg) ![Build APK](https://github.com/ShlalCod/QTBM-CRYPTO/actions/workflows/build-apk.yml/badge.svg)
-
-> 📱 **Build the APK from GitHub**: Push any commit and the
-> [Build APK workflow](https://github.com/ShlalCod/QTBM-CRYPTO/actions/workflows/build-apk.yml)
-> will produce a signed `QTBM-CRYPTO-v1.0.0.apk` you can download directly
-> from the Actions tab → latest run → **Artifacts** section.
+---
 
 ## Features
 
-- **Trading**: Spot, Margin, Futures, Copy Trading, Limit/Market/Stop orders
-- **Markets**: 200+ pairs, live price simulator, depth chart, candlestick chart (lightweight-charts)
-- **Wallet**: Multi-asset wallet, Deposit/Withdraw/Transfer, QR codes, transaction history
+- **Trading**: Spot trading with real Binance market data (WebSocket + REST)
+- **Markets**: 200+ pairs, live prices, candlestick charts (lightweight-charts)
+- **Wallet**: Multi-asset wallet, Deposit/Withdraw/Transfer, real Firestore balances
 - **Earn**: Staking, Savings Goals, Launchpad, DeFi dashboard
 - **P2P**: Peer-to-peer OTC trading
-- **AI Assistant**: In-app AI chat support (Z.AI SDK)
-- **Admin**: KYC review, user management, announcements, audit log
-- **Auth**: Email/password + Google/Apple OAuth (Firebase Auth)
-- **Realtime**: Price streaming via WebSocket mini-service
+- **AI Assistant**: In-app AI chat support
+- **Admin**: Full admin dashboard (user management, KYC review, announcements, audit logs)
+- **Auth**: Firebase Authentication (email/password)
+- **Realtime**: Live price streaming via Binance WebSocket
 - **i18n**: Arabic + English with RTL support
 - **Mobile-First**: Responsive design, installable PWA, Android APK build
-- **Push Notifications**: Firebase Cloud Messaging
 - **Dark/Light theme** with next-themes
 
 ## Tech Stack
 
 | Area | Tech |
 |------|------|
-| Framework | Next.js 16 (App Router, Turbopack) |
+| Framework | Next.js 16 (App Router, output: export for static) |
 | Language | TypeScript 5 |
 | Styling | Tailwind CSS 4 + shadcn/ui (New York) |
 | State | Zustand (client) + TanStack Query (server) |
-| Database | Prisma ORM + SQLite |
-| Auth | Firebase Auth + NextAuth.js |
-| Realtime | Firebase Realtime DB + Socket.io |
-| Notifications | Firebase Cloud Messaging |
-| AI | Z.AI Web Dev SDK (LLM, VLM, TTS, ASR) |
+| Database | Firebase Firestore (production) + Prisma/SQLite (dev metadata) |
+| Auth | Firebase Auth |
+| Realtime | Binance WebSocket + Firebase onSnapshot |
 | Charts | Recharts + lightweight-charts |
-| Animations | Framer Motion |
+| Mobile | Capacitor 8 (Android APK) |
 
-## Firebase Configuration
+## Firebase Project
 
-The app is wired to the **`qtb-bank-crypto`** Firebase project (Europe-west1).
-Configuration values are derived from `google-services.json` and exposed to
-the client through `NEXT_PUBLIC_*` environment variables (see `.env.example`).
+- **Project ID**: `qtb-bank-crypto` (Europe-west1)
+- **Services**: Auth, Firestore, Storage, Realtime DB, Cloud Messaging
+- **Config**: in `.env` (see `.env.example` for template)
 
-| Field | Value |
-|-------|-------|
-| Project ID | `qtb-bank-crypto` |
-| Database URL | `https://qtb-bank-crypto-default-rtdb.europe-west1.firebasedatabase.app` |
-| Storage bucket | `qtb-bank-crypto.firebasestorage.app` |
-| Android package | `com.qtbm.crypto` |
-| Android App ID | `1:506536686458:android:cb8e1888f30ea8a1ac1cc3` |
-
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 - Node.js 20+ (or Bun 1.3+)
-- JDK 21 (for APK builds — Capacitor 8.x requires it)
-- Android Studio (for APK builds, optional)
+- JDK 21 (for APK builds)
 
 ### Install & Run (Web)
 
 ```bash
 bun install
-bun run db:push     # Initialize SQLite database
-bun run dev         # Start dev server at http://localhost:3000
+cp .env.example .env   # fill in your Firebase config
+bun run dev            # http://localhost:3000
 ```
 
-### Build APK (Android) — three ways
-
-#### 🅰 Build on GitHub Actions (recommended — no local setup needed)
-
-1. Push any commit to `main` (or create a `v*.*.*` tag).
-2. Open the
-   [**Actions tab**](https://github.com/ShlalCod/QTBM-CRYPTO/actions/workflows/build-apk.yml).
-3. Click the latest **Build APK** run.
-4. Scroll to the **Artifacts** section at the bottom and download
-   `QTBM-CRYPTO-release-apk.zip`.
-5. Unzip → install `QTBM-CRYPTO-v1.0.0.apk` on your device
-   (`adb install -r QTBM-CRYPTO-v1.0.0.apk`).
-
-> For a **debug** build instead, use *Actions → Run workflow →
-> build_type = debug*.
-
-#### 🅱 Build locally (with Android SDK)
-
-See **[android/BUILD_APK.md](android/BUILD_APK.md)** for the complete
-production APK build guide. Quick start:
+### Build Android APK
 
 ```bash
-# 1) Generate a release keystore (one-time)
-bun run keystore:generate
+# Option 1: GitHub Actions (recommended — no local setup)
+# Push to main → Actions tab → Build APK → download artifact
 
-# 2) Build the signed release APK
-bun run apk:release
-#   → android/app/build/outputs/apk/release/QTBM-CRYPTO-v1.0.0.apk
+# Option 2: Local build
+bun run build          # static export to out/
+bun run cap:sync       # sync to android project
+cd android && ./gradlew assembleRelease
+# → android/app/build/outputs/apk/release/QTBM-CRYPTO-v1.0.0.apk
 ```
 
-#### 🅒 Step-by-step (manual)
+## Default Admin Account
 
-```bash
-# 1) Build the web assets
-bun run build:web
-
-# 2) Sync into the native Android project
-bun run cap:sync
-
-# 3) Build the release APK (requires Android SDK + signing keystore)
-bun run apk:build
+```
+Email:    admin@qtbm.crypto
+Password: QTBM2026!Secure
 ```
 
-The signed production APK will be at:
-`android/app/build/outputs/apk/release/app-release.apk`
+This account has `role: admin` custom claims and lands on the admin dashboard after login.
 
 ## Project Structure
 
 ```
 .
 ├── src/
-│   ├── app/                  # Next.js App Router (pages + API routes)
-│   ├── components/qtbm/      # Feature views (45+ views)
-│   ├── components/ui/        # shadcn/ui primitives
-│   ├── hooks/                # use-mobile, use-toast, use-price-simulator
-│   ├── lib/                  # db, firebase, i18n, utils, mock-data
-│   ├── stores/               # Zustand stores
-│   └── types/                # TypeScript domain types
-├── prisma/                   # Prisma schema
-├── mini-services/            # price-stream WebSocket service
-├── android/                  # Capacitor Android project (APK wrapper)
-├── public/                   # Static assets + firebase-messaging-sw.js
-└── scripts/                  # APK build scripts
+│   ├── app/              # Next.js App Router (layout, page, globals.css)
+│   ├── components/
+│   │   ├── qtbm/         # 43 feature views (Home, Trade, Wallet, Admin, etc.)
+│   │   └── ui/           # shadcn/ui primitives
+│   ├── hooks/            # use-binance, use-price-simulator, use-mobile, etc.
+│   ├── lib/              # firebase, firestore, auth-context, i18n, mock-data
+│   ├── stores/           # Zustand app-store
+│   └── types/            # TypeScript domain types
+├── android/              # Capacitor Android project (APK wrapper)
+├── functions/            # Firebase Cloud Functions (4 callable)
+├── mini-services/        # price-stream WebSocket (real Binance data)
+├── prisma/               # Prisma schema
+├── public/               # Static assets + firebase-messaging-sw.js
+├── scripts/              # Build scripts (APK, keystore, capacitor sync)
+├── .github/workflows/    # CI + APK build
+├── firestore.rules       # Firestore security rules
+├── storage.rules         # Firebase Storage rules
+└── firebase.json         # Firebase CLI config
 ```
+
+## Documentation
+
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** — Complete production deployment guide
+- **[APK-BUILD-REPORT.md](APK-BUILD-REPORT.md)** — APK build verification report
+
+## Security
+
+- Firebase Auth for user authentication
+- Firestore Security Rules enforce user-owns-data model
+- Financial operations use Firestore transactions (atomic)
+- KYC uploads to Firebase Storage with size/type validation
+- Admin actions write audit logs to Firestore
 
 ## License
 

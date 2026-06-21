@@ -12,7 +12,6 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
-    "build:web": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
     "build:static": "bash scripts/build-static.sh",
     "cap:sync": "bash scripts/cap-sync.sh",
     "cap:open": "bash scripts/cap-open.sh",
