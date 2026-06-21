@@ -2,7 +2,7 @@
   "name": "qtbm-crypto",
   "version": "1.0.0",
   "private": true,
-  "description": "QTBM CRYPTO — Digital Asset Exchange (Next.js 16 + Firebase + Capacitor APK)",
+  "description": "QTBM CRYPTO \u2014 Digital Asset Exchange (Next.js 16 + Firebase + Capacitor APK)",
   "scripts": {
     "dev": "next dev -p 3000 2>&1 | tee dev.log",
     "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
@@ -65,6 +65,7 @@
     "date-fns": "^4.4.0",
     "embla-carousel-react": "^8.6.0",
     "firebase": "^12.14.0",
+    "firebase-admin": "^14.0.0",
     "framer-motion": "^12.23.2",
     "input-otp": "^1.4.2",
     "lightweight-charts": "^5.2.0",

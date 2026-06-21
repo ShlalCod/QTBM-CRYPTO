@@ -352,7 +352,11 @@ export async function markNotificationRead(uid: string, notifId: string): Promis
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CLOUD FUNCTION CALLS (financial writes — server-side validation)
+// FINANCIAL OPERATIONS (via Next.js API routes — server-side validation)
+//
+// On Spark plan (no billing), Cloud Functions cannot be deployed.
+// These calls go to Next.js API routes (/api/trade, /api/withdraw, etc.)
+// which use the Firebase Admin SDK to perform secure Firestore transactions.
 // ═══════════════════════════════════════════════════════════════════════════
 
 export interface TradeParams {
@@ -383,28 +387,44 @@ export interface TransferParams {
   toWallet: "spot" | "funding" | "earn" | "futures";
 }
 
+async function callApi(route: string, params: unknown) {
+  const { auth } = await import("./firebase");
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error("Authentication required");
+  }
+  const idToken = await user.getIdToken();
+
+  const resp = await fetch(`/api/${route}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${idToken}`,
+    },
+    body: JSON.stringify(params),
+  });
+
+  const data = await resp.json();
+  if (!resp.ok) {
+    throw new Error(data.error || `Request failed: ${resp.status}`);
+  }
+  return data;
+}
+
 export async function executeTradeCall(params: TradeParams) {
-  const callable = httpsCallable(functions, "executeTrade");
-  const result = await callable(params);
-  return result.data as { success: boolean; tradeId: string };
+  return callApi("trade", params) as Promise<{ success: boolean; tradeId: string }>;
 }
 
 export async function processWithdrawCall(params: WithdrawParams) {
-  const callable = httpsCallable(functions, "processWithdraw");
-  const result = await callable(params);
-  return result.data as { success: boolean; transactionId: string };
+  return callApi("withdraw", params) as Promise<{ success: boolean; transactionId: string }>;
 }
 
 export async function processDepositCall(params: DepositParams) {
-  const callable = httpsCallable(functions, "processDeposit");
-  const result = await callable(params);
-  return result.data as { success: boolean; transactionId: string };
+  return callApi("deposit", params) as Promise<{ success: boolean; transactionId: string }>;
 }
 
 export async function processTransferCall(params: TransferParams) {
-  const callable = httpsCallable(functions, "processTransfer");
-  const result = await callable(params);
-  return result.data as { success: boolean; transactionId: string };
+  return callApi("transfer", params) as Promise<{ success: boolean; transactionId: string }>;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
