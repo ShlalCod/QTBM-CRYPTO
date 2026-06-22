@@ -251,13 +251,34 @@ export default function HomeView() {
   const [previousTotalBalance, setPreviousTotalBalance] = useState<number | null>(null);
 
   // Load real wallet from Firestore — ONLY when user changes (not on every price update)
+  // Uses local cache for instant display, then fetches fresh data
   useEffect(() => {
     if (!firebaseUser) {
       setRealWalletBalances([]);
       return;
     }
     let mounted = true;
+
+    // 1. Load from cache first (instant display)
     (async () => {
+      try {
+        const cachedRaw = typeof window !== 'undefined' ? localStorage.getItem('qtbm:wallet') : null;
+        if (cachedRaw) {
+          const parsed = JSON.parse(cachedRaw);
+          const wallet = parsed.data;
+          if (wallet?.spot && mounted) {
+            const balances = Object.entries(wallet.spot).map(([asset, bal]: [string, any]) => ({
+              asset,
+              total: bal.free,
+              usdValue: bal.usdValue,
+              btcValue: 0,
+            })).filter((b: any) => b.total > 0);
+            setRealWalletBalances(balances);
+          }
+        }
+      } catch { /* ignore */ }
+
+      // 2. Fetch fresh data from Firestore
       try {
         const wallet = await getWallet(firebaseUser.uid);
         if (!mounted || !wallet?.spot) return;
@@ -265,15 +286,22 @@ export default function HomeView() {
           asset,
           total: bal.free,
           usdValue: bal.usdValue,
-          btcValue: 0, // calculated below using live prices
+          btcValue: 0,
         })).filter(b => b.total > 0);
         setRealWalletBalances(balances);
+        // Cache wallet locally
+        try {
+          localStorage.setItem('qtbm:wallet', JSON.stringify({
+            data: wallet,
+            timestamp: Date.now(),
+          }));
+        } catch { /* ignore */ }
       } catch (err) {
-        console.error('Failed to load wallet:', err);
+        // Offline — keep cached data if available
       }
     })();
     return () => { mounted = false; };
-  }, [firebaseUser]); // ← removed livePrices — wallet fetched once per login
+  }, [firebaseUser]);
 
   // Show shimmer on first render
   useEffect(() => {

@@ -52,30 +52,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let unsubProfile: (() => void) | null = null;
+    let profilePollRef: ReturnType<typeof setInterval> | null = null;
 
     const unsubAuth = onAuthStateChanged(auth, async (user) => {
-      // Clean up previous profile subscription
-      if (unsubProfile) {
-        unsubProfile();
-        unsubProfile = null;
+      if (profilePollRef) {
+        clearInterval(profilePollRef);
+        profilePollRef = null;
       }
 
       setFirebaseUser(user);
 
       if (user) {
-        // Check if profile exists; if not, create it
-        const existing = await getUserProfile(user.uid);
-        if (!existing) {
-          await createUserProfile(user.uid, {
-            email: user.email ?? "",
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-          });
-        }
+        // Load profile from cache first (instant display), then fetch from Firestore
+        try {
+          const cachedRaw = typeof window !== 'undefined' ? localStorage.getItem('qtbm:user-profile') : null;
+          if (cachedRaw) {
+            const parsed = JSON.parse(cachedRaw);
+            if (Date.now() - parsed.timestamp < 5 * 60 * 1000) {
+              setProfile(parsed.data);
+            }
+          }
+        } catch { /* ignore */ }
 
-        // Subscribe to profile changes (real-time)
-        unsubProfile = subscribeToUserProfile(user.uid, setProfile);
+        // Check if profile exists; if not, create it
+        const fetchProfile = async () => {
+          try {
+            let existing = await getUserProfile(user.uid);
+            if (!existing) {
+              await createUserProfile(user.uid, {
+                email: user.email ?? "",
+                displayName: user.displayName,
+                photoURL: user.photoURL,
+              });
+              existing = await getUserProfile(user.uid);
+            }
+            if (existing) {
+              setProfile(existing);
+              // Cache profile locally
+              try {
+                localStorage.setItem('qtbm:user-profile', JSON.stringify({
+                  data: existing,
+                  timestamp: Date.now(),
+                }));
+              } catch { /* ignore */ }
+            }
+          } catch (err) {
+            // Offline or permission error — keep cached profile
+          }
+        };
+        fetchProfile();
+        // Poll profile every 5 minutes (instead of continuous onSnapshot)
+        profilePollRef = setInterval(fetchProfile, 5 * 60 * 1000);
       } else {
         setProfile(null);
       }
@@ -85,7 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       unsubAuth();
-      if (unsubProfile) unsubProfile();
+      if (profilePollRef) clearInterval(profilePollRef);
     };
   }, []);
 

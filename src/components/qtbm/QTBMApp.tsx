@@ -21,8 +21,9 @@ import {
 import { useAppStore } from '@/stores/app-store';
 import { useTheme } from 'next-themes';
 import { useAuth } from '@/lib/auth-context';
+import { useNetworkStatus } from '@/hooks/use-network-status';
 import { useTranslation } from '@/lib/i18n';
-import { subscribeToNotifications } from '@/lib/firestore';
+import { subscribeToNotifications, getUserNotifications } from '@/lib/firestore';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -30,48 +31,61 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { mockNotifications } from '@/lib/mock-data';
 import { usePriceSimulator } from '@/hooks/use-price-simulator';
-import HomeView from './HomeView';
-import MarketsView from './MarketsView';
-import TradeView from './TradeView';
-import WalletView from './WalletView';
-import MoreView from './MoreView';
-import AuthView from './AuthView';
-import EarnView from './EarnView';
-import P2PView from './P2PView';
-import LaunchpadView from './LaunchpadView';
-import NotificationsView from './NotificationsView';
-import SettingsView from './SettingsView';
-import KYCView from './KYCView';
-import SupportView from './SupportView';
-import DepositView from './DepositView';
-import WithdrawView from './WithdrawView';
-import TransferView from './TransferView';
-import AssetDetailView from './AssetDetailView';
-import OrderHistoryView from './OrderHistoryView';
-import TradeHistoryView from './TradeHistoryView';
-import FuturesView from './FuturesView';
-import MarginView from './MarginView';
-import AdminDashboardView from './AdminDashboardView';
-import AIChatView from './AIChatView';
-import SwapView from './SwapView';
-import ReferralView from './ReferralView';
-import PortfolioAnalyticsView from './PortfolioAnalyticsView';
-import StakingView from './StakingView';
-import CopyTradingView from './CopyTradingView';
-import VotingView from './VotingView';
-import PriceAlertsView from './PriceAlertsView';
-import LeaderboardView from './LeaderboardView';
-import NewsFeedView from './NewsFeedView';
-import TransactionDetailView from './TransactionDetailView';
-import StrategyBotView from './StrategyBotView';
-import SavingsGoalsView from './SavingsGoalsView';
-import ConvertView from './ConvertView';
-import GiftCardsView from './GiftCardsView';
-import TaxReportView from './TaxReportView';
-import TradeChallengeView from './TradeChallengeView';
-import NFTGalleryView from './NFTGalleryView';
-import DeFiDashboardView from './DeFiDashboardView';
-import SocialFeedView from './SocialFeedView';
+import { lazy, Suspense } from 'react';
+
+// Lazy load all views — each loads on-demand when first visited
+// This splits the bundle and dramatically reduces initial load time
+const HomeView = lazy(() => import('./HomeView'));
+const MarketsView = lazy(() => import('./MarketsView'));
+const TradeView = lazy(() => import('./TradeView'));
+const WalletView = lazy(() => import('./WalletView'));
+const MoreView = lazy(() => import('./MoreView'));
+const AuthView = lazy(() => import('./AuthView'));
+const EarnView = lazy(() => import('./EarnView'));
+const P2PView = lazy(() => import('./P2PView'));
+const LaunchpadView = lazy(() => import('./LaunchpadView'));
+const NotificationsView = lazy(() => import('./NotificationsView'));
+const SettingsView = lazy(() => import('./SettingsView'));
+const KYCView = lazy(() => import('./KYCView'));
+const SupportView = lazy(() => import('./SupportView'));
+const DepositView = lazy(() => import('./DepositView'));
+const WithdrawView = lazy(() => import('./WithdrawView'));
+const TransferView = lazy(() => import('./TransferView'));
+const AssetDetailView = lazy(() => import('./AssetDetailView'));
+const OrderHistoryView = lazy(() => import('./OrderHistoryView'));
+const TradeHistoryView = lazy(() => import('./TradeHistoryView'));
+const FuturesView = lazy(() => import('./FuturesView'));
+const MarginView = lazy(() => import('./MarginView'));
+const AdminDashboardView = lazy(() => import('./AdminDashboardView'));
+const AIChatView = lazy(() => import('./AIChatView'));
+const SwapView = lazy(() => import('./SwapView'));
+const ReferralView = lazy(() => import('./ReferralView'));
+const PortfolioAnalyticsView = lazy(() => import('./PortfolioAnalyticsView'));
+const StakingView = lazy(() => import('./StakingView'));
+const CopyTradingView = lazy(() => import('./CopyTradingView'));
+const VotingView = lazy(() => import('./VotingView'));
+const PriceAlertsView = lazy(() => import('./PriceAlertsView'));
+const LeaderboardView = lazy(() => import('./LeaderboardView'));
+const NewsFeedView = lazy(() => import('./NewsFeedView'));
+const TransactionDetailView = lazy(() => import('./TransactionDetailView'));
+const StrategyBotView = lazy(() => import('./StrategyBotView'));
+const SavingsGoalsView = lazy(() => import('./SavingsGoalsView'));
+const ConvertView = lazy(() => import('./ConvertView'));
+const GiftCardsView = lazy(() => import('./GiftCardsView'));
+const TaxReportView = lazy(() => import('./TaxReportView'));
+const TradeChallengeView = lazy(() => import('./TradeChallengeView'));
+const NFTGalleryView = lazy(() => import('./NFTGalleryView'));
+const DeFiDashboardView = lazy(() => import('./DeFiDashboardView'));
+const SocialFeedView = lazy(() => import('./SocialFeedView'));
+
+// Loading spinner for lazy-loaded views
+function ViewLoader() {
+  return (
+    <div className="flex items-center justify-center h-full min-h-[200px]">
+      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
 
 const navItems = [
   { id: 'home' as const, labelKey: 'nav.home', icon: Home },
@@ -197,6 +211,7 @@ export default function QTBMApp() {
   const { currentView, navigateTo, searchQuery, setSearchQuery, user, unreadCount, setNotifications, isRTL, language, wsConnected, setUser } = useAppStore();
   const { theme, setTheme } = useTheme();
   const { firebaseUser, profile, loading, isAuthenticated, signOut } = useAuth();
+  const { isOnline, wasOffline } = useNetworkStatus();
   const { t } = useTranslation();
   const [searchOpen, setSearchOpen] = React.useState(false);
 
@@ -231,23 +246,32 @@ export default function QTBMApp() {
     }
   }, [profile, loading, setUser]);
 
-  // Subscribe to real notifications from Firestore when authenticated
+  // Poll notifications from Firestore every 30s (replaces continuous onSnapshot)
   useEffect(() => {
     if (!firebaseUser) {
       setNotifications([]);
       return;
     }
-    const unsub = subscribeToNotifications(firebaseUser.uid, (notifs) => {
-      setNotifications(notifs.map(n => ({
-        id: n.id,
-        type: n.type,
-        title: n.title,
-        body: n.body,
-        timestamp: Date.now(),
-        isRead: n.isRead,
-      })));
-    });
-    return () => unsub();
+    let mounted = true;
+    const fetchNotifications = async () => {
+      try {
+        const notifs = await getUserNotifications(firebaseUser.uid, 20);
+        if (!mounted) return;
+        setNotifications(notifs.map(n => ({
+          id: n.id,
+          type: n.type,
+          title: n.title,
+          body: n.body,
+          timestamp: Date.now(),
+          isRead: n.isRead,
+        })));
+      } catch (err) {
+        // Offline or permission error — keep existing notifications
+      }
+    };
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => { mounted = false; clearInterval(interval); };
   }, [firebaseUser, setNotifications]);
 
   // Update document direction and lang attribute
@@ -307,10 +331,10 @@ export default function QTBMApp() {
             <div className="hidden sm:flex flex-col">
               <div className="flex items-center gap-2">
                 <span className="text-primary font-bold text-base leading-tight tracking-wide">QTBM BANK</span>
-                {/* LIVE Badge with WS connection indicator */}
-                <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full border ${wsConnected ? 'bg-success/10 border-success/20' : 'bg-destructive/10 border-destructive/20'}`}>
-                  <div className={`w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-success pulse-green' : 'bg-destructive live-dot'}`} />
-                  <span className={`text-[10px] font-bold tracking-wider ${wsConnected ? 'text-success' : 'text-destructive'}`}>{wsConnected ? t('status.live') : 'OFF'}</span>
+                {/* LIVE Badge with WS + network connection indicator */}
+                <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full border ${wsConnected && isOnline ? 'bg-success/10 border-success/20' : 'bg-destructive/10 border-destructive/20'}`}>
+                  <div className={`w-1.5 h-1.5 rounded-full ${wsConnected && isOnline ? 'bg-success pulse-green' : 'bg-destructive live-dot'}`} />
+                  <span className={`text-[10px] font-bold tracking-wider ${wsConnected && isOnline ? 'text-success' : 'text-destructive'}`}>{!isOnline ? 'غير متصل' : wsConnected ? t('status.live') : 'OFF'}</span>
                 </div>
               </div>
               <span className="text-muted-foreground text-[10px] leading-tight">{t('common.digitalAssetExchange')}</span>
@@ -545,7 +569,9 @@ export default function QTBMApp() {
                 transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className={effectiveView === 'trade' ? 'h-full view-transition' : 'view-transition'}
               >
-                <ViewRenderer view={effectiveView} />
+                <Suspense fallback={<ViewLoader />}>
+                  <ViewRenderer view={effectiveView} />
+                </Suspense>
               </motion.div>
             </AnimatePresence>
           )}

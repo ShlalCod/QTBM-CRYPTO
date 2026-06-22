@@ -320,14 +320,31 @@ export default function WalletView() {
   const [realTransactions, setRealTransactions] = useState<FirestoreTransaction[]>([]);
   const [loadingWallet, setLoadingWallet] = useState(true);
 
-  // Load real wallet + transactions from Firestore
+  // Load real wallet + transactions from Firestore (with local cache)
   useEffect(() => {
     if (!firebaseUser) {
       setLoadingWallet(false);
       return;
     }
     let mounted = true;
+
     (async () => {
+      // 1. Load from cache first (instant display)
+      try {
+        const cachedWallet = typeof window !== 'undefined' ? localStorage.getItem('qtbm:wallet') : null;
+        const cachedTxs = typeof window !== 'undefined' ? localStorage.getItem('qtbm:transactions') : null;
+        if (cachedWallet && mounted) {
+          setRealWallet(JSON.parse(cachedWallet).data);
+        }
+        if (cachedTxs && mounted) {
+          setRealTransactions(JSON.parse(cachedTxs).data);
+        }
+        if ((cachedWallet || cachedTxs) && mounted) {
+          setLoadingWallet(false);
+        }
+      } catch { /* ignore */ }
+
+      // 2. Fetch fresh data from Firestore
       try {
         const [wallet, txs] = await Promise.all([
           getWallet(firebaseUser.uid),
@@ -337,9 +354,14 @@ export default function WalletView() {
           setRealWallet(wallet);
           setRealTransactions(txs);
           setLoadingWallet(false);
+          // Cache locally
+          try {
+            if (wallet) localStorage.setItem('qtbm:wallet', JSON.stringify({ data: wallet, timestamp: Date.now() }));
+            localStorage.setItem('qtbm:transactions', JSON.stringify({ data: txs, timestamp: Date.now() }));
+          } catch { /* ignore */ }
         }
       } catch (err) {
-        console.error('Failed to load wallet:', err);
+        // Offline — keep cached data
         if (mounted) setLoadingWallet(false);
       }
     })();

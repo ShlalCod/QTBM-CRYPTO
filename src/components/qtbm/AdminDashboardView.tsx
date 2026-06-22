@@ -121,53 +121,108 @@ export default function AdminDashboardView() {
   const [newAnnouncement, setNewAnnouncement] = useState({ title: '', body: '', type: 'system' });
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  // Load all admin data from Firestore
-  const loadAdminData = useCallback(async () => {
+  // Load all admin data from Firestore (with local cache)
+  const loadAdminData = useCallback(async (useCache = true) => {
     if (!firebaseUser || profile?.role !== 'admin') return;
+
+    // 1. Load from cache first (instant display)
+    if (useCache) {
+      try {
+        const cachedRaw = typeof window !== 'undefined' ? localStorage.getItem('qtbm:admin-data') : null;
+        if (cachedRaw) {
+          const parsed = JSON.parse(cachedRaw);
+          if (Date.now() - parsed.timestamp < 2 * 60 * 1000) { // 2 min cache
+            const d = parsed.data;
+            setUsers(d.users || []);
+            setKycQueue(d.kycQueue || []);
+            setAnnouncements(d.announcements || []);
+            setRecentTrades(d.recentTrades || []);
+            setAuditLogs(d.auditLogs || []);
+            setStats(d.stats || { totalUsers: 0, totalTrades: 0, pendingKYC: 0, activeAnnouncements: 0 });
+            setLoading(false);
+            return; // Cache is fresh, skip network
+          }
+        }
+      } catch { /* ignore */ }
+    }
+
     setLoading(true);
     try {
-      // Load users
       const usersSnap = await getDocs(query(collection(firestore, 'users'), limit(100)));
       const usersData = usersSnap.docs.map(d => ({ uid: d.id, ...d.data() } as AdminUser));
       setUsers(usersData);
 
-      // Load pending KYC
       const kycSnap = await getDocs(query(collection(firestore, 'kyc'), where('status', '==', 'pending'), limit(50)));
       const kycData = kycSnap.docs.map(d => ({ id: d.id, ...d.data() } as AdminKYC));
       setKycQueue(kycData);
 
-      // Load announcements
       const annSnap = await getDocs(query(collection(firestore, 'public'), where('type', '==', 'announcement'), limit(50)));
       const annData = annSnap.docs.map(d => ({ id: d.id, ...d.data() } as AdminAnnouncement));
       setAnnouncements(annData);
 
-      // Load recent trades
       const tradesSnap = await getDocs(query(collection(firestore, 'trades'), limit(20)));
       const tradesData = tradesSnap.docs.map(d => ({ tradeId: d.id, ...d.data() } as AdminTrade));
       setRecentTrades(tradesData);
 
-      // Load audit logs
       const logsSnap = await getDocs(query(collection(firestore, 'admin'), limit(50)));
       const logsData = logsSnap.docs.map(d => ({ id: d.id, ...d.data() } as AuditLog));
       setAuditLogs(logsData);
 
-      // Calculate stats
-      setStats({
+      const newStats = {
         totalUsers: usersData.length,
         totalTrades: tradesData.length,
         pendingKYC: kycData.length,
         activeAnnouncements: annData.filter(a => a.status === 'active').length,
-      });
+      };
+      setStats(newStats);
+
+      // Cache admin data locally
+      try {
+        localStorage.setItem('qtbm:admin-data', JSON.stringify({
+          data: { users: usersData, kycQueue: kycData, announcements: annData, recentTrades: tradesData, auditLogs: logsData, stats: newStats },
+          timestamp: Date.now(),
+        }));
+      } catch { /* ignore */ }
     } catch (err) {
-      console.error('Admin data load failed:', err);
-      toast.error('فشل تحميل بيانات الأدمن');
+      // Offline — keep cached data
     } finally {
       setLoading(false);
     }
   }, [firebaseUser, profile]);
 
+  // Incremental refresh: reload only a specific collection (not all 5)
+  const refreshCollection = useCallback(async (collectionName: 'users' | 'kyc' | 'public' | 'trades' | 'admin') => {
+    try {
+      if (collectionName === 'users') {
+        const snap = await getDocs(query(collection(firestore, 'users'), limit(100)));
+        const data = snap.docs.map(d => ({ uid: d.id, ...d.data() } as AdminUser));
+        setUsers(data);
+        setStats(s => ({ ...s, totalUsers: data.length }));
+      } else if (collectionName === 'kyc') {
+        const snap = await getDocs(query(collection(firestore, 'kyc'), where('status', '==', 'pending'), limit(50)));
+        const data = snap.docs.map(d => ({ id: d.id, ...d.data() } as AdminKYC));
+        setKycQueue(data);
+        setStats(s => ({ ...s, pendingKYC: data.length }));
+      } else if (collectionName === 'public') {
+        const snap = await getDocs(query(collection(firestore, 'public'), where('type', '==', 'announcement'), limit(50)));
+        const data = snap.docs.map(d => ({ id: d.id, ...d.data() } as AdminAnnouncement));
+        setAnnouncements(data);
+        setStats(s => ({ ...s, activeAnnouncements: data.filter(a => a.status === 'active').length }));
+      } else if (collectionName === 'trades') {
+        const snap = await getDocs(query(collection(firestore, 'trades'), limit(20)));
+        const data = snap.docs.map(d => ({ tradeId: d.id, ...d.data() } as AdminTrade));
+        setRecentTrades(data);
+        setStats(s => ({ ...s, totalTrades: data.length }));
+      } else if (collectionName === 'admin') {
+        const snap = await getDocs(query(collection(firestore, 'admin'), limit(50)));
+        const data = snap.docs.map(d => ({ id: d.id, ...d.data() } as AuditLog));
+        setAuditLogs(data);
+      }
+    } catch { /* offline */ }
+  }, []);
+
   useEffect(() => {
-    loadAdminData();
+    loadAdminData(false);
   }, [loadAdminData]);
 
   // ─── Real admin actions ─────────────────────────────────────────────
@@ -197,7 +252,8 @@ export default function AdminDashboardView() {
       });
       await writeAuditLog('suspend_user', user.email || user.uid, 'success');
       toast.success(`تم تعليق المستخدم: ${user.displayName || user.email}`);
-      loadAdminData(); // refresh
+      refreshCollection("users");
+      refreshCollection("admin");
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'فشل التعليق';
       toast.error(msg);
@@ -216,7 +272,8 @@ export default function AdminDashboardView() {
       });
       await writeAuditLog('reactivate_user', user.email || user.uid, 'success');
       toast.success(`تم إعادة تفعيل المستخدم: ${user.displayName || user.email}`);
-      loadAdminData();
+      refreshCollection("users");
+      refreshCollection("admin");
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'فشل إعادة التفعيل';
       toast.error(msg);
@@ -243,7 +300,9 @@ export default function AdminDashboardView() {
       });
       await writeAuditLog('approve_kyc', kyc.id, 'success');
       toast.success(`تم اعتماد KYC: ${kyc.id}`);
-      loadAdminData();
+      refreshCollection("kyc");
+      refreshCollection("users");
+      refreshCollection("admin");
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'فشل الاعتماد';
       toast.error(msg);
@@ -267,7 +326,9 @@ export default function AdminDashboardView() {
       });
       await writeAuditLog('reject_kyc', kyc.id, 'success');
       toast.success(`تم رفض KYC: ${kyc.id}`);
-      loadAdminData();
+      refreshCollection("kyc");
+      refreshCollection("users");
+      refreshCollection("admin");
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'فشل الرفض';
       toast.error(msg);
@@ -297,7 +358,8 @@ export default function AdminDashboardView() {
       toast.success('تم إنشاء الإعلان بنجاح');
       setShowAnnouncementModal(false);
       setNewAnnouncement({ title: '', body: '', type: 'system' });
-      loadAdminData();
+      refreshCollection("public");
+      refreshCollection("admin");
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'فشل الإنشاء';
       toast.error(msg);
@@ -314,7 +376,8 @@ export default function AdminDashboardView() {
       await deleteDoc(doc(firestore, 'public', ann.id));
       await writeAuditLog('delete_announcement', ann.id, 'success');
       toast.success('تم حذف الإعلان');
-      loadAdminData();
+      refreshCollection("public");
+      refreshCollection("admin");
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'فشل الحذف';
       toast.error(msg);
