@@ -250,7 +250,7 @@ export default function HomeView() {
   const [realWalletBalances, setRealWalletBalances] = useState<Array<{asset: string; total: number; usdValue: number; btcValue: number}>>([]);
   const [previousTotalBalance, setPreviousTotalBalance] = useState<number | null>(null);
 
-  // Load real wallet from Firestore
+  // Load real wallet from Firestore — ONLY when user changes (not on every price update)
   useEffect(() => {
     if (!firebaseUser) {
       setRealWalletBalances([]);
@@ -265,7 +265,7 @@ export default function HomeView() {
           asset,
           total: bal.free,
           usdValue: bal.usdValue,
-          btcValue: bal.usdValue / (livePrices['BTCUSDT'] || 67000),
+          btcValue: 0, // calculated below using live prices
         })).filter(b => b.total > 0);
         setRealWalletBalances(balances);
       } catch (err) {
@@ -273,7 +273,7 @@ export default function HomeView() {
       }
     })();
     return () => { mounted = false; };
-  }, [firebaseUser, livePrices]);
+  }, [firebaseUser]); // ← removed livePrices — wallet fetched once per login
 
   // Show shimmer on first render
   useEffect(() => {
