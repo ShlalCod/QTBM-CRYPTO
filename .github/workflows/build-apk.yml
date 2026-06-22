@@ -130,7 +130,7 @@ jobs:
             ./gradlew assembleRelease --no-daemon --console=plain --stacktrace
           fi
 
-      # ---------- 9. Locate & rename APK ----------
+      # ---------- 9. Locate & verify APK ----------
       - name: 📂 Locate built APK
         id: apk
         run: |
@@ -146,15 +146,12 @@ jobs:
             exit 1
           fi
           APK_ABS="$(pwd)/$APK_PATH"
-          # Rename to QTBM-CRYPTO-v1.0.0.apk
-          APK_DIR=$(dirname "$APK_ABS")
-          cp "$APK_ABS" "$APK_DIR/QTBM-CRYPTO-v1.0.0.apk"
-          APK_FINAL="$APK_DIR/QTBM-CRYPTO-v1.0.0.apk"
-          APK_SIZE=$(du -h "$APK_FINAL" | cut -f1)
-          echo "apk_path=$APK_FINAL" >> $GITHUB_OUTPUT
-          echo "apk_name=QTBM-CRYPTO-v1.0.0.apk" >> $GITHUB_OUTPUT
+          APK_NAME=$(basename "$APK_ABS")
+          APK_SIZE=$(du -h "$APK_ABS" | cut -f1)
+          echo "apk_path=$APK_ABS" >> $GITHUB_OUTPUT
+          echo "apk_name=$APK_NAME" >> $GITHUB_OUTPUT
           echo "apk_size=$APK_SIZE" >> $GITHUB_OUTPUT
-          echo "✓ Built APK: QTBM-CRYPTO-v1.0.0.apk ($APK_SIZE)"
+          echo "✓ Built APK: $APK_NAME ($APK_SIZE)"
 
       # ---------- 10. Upload artifact ----------
       - name: 📤 Upload APK artifact
